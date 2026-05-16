@@ -4,15 +4,17 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Qiao OS</title>
+    <!-- 引入 Font Awesome 图标库，用于更逼真的 App 内部图标 -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ================= 基础重置与全局设定 ================= */
+        /* ================= 0. 基础重置与全局设定 ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; background-color: #000; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif; overflow: hidden; }
         .hidden { display: none !important; }
         .fade-out { opacity: 0; transition: opacity 0.8s ease; pointer-events: none; }
         .fade-in { opacity: 1; transition: opacity 0.8s ease; }
 
-        /* ================= 第一幕：黑屏打字机 ================= */
+        /* ================= 1. 第一幕：黑屏打字机 ================= */
         #boot-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; padding: 20px; text-align: center; }
         .typewriter-text { font-size: 1.1rem; line-height: 1.8; min-height: 80px; font-weight: 300; letter-spacing: 1px; color: rgba(255, 255, 255, 0.9); }
         .cursor { display: inline-block; width: 2px; height: 1.2rem; background-color: #fff; animation: blink 0.8s infinite; vertical-align: middle; margin-left: 2px; }
@@ -20,17 +22,22 @@
         #breathing-btn { margin-top: 50px; width: 30px; height: 30px; background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; opacity: 0; cursor: pointer; animation: breathe 2s infinite alternate; transition: opacity 1s ease; }
         @keyframes breathe { from { transform: scale(0.8); opacity: 0.3; } to { transform: scale(1.2); opacity: 0.8; } }
 
-        /* ================= 手机系统外壳 ================= */
+        /* ================= 2. 手机系统外壳 & 状态栏 ================= */
         #os-container { position: relative; width: 100%; height: 100%; background-color: #000; overflow: hidden; }
         
-        /* 状态栏 */
-        #status-bar { position: absolute; top: 0; left: 0; width: 100%; height: 40px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; color: #fff; z-index: 500; font-size: 0.85rem; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.5); }
-        .status-right { display: flex; gap: 5px; align-items: center; }
-        .battery { width: 22px; height: 11px; border: 1px solid rgba(255,255,255,0.8); border-radius: 3px; position: relative; }
-        .battery::after { content: ''; position: absolute; top: 2px; right: -3px; width: 2px; height: 5px; background: rgba(255,255,255,0.8); border-radius: 0 1px 1px 0; }
-        .battery-level { width: 80%; height: 100%; background: #fff; border-radius: 1px; }
+        #status-bar { position: absolute; top: 0; left: 0; width: 100%; height: 40px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; color: #fff; z-index: 500; font-size: 0.85rem; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.5); transition: color 0.3s ease; }
+        /* 当进入白色背景APP时，状态栏变黑 */
+        #status-bar.dark-mode { color: #000; text-shadow: none; }
+        #status-bar.dark-mode .battery { border-color: #000; }
+        #status-bar.dark-mode .battery::after { background: #000; }
+        #status-bar.dark-mode .battery-level { background: #000; }
 
-        /* ================= 第二/三幕：锁屏界面 ================= */
+        .status-right { display: flex; gap: 5px; align-items: center; }
+        .battery { width: 22px; height: 11px; border: 1px solid rgba(255,255,255,0.8); border-radius: 3px; position: relative; transition: border-color 0.3s ease; }
+        .battery::after { content: ''; position: absolute; top: 2px; right: -3px; width: 2px; height: 5px; background: rgba(255,255,255,0.8); border-radius: 0 1px 1px 0; transition: background 0.3s ease; }
+        .battery-level { width: 80%; height: 100%; background: #fff; border-radius: 1px; transition: background 0.3s ease; }
+
+        /* ================= 3. 第二幕：锁屏界面 ================= */
         #lock-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 80px; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease; }
         #lock-time { font-size: 5rem; font-weight: 200; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.2); letter-spacing: -2px; }
         #lock-date { font-size: 1.2rem; color: #fff; text-shadow: 0 1px 5px rgba(0,0,0,0.3); margin-top: -10px; }
@@ -38,10 +45,9 @@
         .unlock-bar { width: 120px; height: 5px; background: #fff; border-radius: 10px; margin-top: 10px; }
         @keyframes bounceHint { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* ================= 第四幕：桌面与组件 ================= */
-        #desktop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat; z-index: 100; padding: 50px 20px 20px 20px; display: flex; flex-direction: column; }
+        /* ================= 4. 桌面层 ================= */
+        #desktop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat; z-index: 100; padding: 50px 20px 20px 20px; display: flex; flex-direction: column; transition: transform 0.3s ease, filter 0.3s ease; }
         
-        /* 桌面小部件 (天气 & 时间) */
         .widgets-container { display: flex; gap: 15px; margin-bottom: 30px; margin-top: 20px; }
         .widget { flex: 1; height: 120px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; justify-content: center; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.2); }
         .widget-time h2 { font-size: 2.2rem; font-weight: 400; margin-bottom: 5px; }
@@ -51,20 +57,15 @@
         .widget-weather h2 { font-size: 2rem; font-weight: 400; }
         .widget-weather .icon { font-size: 2rem; }
 
-        /* APP 容器与图标 */
         .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 25px; column-gap: 15px; justify-items: center; }
         .app-item { display: flex; flex-direction: column; align-items: center; position: relative; width: 60px; cursor: pointer; transition: transform 0.1s; }
         .app-item:active { transform: scale(0.9); }
-        .app-icon { width: 60px; height: 60px; border-radius: 14px; background-size: cover; background-position: center; box-shadow: 0 2px 10px rgba(0,0,0,0.15); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: #fff; font-weight: bold; }
+        .app-icon { width: 60px; height: 60px; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.15); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: #fff; font-weight: bold; }
         .app-name { color: #fff; font-size: 0.75rem; margin-top: 5px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
         
-        /* 模糊装饰图标 */
         .app-blurred .app-icon { filter: blur(3px) grayscale(50%); opacity: 0.7; }
+        .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: #fff; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: transform 0.3s ease, opacity 0.3s ease; z-index: 5; }
         
-        /* 红点角标 */
-        .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: #fff; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: transform 0.3s ease, opacity 0.3s ease; }
-        
-        /* 各个APP的模拟背景色 */
         .icon-netease { background: linear-gradient(135deg, #ff5a5f, #e00024); }
         .icon-wechat { background: linear-gradient(135deg, #07c160, #06ad56); }
         .icon-qq { background: #12b7f5; }
@@ -76,22 +77,36 @@
         .icon-notes { background: #f1c40f; }
 
         /* 通知横幅 */
-        #notification-banner { position: absolute; top: -100px; left: 5%; width: 90%; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 15px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 600; transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid rgba(255,255,255,0.3); color: #fff; }
+        #notification-banner { position: absolute; top: -100px; left: 5%; width: 90%; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 15px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 600; transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid rgba(255,255,255,0.3); color: #fff; cursor: pointer; }
         .notif-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #ff5a5f, #e00024); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
         .notif-content { flex: 1; }
         .notif-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 2px; }
         .notif-desc { font-size: 0.8rem; opacity: 0.9; }
 
-        /* ================= 下拉控制中心 (Control Center) ================= */
-        #control-center { position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 400; transition: top 0.4s cubic-bezier(0.25, 1, 0.5, 1); padding: 50px 20px; display: flex; flex-direction: column; color: #fff; }
-        .cc-header { font-size: 1.5rem; font-weight: 500; margin-bottom: 20px; }
-        .cc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
-        .cc-card { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; }
-        .cc-icon { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
-        .cc-handle { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 50px; height: 5px; background: rgba(255,255,255,0.5); border-radius: 10px; }
+        /* ================= 5. App 内部视图层 (SPA核心设计) ================= */
+        .app-view-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; pointer-events: none; }
+        .app-page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; transform: scale(0.9) translateY(100%); opacity: 0; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease; pointer-events: none; overflow-y: auto; padding-top: 40px; }
+        /* 激活状态的 App 页面 */
+        .app-page.active { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
 
-        /* 状态栏触控遮罩 (用于触发下拉) */
-        #status-bar-touch-zone { position: absolute; top: 0; left: 0; width: 100%; height: 50px; z-index: 999; }
+        /* 统一的返回主屏幕指示条 (Home Indicator) */
+        .home-indicator-zone { position: fixed; bottom: 0; left: 0; width: 100%; height: 30px; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 8px; z-index: 1000; cursor: pointer; pointer-events: auto; }
+        .home-bar { width: 130px; height: 5px; background: rgba(0,0,0,0.8); border-radius: 10px; transition: background 0.3s ease; }
+        .dark-mode-app .home-bar { background: rgba(255,255,255,0.8); }
+
+        /* --- 特定 App 样式：网易云音乐 --- */
+        #app-netease-page { background: #121212; color: #fff; }
+        .netease-header { padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #333; }
+        .netease-header h3 { font-size: 1.1rem; font-weight: 500; }
+        .netease-body { padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: calc(100% - 100px); text-align: center; }
+        .vinyl-record { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle at center, #111 0%, #333 100%); border: 5px solid #000; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 20px rgba(0,0,0,0.5); animation: spin 10s linear infinite; margin-bottom: 30px; }
+        .vinyl-cover { width: 100px; height: 100px; border-radius: 50%; background: url('https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=200&auto=format&fit=crop') center/cover; border: 2px solid #222; }
+        @keyframes spin { 100% { transform: rotate(360deg); } }
+        .listen-invite { background: rgba(255, 90, 95, 0.1); border: 1px solid #ff5a5f; padding: 20px; border-radius: 15px; width: 100%; margin-top: 20px; }
+        .listen-invite h4 { color: #ff5a5f; margin-bottom: 10px; font-size: 1.1rem; }
+        .listen-invite p { font-size: 0.9rem; color: #ccc; line-height: 1.5; margin-bottom: 15px; }
+        .btn-join { background: #ff5a5f; color: #fff; padding: 10px 30px; border-radius: 20px; font-weight: bold; border: none; cursor: pointer; }
+
     </style>
 </head>
 <body>
@@ -109,45 +124,25 @@
         <div id="status-bar">
             <div id="status-time">00:00</div>
             <div class="status-right">
-                <span>📶</span>
-                <span>LTE</span>
+                <i class="fa-solid fa-signal"></i>
+                <i class="fa-solid fa-wifi"></i>
                 <div class="battery"><div class="battery-level"></div></div>
             </div>
         </div>
-
-        <!-- 用于触控下拉控制中心的透明遮罩 -->
-        <div id="status-bar-touch-zone"></div>
 
         <!-- 第二幕：锁屏界面 -->
         <div id="lock-screen">
             <div id="lock-time">00:00</div>
             <div id="lock-date">5月18日 星期四</div>
-            
             <div class="unlock-hint" id="unlock-hint">
                 <span>向上滑动解锁</span>
                 <div class="unlock-bar"></div>
             </div>
         </div>
 
-        <!-- 下拉控制中心 -->
-        <div id="control-center">
-            <div class="cc-header">控制中心</div>
-            <div class="cc-grid">
-                <div class="cc-card">
-                    <div class="cc-icon">✈️</div>
-                    <div>飞行模式<br><small style="opacity:0.6">已关闭</small></div>
-                </div>
-                <div class="cc-card">
-                    <div class="cc-icon" style="background: #007aff;">📶</div>
-                    <div>蜂窝数据<br><small style="opacity:0.6">中国移动</small></div>
-                </div>
-            </div>
-            <div class="cc-handle"></div>
-        </div>
-
         <!-- 网易云通知横幅 -->
         <div id="notification-banner">
-            <div class="notif-icon">🎵</div>
+            <div class="notif-icon"><i class="fa-solid fa-music"></i></div>
             <div class="notif-content">
                 <div class="notif-title">网易云音乐</div>
                 <div class="notif-desc">一起听：收到一条新消息</div>
@@ -156,290 +151,225 @@
 
         <!-- 第三幕/第四幕：桌面 -->
         <div id="desktop">
-            
-            <!-- 桌面小部件 -->
             <div class="widgets-container">
-                <!-- 时间小部件 -->
                 <div class="widget widget-time">
                     <h2 id="widget-time">00:00</h2>
                     <p id="widget-date">5月18日 星期四</p>
                 </div>
-                <!-- 北海天气小部件 -->
                 <div class="widget widget-weather">
                     <div class="city">📍 广西北海市</div>
-                    <div class="temp-icon">
-                        <div class="icon">⛅</div>
-                        <h2>28°</h2>
-                    </div>
+                    <div class="temp-icon"><div class="icon">⛅</div><h2>28°</h2></div>
                     <div class="city" style="margin-top:5px; opacity:0.8">多云 | 空气优</div>
                 </div>
             </div>
 
-            <!-- APP 网格 -->
             <div class="app-grid">
-                <!-- 核心解锁APP (带红点) -->
-                <div class="app-item core-app" data-id="netease">
-                    <div class="app-icon icon-netease">🎵</div>
+                <!-- 点击触发打开网易云 -->
+                <div class="app-item core-app" onclick="openApp('netease')">
+                    <div class="app-icon icon-netease"><i class="fa-solid fa-music"></i></div>
                     <div class="app-name">网易云音乐</div>
-                    <div class="badge">1</div>
+                    <div class="badge" id="badge-netease">1</div>
                 </div>
-                <div class="app-item core-app" data-id="wechat">
-                    <div class="app-icon icon-wechat">💬</div>
+                <!-- 其他 APP 暂时只消除红点 -->
+                <div class="app-item core-app" onclick="clearBadge(this)">
+                    <div class="app-icon icon-wechat"><i class="fa-solid fa-comment"></i></div>
                     <div class="app-name">微信</div>
                     <div class="badge">999+</div>
                 </div>
-                <div class="app-item core-app" data-id="qq">
-                    <div class="app-icon icon-qq">🐧</div>
+                <div class="app-item core-app" onclick="clearBadge(this)">
+                    <div class="app-icon icon-qq"><i class="fa-brands fa-qq"></i></div>
                     <div class="app-name">QQ</div>
                     <div class="badge">99+</div>
                 </div>
-                <div class="app-item core-app" data-id="xxt">
-                    <div class="app-icon icon-xxt">🎓</div>
+                <div class="app-item core-app" onclick="clearBadge(this)">
+                    <div class="app-icon icon-xxt"><i class="fa-solid fa-graduation-cap"></i></div>
                     <div class="app-name">学习通</div>
                     <div class="badge">1个待办</div>
                 </div>
-                <div class="app-item core-app" data-id="honor">
-                    <div class="app-icon icon-honor">👑</div>
+                <div class="app-item core-app" onclick="clearBadge(this)">
+                    <div class="app-icon icon-honor"><i class="fa-solid fa-gamepad"></i></div>
                     <div class="app-name">王者荣耀</div>
                     <div class="badge">1个邀请</div>
                 </div>
-                <div class="app-item core-app" data-id="steam">
-                    <div class="app-icon icon-steam">♨️</div>
+                <div class="app-item core-app" onclick="clearBadge(this)">
+                    <div class="app-icon icon-steam"><i class="fa-brands fa-steam"></i></div>
                     <div class="app-name">Steam</div>
                     <div class="badge">1个提醒</div>
                 </div>
+                
+                <div class="app-item app-blurred"><div class="app-icon icon-camera"><i class="fa-solid fa-camera"></i></div><div class="app-name">相机</div></div>
+                <div class="app-item app-blurred"><div class="app-icon icon-settings"><i class="fa-solid fa-gear"></i></div><div class="app-name">设置</div></div>
+                <div class="app-item app-blurred"><div class="app-icon icon-notes"><i class="fa-solid fa-note-sticky"></i></div><div class="app-name">备忘录</div></div>
+            </div>
+        </div>
 
-                <!-- 模糊装饰APP (不可点击) -->
-                <div class="app-item app-blurred">
-                    <div class="app-icon icon-camera">📷</div>
-                    <div class="app-name">相机</div>
+        <!-- ================= APP 内部视图容器 ================= -->
+        <div class="app-view-container">
+            
+            <!-- 1. 网易云音乐内部解密页 -->
+            <div id="app-netease-page" class="app-page dark-mode-app">
+                <div class="netease-header">
+                    <i class="fa-solid fa-chevron-left" onclick="closeApp()"></i>
+                    <h3>一起听</h3>
+                    <i class="fa-solid fa-ellipsis-vertical"></i>
                 </div>
-                <div class="app-item app-blurred">
-                    <div class="app-icon icon-settings">⚙️</div>
-                    <div class="app-name">设置</div>
-                </div>
-                <div class="app-item app-blurred">
-                    <div class="app-icon icon-notes">📝</div>
-                    <div class="app-name">备忘录</div>
+                <div class="netease-body">
+                    <div class="vinyl-record"><div class="vinyl-cover"></div></div>
+                    <h3>《遇到》</h3>
+                    <p style="color:#888; font-size:0.9rem; margin-top:5px;">方雅贤 - 恶作剧之吻</p>
+                    
+                    <div class="listen-invite">
+                        <h4>收到一个跨越1800km的邀请</h4>
+                        <p>“我们虽然不在同一个经纬度，但此时此刻，我想和你听同一段旋律。”</p>
+                        <button class="btn-join">加入一起听</button>
+                    </div>
                 </div>
             </div>
+
+            <!-- 这里可以无限添加其他APP的页面，如： -->
+            <!-- <div id="app-wechat-page" class="app-page">微信聊天界面代码...</div> -->
+            
+        </div>
+
+        <!-- 全局返回主屏幕的白条/黑条 -->
+        <div class="home-indicator-zone" id="home-indicator" onclick="closeApp()" style="display:none;">
+            <div class="home-bar"></div>
         </div>
 
     </div>
 
     <script>
-        // ================= 实时时间同步模块 =================
+        // --- 实时时间同步 ---
         function updateTime() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const timeString = `${hours}:${minutes}`;
-            
             const month = now.getMonth() + 1;
             const date = now.getDate();
             const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-            const dayString = days[now.getDay()];
-            const dateString = `${month}月${date}日 ${dayString}`;
+            const dateString = `${month}月${date}日 ${days[now.getDay()]}`;
 
-            // 更新状态栏
             document.getElementById('status-time').innerText = timeString;
-            // 更新锁屏
             document.getElementById('lock-time').innerText = timeString;
             document.getElementById('lock-date').innerText = dateString;
-            // 更新桌面小部件
             document.getElementById('widget-time').innerText = timeString;
             document.getElementById('widget-date').innerText = dateString;
         }
-        setInterval(updateTime, 1000);
-        updateTime();
+        setInterval(updateTime, 1000); updateTime();
 
-        // ================= 剧本 1：黑屏打字机 =================
-        const textLines = [
-            "你在互联网的角落里，捡到了一部手机……",
-            "它跨越了 1800 公里，从河南焦作，流落到了广西北海。"
-        ];
+        // --- 剧本 1：黑屏打字机 ---
+        const textLines = ["你在互联网的角落里，捡到了一部手机……", "它跨越了 1800 公里，从河南焦作，流落到了广西北海。"];
         const typeTextContainer = document.getElementById("type-text");
-        const breathingBtn = document.getElementById("breathing-btn");
-        let lineIndex = 0;
-        let charIndex = 0;
-
+        let lineIdx = 0, charIdx = 0;
         function typeWriter() {
-            if (lineIndex < textLines.length) {
-                if (charIndex < textLines[lineIndex].length) {
-                    typeTextContainer.innerHTML = textLines[lineIndex].substring(0, charIndex + 1) + '<span class="cursor"></span>';
-                    charIndex++;
-                    setTimeout(typeWriter, 80); // 打字速度
+            if (lineIdx < textLines.length) {
+                if (charIdx < textLines[lineIdx].length) {
+                    typeTextContainer.innerHTML = textLines[lineIdx].substring(0, charIdx + 1) + '<span class="cursor"></span>';
+                    charIdx++;
+                    setTimeout(typeWriter, 80);
                 } else {
-                    typeTextContainer.innerHTML = textLines[lineIndex]; // 移除光标
-                    lineIndex++;
-                    charIndex = 0;
-                    if(lineIndex < textLines.length) {
-                        setTimeout(() => { 
-                            typeTextContainer.innerHTML = ""; 
-                            typeWriter(); 
-                        }, 1500); // 两句话的间隔
+                    typeTextContainer.innerHTML = textLines[lineIdx];
+                    lineIdx++; charIdx = 0;
+                    if(lineIdx < textLines.length) {
+                        setTimeout(() => { typeTextContainer.innerHTML = ""; typeWriter(); }, 1500);
                     } else {
-                        // 文字打完，显示呼吸灯
-                        setTimeout(() => { breathingBtn.style.opacity = 1; }, 500);
+                        setTimeout(() => { document.getElementById("breathing-btn").style.opacity = 1; }, 500);
                     }
                 }
             }
         }
-        // 启动打字机
         setTimeout(typeWriter, 1000);
-
-        // 点击呼吸灯，进入第二幕
-        breathingBtn.addEventListener("click", () => {
+        document.getElementById("breathing-btn").addEventListener("click", () => {
             document.getElementById("boot-screen").classList.add("fade-out");
             document.getElementById("os-container").classList.remove("hidden");
         });
 
-        // ================= 剧本 2/3：锁屏上滑解锁 =================
+        // --- 剧本 2/3：上滑解锁 ---
         const lockScreen = document.getElementById("lock-screen");
-        let startY = 0;
-        let currentY = 0;
-        let isDragging = false;
-
-        lockScreen.addEventListener("touchstart", (e) => {
-            startY = e.touches[0].clientY;
-            isDragging = true;
-            lockScreen.style.transition = "none"; // 拖动时取消动画
-        });
-
-        lockScreen.addEventListener("touchmove", (e) => {
-            if (!isDragging) return;
-            currentY = e.touches[0].clientY;
-            const diff = currentY - startY;
-            if (diff < 0) { // 只允许向上滑
-                lockScreen.style.transform = `translateY(${diff}px)`;
-                lockScreen.style.opacity = 1 - Math.abs(diff) / 500;
-            }
-        });
-
-        lockScreen.addEventListener("touchend", (e) => {
-            isDragging = false;
-            lockScreen.style.transition = "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease";
-            const diff = currentY - startY;
-            
-            if (diff < -100) { // 滑动距离足够，执行解锁
+        let startY = 0, currentY = 0, isDragging = false;
+        
+        function handleUnlock(diff) {
+            if (diff < -100) {
                 lockScreen.style.transform = `translateY(-100vh)`;
                 lockScreen.style.opacity = 0;
-                
-                // 解锁后触发网易云通知横幅 (延迟1.5秒)
                 setTimeout(() => {
-                    document.getElementById("notification-banner").style.top = "50px";
-                    // 4秒后自动收起
-                    setTimeout(() => {
-                        document.getElementById("notification-banner").style.top = "-100px";
-                    }, 4000);
-                }, 1500);
-
-            } else { // 距离不够，回弹
+                    const banner = document.getElementById("notification-banner");
+                    banner.style.top = "50px";
+                    setTimeout(() => { banner.style.top = "-100px"; }, 4000);
+                }, 1000);
+            } else {
                 lockScreen.style.transform = `translateY(0)`;
                 lockScreen.style.opacity = 1;
             }
-        });
+        }
 
-        // 兼容PC端点击解锁
+        lockScreen.addEventListener("touchstart", (e) => { startY = e.touches[0].clientY; isDragging = true; lockScreen.style.transition = "none"; });
+        lockScreen.addEventListener("touchmove", (e) => {
+            if (!isDragging) return; currentY = e.touches[0].clientY; const diff = currentY - startY;
+            if (diff < 0) { lockScreen.style.transform = `translateY(${diff}px)`; lockScreen.style.opacity = 1 - Math.abs(diff) / 500; }
+        });
+        lockScreen.addEventListener("touchend", (e) => {
+            isDragging = false; lockScreen.style.transition = "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease";
+            handleUnlock(currentY - startY);
+        });
         document.getElementById("unlock-hint").addEventListener("click", () => {
-            lockScreen.style.transform = `translateY(-100vh)`;
-            lockScreen.style.opacity = 0;
-            setTimeout(() => {
-                document.getElementById("notification-banner").style.top = "50px";
-                setTimeout(() => { document.getElementById("notification-banner").style.top = "-100px"; }, 4000);
-            }, 1500);
-        });
-
-        // ================= 剧本 4：状态栏下拉控制中心 =================
-        const touchZone = document.getElementById("status-bar-touch-zone");
-        const controlCenter = document.getElementById("control-center");
-        let ccStartY = 0;
-        let ccCurrentY = 0;
-        let ccIsDragging = false;
-        let ccIsOpen = false;
-
-        // 下拉触发
-        touchZone.addEventListener("touchstart", (e) => {
-            if (lockScreen.style.opacity === "0") { // 只有在解锁后才能下拉
-                ccStartY = e.touches[0].clientY;
-                ccIsDragging = true;
-                controlCenter.style.transition = "none";
-            }
-        });
-
-        touchZone.addEventListener("touchmove", (e) => {
-            if (!ccIsDragging) return;
-            ccCurrentY = e.touches[0].clientY;
-            const diff = ccCurrentY - ccStartY;
-            if (diff > 0 && diff < window.innerHeight) {
-                controlCenter.style.top = `${-100 + (diff / window.innerHeight) * 100}%`;
-            }
-        });
-
-        touchZone.addEventListener("touchend", (e) => {
-            if (!ccIsDragging) return;
-            ccIsDragging = false;
-            controlCenter.style.transition = "top 0.4s cubic-bezier(0.25, 1, 0.5, 1)";
-            const diff = ccCurrentY - ccStartY;
-            
-            if (diff > 100) { // 下拉距离够了，完全打开
-                controlCenter.style.top = "0";
-                ccIsOpen = true;
-            } else { // 弹回
-                controlCenter.style.top = "-100%";
-            }
-        });
-
-        // 上滑收起控制中心
-        controlCenter.addEventListener("touchstart", (e) => {
-            if(ccIsOpen) {
-                ccStartY = e.touches[0].clientY;
-                ccIsDragging = true;
-                controlCenter.style.transition = "none";
-            }
+            lockScreen.style.transition = "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease";
+            handleUnlock(-150); 
         });
         
-        controlCenter.addEventListener("touchmove", (e) => {
-            if (!ccIsDragging || !ccIsOpen) return;
-            ccCurrentY = e.touches[0].clientY;
-            const diff = ccCurrentY - ccStartY;
-            if (diff < 0) { // 上滑
-                controlCenter.style.top = `${(diff / window.innerHeight) * 100}%`;
-            }
+        // 点击通知栏也可以进入网易云
+        document.getElementById("notification-banner").addEventListener("click", () => {
+            document.getElementById("notification-banner").style.top = "-100px";
+            openApp('netease');
         });
 
-        controlCenter.addEventListener("touchend", (e) => {
-            if (!ccIsDragging) return;
-            ccIsDragging = false;
-            controlCenter.style.transition = "top 0.4s cubic-bezier(0.25, 1, 0.5, 1)";
-            const diff = ccCurrentY - ccStartY;
-            if (diff < -50) { // 上滑距离够了，收起
-                controlCenter.style.top = "-100%";
-                ccIsOpen = false;
-            } else { // 弹回打开状态
-                controlCenter.style.top = "0";
+        // --- 剧本 4：SPA 架构 - App 打开与关闭逻辑 ---
+        
+        // 消除红点通用函数
+        function clearBadge(el) {
+            const badge = el.querySelector('.badge');
+            if(badge && !badge.classList.contains('hidden')) {
+                badge.style.transform = 'scale(0)';
+                badge.style.opacity = '0';
+                setTimeout(() => { badge.classList.add('hidden'); }, 300);
             }
-        });
+        }
 
-        // ================= 桌面互动：红点消除与模块入口 =================
-        const coreApps = document.querySelectorAll('.core-app');
-        coreApps.forEach(app => {
-            app.addEventListener('click', function() {
-                const badge = this.querySelector('.badge');
-                const appId = this.getAttribute('data-id');
+        // 打开特定 App
+        function openApp(appId) {
+            // 消除桌面上的红点
+            const badge = document.getElementById(`badge-${appId}`);
+            if(badge) { badge.style.transform = 'scale(0)'; badge.style.opacity = '0'; }
+
+            const page = document.getElementById(`app-${appId}-page`);
+            if(page) {
+                page.classList.add('active');
+                document.getElementById('desktop').style.transform = 'scale(0.95)';
+                document.getElementById('desktop').style.filter = 'blur(5px)';
                 
-                // 1. 消除红点动画
-                if(badge && !badge.classList.contains('hidden')) {
-                    badge.style.transform = 'scale(0)';
-                    badge.style.opacity = '0';
-                    setTimeout(() => { badge.classList.add('hidden'); }, 300);
-                }
+                // 显示底部的 Home 返回条
+                document.getElementById('home-indicator').style.display = 'flex';
 
-                // 2. 这里是你后续接入各个 APP 内部解密页面的入口
-                console.log(`正在打开APP: ${appId}`);
-                // 例如：if(appId === 'wechat') { openWechatChatUI(); }
+                // 判断是否是需要黑色状态栏的白底App（网易云是黑底，不需要变色）
+                if(!page.classList.contains('dark-mode-app')) {
+                    document.getElementById('status-bar').classList.add('dark-mode');
+                }
+            }
+        }
+
+        // 关闭 App（返回桌面）
+        function closeApp() {
+            const activePages = document.querySelectorAll('.app-page.active');
+            activePages.forEach(page => {
+                page.classList.remove('active');
             });
-        });
+            
+            document.getElementById('desktop').style.transform = 'scale(1)';
+            document.getElementById('desktop').style.filter = 'blur(0)';
+            document.getElementById('home-indicator').style.display = 'none';
+            document.getElementById('status-bar').classList.remove('dark-mode');
+        }
     </script>
 </body>
 </html>
