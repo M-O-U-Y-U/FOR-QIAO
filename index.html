@@ -3,373 +3,431 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>TARGET:郑巧 // 权限待解密</title>
-    <!-- 引入极客字体与图标库 -->
-    <link href="https://fonts.googleapis.com/css2?family=Courier+Prime:wght@400;700&family=Noto+Sans+SC:wght@300;400;500;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
-    
+    <title>Unknown Device</title>
     <style>
-        /* ==========================================
-           0. 全局与基础设置
-           ========================================== */
-        * { box-sizing: border-box; margin: 0; padding: 0; user-select: none; -webkit-tap-highlight-color: transparent; }
-        body, html { width: 100%; height: 100%; background-color: #000; overflow: hidden; font-family: 'Noto Sans SC', sans-serif; }
-        
-        .hidden { display: none !important; }
-        .fade-out { opacity: 0; transition: opacity 0.8s ease; pointer-events: none; }
-        .slide-up { transform: translateY(-100%); transition: transform 0.6s cubic-bezier(0.25, 1, 0.5, 1); pointer-events: none; }
-
-        /* ==========================================
-           1. 第一幕：黑屏预热 (Act 1)
-           ========================================== */
-        #act1-blackscreen {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
-            background-color: #000; z-index: 300;
-            display: flex; flex-direction: column; justify-content: center; align-items: center;
-            padding: 20px;
+        :root {
+            --bg-dark: #000000;
+            --text-light: #ffffff;
+            --ios-blue: #0A84FF;
+            --ios-red: #FF453A;
+            --font-main: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
         }
 
-        .typewriter-text {
-            color: #fff; font-family: 'Courier Prime', monospace; font-size: 1.1rem;
-            line-height: 2; letter-spacing: 2px; min-height: 100px; text-align: center;
-            text-shadow: 0 0 5px rgba(255,255,255,0.5);
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            user-select: none;
+            -webkit-tap-highlight-color: transparent;
         }
 
-        /* 呼吸灯按钮 */
-        .breathing-btn {
-            margin-top: 50px; width: 50px; height: 50px;
-            background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%);
-            border-radius: 50%; cursor: pointer; opacity: 0; transition: opacity 1s ease;
-            animation: breathe 2.5s infinite ease-in-out;
+        body {
+            background-color: var(--bg-dark);
+            color: var(--text-light);
+            font-family: var(--font-main);
+            height: 100vh;
+            width: 100vw;
+            overflow: hidden;
+            display: flex;
+            justify-content: center;
+            align-items: center;
         }
 
-        @keyframes breathe {
-            0%, 100% { transform: scale(0.8); opacity: 0.3; filter: blur(4px); }
-            50% { transform: scale(1.2); opacity: 0.8; filter: blur(2px); }
+        /* ================= 幕布控制 ================= */
+        .scene {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
+            opacity: 0;
+            pointer-events: none;
+            z-index: 1;
         }
 
-        /* ==========================================
-           2. 手机 UI 通用容器 (Act 2 & Act 3)
-           ========================================== */
-        #phone-container {
-            position: fixed; top: 0; left: 0; width: 100vw; height: 100vh;
+        .scene.active {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 10;
+        }
+
+        /* ================= 场景 0: 启动触发器 ================= */
+        #scene-0 {
+            opacity: 1;
+            pointer-events: auto;
+            z-index: 20;
+            cursor: pointer;
+        }
+        .boot-text {
+            color: #333;
+            font-size: 0.8rem;
+            animation: pulse 2s infinite;
+        }
+
+        /* ================= 场景 1: 黑屏预热 ================= */
+        .typing-container {
+            width: 80%;
+            max-width: 400px;
+            min-height: 150px;
+            font-size: 1.1rem;
+            line-height: 1.8;
+            letter-spacing: 2px;
+            color: #ddd;
+        }
+        .cursor {
+            display: inline-block;
+            width: 8px;
+            height: 1.1rem;
+            background-color: #ddd;
+            vertical-align: middle;
+            animation: blink 1s step-end infinite;
+        }
+        .breath-btn {
+            position: absolute;
+            bottom: 15%;
+            width: 20px;
+            height: 20px;
+            background-color: rgba(255, 255, 255, 0.5);
+            border-radius: 50%;
+            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
+            animation: breath 2s infinite ease-in-out;
+            cursor: pointer;
+            opacity: 0;
+            transition: opacity 1s;
+        }
+        .breath-btn.show { opacity: 1; pointer-events: auto; }
+
+        /* ================= 场景 2: 锁屏界面 ================= */
+        #scene-2 {
             background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
-            z-index: 100; overflow: hidden;
+        }
+        .lock-header {
+            position: absolute;
+            top: 15%;
+            text-align: center;
+            width: 100%;
+            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
+        }
+        .lock-icon { font-size: 1.5rem; margin-bottom: 10px; display: inline-block; }
+        .lock-time { font-size: 5rem; font-weight: 200; letter-spacing: 2px; line-height: 1; }
+        .lock-date { font-size: 1.2rem; margin-top: 10px; font-weight: 400; }
+        .swipe-hint {
+            position: absolute;
+            bottom: 5%;
+            text-align: center;
+            width: 100%;
+            font-size: 0.9rem;
+            animation: slideUpHint 2s infinite;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
 
-        /* 顶部状态栏 */
-        .status-bar {
-            position: absolute; top: 0; left: 0; width: 100%; height: 44px;
-            display: flex; justify-content: space-between; align-items: center;
-            padding: 0 20px; color: #fff; font-size: 14px; font-weight: 500; z-index: 250;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.5);
+        /* ================= 场景 3: 桌面 ================= */
+        #scene-3 {
+            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
+            align-items: flex-start;
+            padding-top: 60px;
         }
-        .status-icons i { margin-left: 5px; }
-
-        /* ==========================================
-           3. 第二幕：高仿锁屏 (Act 2)
-           ========================================== */
-        #act2-lockscreen {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: inherit; z-index: 200; display: flex; flex-direction: column;
-            align-items: center; padding-top: 15vh;
-        }
-
-        /* 给锁屏加一层轻微暗化，突出时间 */
-        #act2-lockscreen::before {
-            content: ''; position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            background: rgba(0,0,0,0.2); z-index: -1;
-        }
-
-        .lock-time { font-size: 6rem; color: #fff; font-weight: 300; line-height: 1; text-shadow: 0 2px 10px rgba(0,0,0,0.3); }
-        .lock-date { font-size: 1.2rem; color: rgba(255,255,255,0.9); margin-top: 10px; font-weight: 400; text-shadow: 0 1px 5px rgba(0,0,0,0.3); }
-
-        .unlock-hint {
-            position: absolute; bottom: 50px; color: #fff; font-size: 0.9rem;
-            letter-spacing: 1px; animation: bounce 2s infinite; cursor: pointer;
-            text-shadow: 0 1px 3px rgba(0,0,0,0.8);
-        }
-
-        @keyframes bounce {
-            0%, 20%, 50%, 80%, 100% {transform: translateY(0);}
-            40% {transform: translateY(-10px);}
-            60% {transform: translateY(-5px);}
-        }
-
-        /* ==========================================
-           4. 第三幕：桌面与 App Grid (Act 3)
-           ========================================== */
-        #act3-desktop {
-            position: absolute; top: 0; left: 0; width: 100%; height: 100%;
-            padding: 80px 20px 0 20px; z-index: 150;
-        }
-
         .app-grid {
-            display: grid; grid-template-columns: repeat(4, 1fr); gap: 20px 15px;
+            display: grid;
+            grid-template-columns: repeat(4, 1fr);
+            gap: 20px 15px;
+            width: 90%;
+            max-width: 400px;
+            margin: 0 auto;
         }
-
         .app-item {
-            display: flex; flex-direction: column; align-items: center; position: relative; cursor: pointer;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            position: relative;
+            cursor: pointer;
+            transition: transform 0.1s;
         }
-
+        .app-item:active { transform: scale(0.9); }
         .app-icon {
-            width: 60px; height: 60px; border-radius: 14px; display: flex; justify-content: center; align-items: center;
-            font-size: 32px; color: #fff; box-shadow: 0 4px 10px rgba(0,0,0,0.2); transition: transform 0.1s;
+            width: 60px;
+            height: 60px;
+            border-radius: 14px;
+            background-size: cover;
+            background-position: center;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
         }
-
-        .app-item:active .app-icon { transform: scale(0.9); }
-        
         .app-name {
-            color: #fff; font-size: 11px; margin-top: 6px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); font-weight: 500;
-        }
-
-        /* App 专属配色与图标拟物 */
-        .icon-wechat { background: linear-gradient(180deg, #1AAD19, #109b10); }
-        .icon-qq { background: #fff; color: #12B7F5 !important; }
-        .icon-netease { background: linear-gradient(180deg, #E60026, #c20020); }
-        .icon-xxt { background: linear-gradient(180deg, #2196F3, #1565C0); }
-        .icon-hok { background: linear-gradient(180deg, #FFB300, #F57C00); }
-        .icon-steam { background: linear-gradient(180deg, #171A21, #2A475E); }
-
-        /* 模糊置灰的系统 App */
-        .app-item.blurred .app-icon { background: #555; filter: blur(2px) grayscale(80%); opacity: 0.6; }
-        .app-item.blurred { cursor: default; }
-        .app-item.blurred:active .app-icon { transform: none; }
-
-        /* 红点标记 (Notification Badge) */
-        .badge {
-            position: absolute; top: -5px; right: -5px; background-color: #FF3B30; color: #fff;
-            font-size: 10px; font-weight: bold; padding: 2px 6px; border-radius: 10px;
-            min-width: 20px; text-align: center; border: 1.5px solid #fff; z-index: 10;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: transform 0.2s, opacity 0.2s;
-        }
-
-        .badge-text { font-size: 9px; right: -15px; } /* 长文本红点微调 */
-
-        /* 网易云音乐顶部横幅通知 */
-        .notification-banner {
-            position: absolute; top: -100px; left: 50%; transform: translateX(-50%);
-            width: 90%; max-width: 400px; background: rgba(255,255,255,0.85); backdrop-filter: blur(10px);
-            border-radius: 20px; padding: 15px; display: flex; align-items: center; gap: 15px;
-            box-shadow: 0 10px 25px rgba(0,0,0,0.2); z-index: 400; transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            font-size: 0.75rem;
+            margin-top: 5px;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
         }
         
-        .notification-banner.show { top: 15px; }
-        .banner-icon { width: 40px; height: 40px; border-radius: 10px; background: #E60026; color: #fff; display: flex; justify-content: center; align-items: center; font-size: 20px; }
-        .banner-content { flex: 1; }
-        .banner-title { font-size: 14px; font-weight: bold; color: #333; display: flex; justify-content: space-between;}
-        .banner-title span:last-child { font-size: 12px; color: #888; font-weight: normal; }
-        .banner-desc { font-size: 13px; color: #555; margin-top: 4px; }
+        /* 模糊装饰 App */
+        .app-item.blurred { filter: grayscale(50%) blur(2px); opacity: 0.6; pointer-events: none; }
+
+        /* 红点气泡 */
+        .badge {
+            position: absolute;
+            top: -5px;
+            right: -5px;
+            background-color: var(--ios-red);
+            color: white;
+            font-size: 0.7rem;
+            font-weight: bold;
+            padding: 2px 6px;
+            border-radius: 10px;
+            border: 2px solid transparent;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
+            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
+            z-index: 5;
+        }
+        .badge.hide { transform: scale(0); opacity: 0; }
+
+        /* 通知横幅 */
+        .notification-banner {
+            position: absolute;
+            top: -100px;
+            left: 5%;
+            width: 90%;
+            max-width: 400px;
+            background: rgba(30, 30, 30, 0.85);
+            backdrop-filter: blur(15px);
+            -webkit-backdrop-filter: blur(15px);
+            border-radius: 16px;
+            padding: 15px;
+            display: flex;
+            align-items: center;
+            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
+            transition: top 0.5s cubic-bezier(0.25, 1, 0.5, 1);
+            z-index: 100;
+        }
+        .notification-banner.show { top: 20px; }
+        .notif-icon { width: 40px; height: 40px; border-radius: 8px; margin-right: 12px; }
+        .notif-content h4 { font-size: 0.9rem; margin-bottom: 3px; }
+        .notif-content p { font-size: 0.8rem; color: #aaa; }
+
+        /* App 颜色占位 (因为没有实际图片资源) */
+        .bg-netease { background: linear-gradient(135deg, #e60026, #ff4d4d); }
+        .bg-wechat { background: linear-gradient(135deg, #07c160, #20d274); }
+        .bg-qq { background: #12b7f5; }
+        .bg-chaoxing { background: linear-gradient(135deg, #5c89fe, #81a4ff); }
+        .bg-wangzhe { background: linear-gradient(135deg, #f5a623, #ffc107); }
+        .bg-steam { background: linear-gradient(135deg, #171a21, #2a475e); }
+        .bg-grey { background: #555; }
+
+        /* ================= 动画关键帧 ================= */
+        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
+        @keyframes blink { 50% { opacity: 0; } }
+        @keyframes breath { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.3); opacity: 1; } }
+        @keyframes slideUpHint { 0%, 100% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(-10px); opacity: 1; } }
     </style>
 </head>
 <body>
 
-    <!-- ==========================================
-         ACT 1: 黑屏打字机
-         ========================================== -->
-    <div id="act1-blackscreen">
-        <div class="typewriter-text" id="tw-text"></div>
-        <div class="breathing-btn" id="breathing-btn"></div>
+    <!-- 用于播放打字机音效的音频标签 (建议后续替换为你自己的 mp3 链接) -->
+    <!-- 由于没有任何外部资源，这里使用一段极短的 base64 编码的“滴答”声来模拟键盘敲击 -->
+    <audio id="type-sound" preload="auto">
+        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAD//w==" type="audio/wav">
+    </audio>
+
+    <!-- 场景 0：解除自动播放限制 -->
+    <div id="scene-0" class="scene active">
+        <p class="boot-text">[ 触碰屏幕以启动终端 ]</p>
     </div>
 
-    <!-- ==========================================
-         ACT 2 & 3: 手机界面容器
-         ========================================== -->
-    <div id="phone-container">
-        
-        <!-- 顶部状态栏 -->
-        <div class="status-bar">
-            <div class="status-time">05:18</div>
-            <div class="status-icons">
-                <i class="fa-solid fa-signal"></i>
-                <i class="fa-solid fa-wifi"></i>
-                <i class="fa-solid fa-battery-full"></i>
+    <!-- 场景 1：黑屏打字 -->
+    <div id="scene-1" class="scene">
+        <div class="typing-container">
+            <span id="type-text"></span><span class="cursor"></span>
+        </div>
+        <div id="breath-btn" class="breath-btn"></div>
+    </div>
+
+    <!-- 场景 2：锁屏界面 -->
+    <div id="scene-2" class="scene">
+        <div class="lock-header">
+            <span class="lock-icon">🔒</span>
+            <div class="lock-time" id="lock-time">--:--</div>
+            <div class="lock-date" id="lock-date">--月--日 星期-</div>
+        </div>
+        <div class="swipe-hint" id="swipe-hint">
+            👆 向上滑动 或 点击解锁
+        </div>
+    </div>
+
+    <!-- 场景 3：手机桌面 -->
+    <div id="scene-3" class="scene">
+        <div class="app-grid">
+            <!-- 第一排：装饰 App -->
+            <div class="app-item blurred"><div class="app-icon bg-grey"></div><span class="app-name">设置</span></div>
+            <div class="app-item blurred"><div class="app-icon bg-grey"></div><span class="app-name">相机</span></div>
+            <div class="app-item blurred"><div class="app-icon bg-grey"></div><span class="app-name">天气</span></div>
+            <div class="app-item blurred"><div class="app-icon bg-grey"></div><span class="app-name">备忘录</span></div>
+            
+            <!-- 第二/三排：核心 App -->
+            <div class="app-item active-app">
+                <div class="badge">1</div>
+                <div class="app-icon bg-netease"></div><span class="app-name">网易云音乐</span>
             </div>
-        </div>
-
-        <!-- 网易云专属顶部通知栏 -->
-        <div class="notification-banner" id="netease-banner">
-            <div class="banner-icon"><i class="fa-solid fa-music"></i></div>
-            <div class="banner-content">
-                <div class="banner-title">网易云音乐 <span>刚刚</span></div>
-                <div class="banner-desc">一起听发来一条消息</div>
+            <div class="app-item active-app">
+                <div class="badge">999+</div>
+                <div class="app-icon bg-wechat"></div><span class="app-name">微信</span>
             </div>
-        </div>
-
-        <!-- 锁屏界面 (覆盖在桌面上方) -->
-        <div id="act2-lockscreen">
-            <div class="lock-time">05:18</div>
-            <div class="lock-date">5月18日 星期日</div>
-            <div class="unlock-hint" id="unlock-trigger">【 👆 向上滑动 或 点击 🔓 解锁手机 】</div>
-        </div>
-
-        <!-- 手机桌面 App Grid -->
-        <div id="act3-desktop">
-            <div class="app-grid">
-                
-                <!-- 核心可交互 App -->
-                <div class="app-item clearable-app" id="app-wechat">
-                    <div class="app-icon icon-wechat"><i class="fa-solid fa-comment"></i></div>
-                    <div class="badge">999+</div>
-                    <div class="app-name">微信</div>
-                </div>
-
-                <div class="app-item clearable-app" id="app-qq">
-                    <div class="app-icon icon-qq"><i class="fa-brands fa-qq"></i></div>
-                    <div class="badge">99+</div>
-                    <div class="app-name">QQ</div>
-                </div>
-
-                <div class="app-item clearable-app" id="app-netease">
-                    <div class="app-icon icon-netease"><i class="fa-solid fa-music"></i></div>
-                    <div class="badge">1</div>
-                    <div class="app-name">网易云音乐</div>
-                </div>
-
-                <div class="app-item clearable-app" id="app-xxt">
-                    <div class="app-icon icon-xxt"><i class="fa-solid fa-graduation-cap"></i></div>
-                    <div class="badge badge-text">1个待办</div>
-                    <div class="app-name">学习通</div>
-                </div>
-
-                <div class="app-item clearable-app" id="app-hok">
-                    <div class="app-icon icon-hok"><i class="fa-solid fa-gamepad"></i></div>
-                    <div class="badge badge-text">1个邀请</div>
-                    <div class="app-name">王者荣耀</div>
-                </div>
-
-                <div class="app-item clearable-app" id="app-steam">
-                    <div class="app-icon icon-steam"><i class="fa-brands fa-steam"></i></div>
-                    <div class="badge badge-text">1个提醒</div>
-                    <div class="app-name">Steam</div>
-                </div>
-
-                <!-- 模糊/伪造的系统自带 App -->
-                <div class="app-item blurred">
-                    <div class="app-icon"><i class="fa-solid fa-camera"></i></div>
-                    <div class="app-name">相机</div>
-                </div>
-                <div class="app-item blurred">
-                    <div class="app-icon"><i class="fa-solid fa-gear"></i></div>
-                    <div class="app-name">设置</div>
-                </div>
-                <div class="app-item blurred">
-                    <div class="app-icon"><i class="fa-regular fa-clock"></i></div>
-                    <div class="app-name">时钟</div>
-                </div>
-                <div class="app-item blurred">
-                    <div class="app-icon"><i class="fa-solid fa-cloud-sun"></i></div>
-                    <div class="app-name">天气</div>
-                </div>
-                <div class="app-item blurred">
-                    <div class="app-icon"><i class="fa-solid fa-note-sticky"></i></div>
-                    <div class="app-name">备忘录</div>
-                </div>
-                <div class="app-item blurred">
-                    <div class="app-icon"><i class="fa-solid fa-calculator"></i></div>
-                    <div class="app-name">计算器</div>
-                </div>
-
+            <div class="app-item active-app">
+                <div class="badge">99+</div>
+                <div class="app-icon bg-qq"></div><span class="app-name">QQ</span>
+            </div>
+            <div class="app-item active-app">
+                <div class="badge">1个待办</div>
+                <div class="app-icon bg-chaoxing"></div><span class="app-name">学习通</span>
+            </div>
+            <div class="app-item active-app">
+                <div class="badge">1个邀请</div>
+                <div class="app-icon bg-wangzhe"></div><span class="app-name">王者荣耀</span>
+            </div>
+            <div class="app-item active-app">
+                <div class="badge">1个提醒</div>
+                <div class="app-icon bg-steam"></div><span class="app-name">Steam</span>
             </div>
         </div>
     </div>
 
-    <!-- ==========================================
-         JS 交互逻辑
-         ========================================== -->
+    <!-- 顶部通知横幅 -->
+    <div id="notification" class="notification-banner">
+        <div class="notif-icon bg-netease"></div>
+        <div class="notif-content">
+            <h4>网易云音乐</h4>
+            <p>一起听发来一条消息</p>
+        </div>
+    </div>
+
     <script>
-        document.addEventListener("DOMContentLoaded", () => {
+        // ================= 全局变量 =================
+        const audio = document.getElementById('type-sound');
+        const lines = [
+            "你在互联网的角落里，捡到了一部手机……",
+            "它跨越了 1800 公里，从河南焦作，流落到了广西北海。"
+        ];
+        let currentLine = 0;
+        let currentChar = 0;
+        const typeSpeed = 100; // 打字速度(毫秒)
+        const typeContainer = document.getElementById('type-text');
+        
+        const scene0 = document.getElementById('scene-0');
+        const scene1 = document.getElementById('scene-1');
+        const scene2 = document.getElementById('scene-2');
+        const scene3 = document.getElementById('scene-3');
+
+        // ================= 步骤 0: 启动与打字 =================
+        scene0.addEventListener('click', () => {
+            scene0.classList.remove('active');
+            scene1.classList.add('active');
             
-            // --- 阶段 1：打字机特效 ---
-            const twTextElement = document.getElementById("tw-text");
-            const breathingBtn = document.getElementById("breathing-btn");
-            const act1 = document.getElementById("act1-blackscreen");
+            // 播放一个无声音频解锁浏览器的限制
+            audio.play().catch(e => console.log("Audio autoplay restricted."));
             
-            const lines = [
-                "你在互联网的角落里，捡到了一部手机……",
-                "它跨越了 1800 公里，从河南焦作，流落到了广西北海。"
-            ];
-            
-            let currentLine = 0;
-            let currentChar = 0;
+            setTimeout(typeWriter, 1000); // 延迟一秒开始打字
+        });
 
-            function typeWriter() {
-                if (currentLine < lines.length) {
-                    if (currentChar < lines[currentLine].length) {
-                        twTextElement.innerHTML += lines[currentLine].charAt(currentChar);
-                        currentChar++;
-                        setTimeout(typeWriter, 100); // 打字速度
-                    } else {
-                        twTextElement.innerHTML += "<br><br>";
-                        currentLine++;
-                        currentChar = 0;
-                        setTimeout(typeWriter, 800); // 两句话之间的停顿
-                    }
-                } else {
-                    // 打字结束，显示呼吸灯
-                    breathingBtn.style.opacity = 1;
-                }
-            }
-
-            // 延迟 1 秒后开始打字
-            setTimeout(typeWriter, 1000);
-
-            // --- 阶段 2：点击呼吸灯，进入锁屏 ---
-            breathingBtn.addEventListener("click", () => {
-                act1.classList.add("fade-out");
-                setTimeout(() => { act1.classList.add("hidden"); }, 800);
-            });
-
-            // --- 阶段 3：上滑解锁手机 ---
-            const lockscreen = document.getElementById("act2-lockscreen");
-            const unlockTrigger = document.getElementById("unlock-trigger");
-            const neteaseBanner = document.getElementById("netease-banner");
-
-            // 支持点击解锁
-            unlockTrigger.addEventListener("click", unlockPhone);
-            
-            // 支持滑动解锁 (模拟上滑)
-            let startY = 0;
-            lockscreen.addEventListener("touchstart", (e) => { startY = e.touches[0].clientY; });
-            lockscreen.addEventListener("touchend", (e) => {
-                let endY = e.changedTouches[0].clientY;
-                if (startY - endY > 50) { unlockPhone(); } // 向上滑动超过50px即解锁
-            });
-
-            function unlockPhone() {
-                lockscreen.classList.add("slide-up");
-                
-                // 解锁后 1.5 秒，弹出网易云横幅通知
-                setTimeout(() => {
-                    neteaseBanner.classList.add("show");
+        function typeWriter() {
+            if (currentLine < lines.length) {
+                if (currentChar < lines[currentLine].length) {
+                    typeContainer.innerHTML += lines[currentLine].charAt(currentChar);
                     
-                    // 横幅显示 4 秒后自动收起
-                    setTimeout(() => {
-                        neteaseBanner.classList.remove("show");
-                    }, 4000);
-                }, 1500);
+                    // 每次敲击播放音效
+                    audio.currentTime = 0;
+                    audio.play().catch(e => {});
+
+                    currentChar++;
+                    setTimeout(typeWriter, typeSpeed);
+                } else {
+                    // 一句打完，换行
+                    typeContainer.innerHTML += "<br><br>";
+                    currentLine++;
+                    currentChar = 0;
+                    setTimeout(typeWriter, 800); // 句间停顿
+                }
+            } else {
+                // 打字全部结束，显示呼吸灯按钮
+                setTimeout(() => {
+                    document.getElementById('breath-btn').classList.add('show');
+                }, 500);
             }
+        }
 
-            // --- 阶段 4：桌面红点消除游戏逻辑 ---
-            const clearableApps = document.querySelectorAll(".clearable-app");
+        // ================= 步骤 1: 进入锁屏 =================
+        document.getElementById('breath-btn').addEventListener('click', () => {
+            scene1.classList.remove('active');
+            scene2.classList.add('active');
+            updateClock(); // 立即更新一次时间
+        });
+
+        // ================= 时钟同步 =================
+        function updateClock() {
+            const now = new Date();
+            const h = String(now.getHours()).padStart(2, '0');
+            const m = String(now.getMinutes()).padStart(2, '0');
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            const days = ['日', '一', '二', '三', '四', '五', '六'];
+            const day = days[now.getDay()];
+
+            document.getElementById('lock-time').innerText = `${h}:${m}`;
+            document.getElementById('lock-date').innerText = `${month}月${date}日 星期${day}`;
+        }
+        setInterval(updateClock, 1000);
+
+        // ================= 步骤 2: 解锁手机 =================
+        let startY = 0;
+        
+        function unlockPhone() {
+            scene2.style.transform = "translateY(-100%)";
+            scene2.style.opacity = "0";
             
-            clearableApps.forEach(app => {
-                app.addEventListener("click", function() {
-                    const badge = this.querySelector(".badge");
-                    if (badge) {
-                        // 缩小并淡出红点动画
-                        badge.style.transform = "scale(0)";
-                        badge.style.opacity = "0";
-                        
-                        // 动画结束后从 DOM 移除
-                        setTimeout(() => { badge.remove(); }, 200);
+            setTimeout(() => {
+                scene2.classList.remove('active');
+                scene3.classList.add('active');
+                
+                // 延迟 1 秒弹出网易云通知
+                setTimeout(() => {
+                    const notif = document.getElementById('notification');
+                    notif.classList.add('show');
+                    // 4 秒后自动收起
+                    setTimeout(() => {
+                        notif.classList.remove('show');
+                    }, 4000);
+                }, 1000);
+                
+            }, 500); // 等待上滑动画结束
+        }
 
-                        // 这里可以预留接口，打开真实的 App 内容模块
-                        // console.log(`打开 ${this.querySelector('.app-name').innerText} 模块`);
-                    }
-                });
+        // 支持点击解锁
+        document.getElementById('swipe-hint').addEventListener('click', unlockPhone);
+
+        // 支持触屏上滑解锁
+        scene2.addEventListener('touchstart', (e) => {
+            startY = e.touches[0].clientY;
+        });
+        scene2.addEventListener('touchend', (e) => {
+            let endY = e.changedTouches[0].clientY;
+            if (startY - endY > 50) { // 向上滑动超过 50px
+                unlockPhone();
+            }
+        });
+
+        // ================= 步骤 3: 桌面红点消除逻辑 =================
+        const apps = document.querySelectorAll('.active-app');
+        apps.forEach(app => {
+            app.addEventListener('click', function() {
+                const badge = this.querySelector('.badge');
+                if (badge && !badge.classList.contains('hide')) {
+                    // 消除红点动效
+                    badge.classList.add('hide');
+                    // 预留接口：你可以在这里添加 App 内部解密页面的跳转逻辑
+                    // alert('打开了: ' + this.querySelector('.app-name').innerText);
+                }
             });
-
         });
     </script>
 </body>
