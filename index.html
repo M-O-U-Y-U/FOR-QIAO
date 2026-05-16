@@ -3,432 +3,155 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Unknown Device</title>
-    <style>
-        :root {
-            --bg-dark: #000000;
-            --text-light: #ffffff;
-            --ios-blue: #0A84FF;
-            --ios-red: #FF453A;
-            --font-main: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif;
-        }
-
-        * {
-            box-sizing: border-box;
-            margin: 0;
-            padding: 0;
-            user-select: none;
-            -webkit-tap-highlight-color: transparent;
-        }
-
-        body {
-            background-color: var(--bg-dark);
-            color: var(--text-light);
-            font-family: var(--font-main);
-            height: 100vh;
-            width: 100vw;
-            overflow: hidden;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-        }
-
-        /* ================= 幕布控制 ================= */
-        .scene {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            align-items: center;
-            transition: opacity 0.5s ease, transform 0.6s cubic-bezier(0.25, 1, 0.5, 1);
-            opacity: 0;
-            pointer-events: none;
-            z-index: 1;
-        }
-
-        .scene.active {
-            opacity: 1;
-            pointer-events: auto;
-            z-index: 10;
-        }
-
-        /* ================= 场景 0: 启动触发器 ================= */
-        #scene-0 {
-            opacity: 1;
-            pointer-events: auto;
-            z-index: 20;
-            cursor: pointer;
-        }
-        .boot-text {
-            color: #333;
-            font-size: 0.8rem;
-            animation: pulse 2s infinite;
-        }
-
-        /* ================= 场景 1: 黑屏预热 ================= */
-        .typing-container {
-            width: 80%;
-            max-width: 400px;
-            min-height: 150px;
-            font-size: 1.1rem;
-            line-height: 1.8;
-            letter-spacing: 2px;
-            color: #ddd;
-        }
-        .cursor {
-            display: inline-block;
-            width: 8px;
-            height: 1.1rem;
-            background-color: #ddd;
-            vertical-align: middle;
-            animation: blink 1s step-end infinite;
-        }
-        .breath-btn {
-            position: absolute;
-            bottom: 15%;
-            width: 20px;
-            height: 20px;
-            background-color: rgba(255, 255, 255, 0.5);
-            border-radius: 50%;
-            box-shadow: 0 0 15px rgba(255, 255, 255, 0.8);
-            animation: breath 2s infinite ease-in-out;
-            cursor: pointer;
-            opacity: 0;
-            transition: opacity 1s;
-        }
-        .breath-btn.show { opacity: 1; pointer-events: auto; }
-
-        /* ================= 场景 2: 锁屏界面 ================= */
-        #scene-2 {
-            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
-        }
-        .lock-header {
-            position: absolute;
-            top: 15%;
-            text-align: center;
-            width: 100%;
-            text-shadow: 0 2px 4px rgba(0,0,0,0.3);
-        }
-        .lock-icon { font-size: 1.5rem; margin-bottom: 10px; display: inline-block; }
-        .lock-time { font-size: 5rem; font-weight: 200; letter-spacing: 2px; line-height: 1; }
-        .lock-date { font-size: 1.2rem; margin-top: 10px; font-weight: 400; }
-        .swipe-hint {
-            position: absolute;
-            bottom: 5%;
-            text-align: center;
-            width: 100%;
-            font-size: 0.9rem;
-            animation: slideUpHint 2s infinite;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-        }
-
-        /* ================= 场景 3: 桌面 ================= */
-        #scene-3 {
-            background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat;
-            align-items: flex-start;
-            padding-top: 60px;
-        }
-        .app-grid {
-            display: grid;
-            grid-template-columns: repeat(4, 1fr);
-            gap: 20px 15px;
-            width: 90%;
-            max-width: 400px;
-            margin: 0 auto;
-        }
-        .app-item {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            position: relative;
-            cursor: pointer;
-            transition: transform 0.1s;
-        }
-        .app-item:active { transform: scale(0.9); }
-        .app-icon {
-            width: 60px;
-            height: 60px;
-            border-radius: 14px;
-            background-size: cover;
-            background-position: center;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.2);
-        }
-        .app-name {
-            font-size: 0.75rem;
-            margin-top: 5px;
-            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
-        }
-        
-        /* 模糊装饰 App */
-        .app-item.blurred { filter: grayscale(50%) blur(2px); opacity: 0.6; pointer-events: none; }
-
-        /* 红点气泡 */
-        .badge {
-            position: absolute;
-            top: -5px;
-            right: -5px;
-            background-color: var(--ios-red);
-            color: white;
-            font-size: 0.7rem;
-            font-weight: bold;
-            padding: 2px 6px;
-            border-radius: 10px;
-            border: 2px solid transparent;
-            box-shadow: 0 2px 5px rgba(0,0,0,0.3);
-            transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275), opacity 0.3s;
-            z-index: 5;
-        }
-        .badge.hide { transform: scale(0); opacity: 0; }
-
-        /* 通知横幅 */
-        .notification-banner {
-            position: absolute;
-            top: -100px;
-            left: 5%;
-            width: 90%;
-            max-width: 400px;
-            background: rgba(30, 30, 30, 0.85);
-            backdrop-filter: blur(15px);
-            -webkit-backdrop-filter: blur(15px);
-            border-radius: 16px;
-            padding: 15px;
-            display: flex;
-            align-items: center;
-            box-shadow: 0 10px 20px rgba(0,0,0,0.3);
-            transition: top 0.5s cubic-bezier(0.25, 1, 0.5, 1);
-            z-index: 100;
-        }
-        .notification-banner.show { top: 20px; }
-        .notif-icon { width: 40px; height: 40px; border-radius: 8px; margin-right: 12px; }
-        .notif-content h4 { font-size: 0.9rem; margin-bottom: 3px; }
-        .notif-content p { font-size: 0.8rem; color: #aaa; }
-
-        /* App 颜色占位 (因为没有实际图片资源) */
-        .bg-netease { background: linear-gradient(135deg, #e60026, #ff4d4d); }
-        .bg-wechat { background: linear-gradient(135deg, #07c160, #20d274); }
-        .bg-qq { background: #12b7f5; }
-        .bg-chaoxing { background: linear-gradient(135deg, #5c89fe, #81a4ff); }
-        .bg-wangzhe { background: linear-gradient(135deg, #f5a623, #ffc107); }
-        .bg-steam { background: linear-gradient(135deg, #171a21, #2a475e); }
-        .bg-grey { background: #555; }
-
-        /* ================= 动画关键帧 ================= */
-        @keyframes pulse { 0%, 100% { opacity: 0.3; } 50% { opacity: 1; } }
-        @keyframes blink { 50% { opacity: 0; } }
-        @keyframes breath { 0%, 100% { transform: scale(1); opacity: 0.8; } 50% { transform: scale(1.3); opacity: 1; } }
-        @keyframes slideUpHint { 0%, 100% { transform: translateY(0); opacity: 0.5; } 50% { transform: translateY(-10px); opacity: 1; } }
-    </style>
+    <title>Phone OS // 郑巧专属</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
+    <!-- 音频资源 -->
+    <audio id="typing-sound" src="typing.mp3" loop></audio>
+    <audio id="bgm-sound" src="bgm.mp3" loop></audio>
 
-    <!-- 用于播放打字机音效的音频标签 (建议后续替换为你自己的 mp3 链接) -->
-    <!-- 由于没有任何外部资源，这里使用一段极短的 base64 编码的“滴答”声来模拟键盘敲击 -->
-    <audio id="type-sound" preload="auto">
-        <source src="data:audio/wav;base64,UklGRigAAABXQVZFZm10IBAAAAABAAEARKwAAIhYAQACABAAZGF0YQQAAAD//w==" type="audio/wav">
-    </audio>
-
-    <!-- 场景 0：解除自动播放限制 -->
-    <div id="scene-0" class="scene active">
-        <p class="boot-text">[ 触碰屏幕以启动终端 ]</p>
-    </div>
-
-    <!-- 场景 1：黑屏打字 -->
-    <div id="scene-1" class="scene">
-        <div class="typing-container">
-            <span id="type-text"></span><span class="cursor"></span>
-        </div>
-        <div id="breath-btn" class="breath-btn"></div>
-    </div>
-
-    <!-- 场景 2：锁屏界面 -->
-    <div id="scene-2" class="scene">
-        <div class="lock-header">
-            <span class="lock-icon">🔒</span>
-            <div class="lock-time" id="lock-time">--:--</div>
-            <div class="lock-date" id="lock-date">--月--日 星期-</div>
-        </div>
-        <div class="swipe-hint" id="swipe-hint">
-            👆 向上滑动 或 点击解锁
-        </div>
-    </div>
-
-    <!-- 场景 3：手机桌面 -->
-    <div id="scene-3" class="scene">
-        <div class="app-grid">
-            <!-- 第一排：装饰 App -->
-            <div class="app-item blurred"><div class="app-icon bg-grey"></div><span class="app-name">设置</span></div>
-            <div class="app-item blurred"><div class="app-icon bg-grey"></div><span class="app-name">相机</span></div>
-            <div class="app-item blurred"><div class="app-icon bg-grey"></div><span class="app-name">天气</span></div>
-            <div class="app-item blurred"><div class="app-icon bg-grey"></div><span class="app-name">备忘录</span></div>
-            
-            <!-- 第二/三排：核心 App -->
-            <div class="app-item active-app">
-                <div class="badge">1</div>
-                <div class="app-icon bg-netease"></div><span class="app-name">网易云音乐</span>
-            </div>
-            <div class="app-item active-app">
-                <div class="badge">999+</div>
-                <div class="app-icon bg-wechat"></div><span class="app-name">微信</span>
-            </div>
-            <div class="app-item active-app">
-                <div class="badge">99+</div>
-                <div class="app-icon bg-qq"></div><span class="app-name">QQ</span>
-            </div>
-            <div class="app-item active-app">
-                <div class="badge">1个待办</div>
-                <div class="app-icon bg-chaoxing"></div><span class="app-name">学习通</span>
-            </div>
-            <div class="app-item active-app">
-                <div class="badge">1个邀请</div>
-                <div class="app-icon bg-wangzhe"></div><span class="app-name">王者荣耀</span>
-            </div>
-            <div class="app-item active-app">
-                <div class="badge">1个提醒</div>
-                <div class="app-icon bg-steam"></div><span class="app-name">Steam</span>
-            </div>
-        </div>
-    </div>
-
-    <!-- 顶部通知横幅 -->
-    <div id="notification" class="notification-banner">
-        <div class="notif-icon bg-netease"></div>
-        <div class="notif-content">
-            <h4>网易云音乐</h4>
-            <p>一起听发来一条消息</p>
-        </div>
-    </div>
-
-    <script>
-        // ================= 全局变量 =================
-        const audio = document.getElementById('type-sound');
-        const lines = [
-            "你在互联网的角落里，捡到了一部手机……",
-            "它跨越了 1800 公里，从河南焦作，流落到了广西北海。"
-        ];
-        let currentLine = 0;
-        let currentChar = 0;
-        const typeSpeed = 100; // 打字速度(毫秒)
-        const typeContainer = document.getElementById('type-text');
+    <div class="device-screen">
         
-        const scene0 = document.getElementById('scene-0');
-        const scene1 = document.getElementById('scene-1');
-        const scene2 = document.getElementById('scene-2');
-        const scene3 = document.getElementById('scene-3');
+        <!-- 第一阶段：黑屏打字机 -->
+        <div id="boot-screen" class="screen active">
+            <div class="typing-container">
+                <p id="line1" class="typing-text"></p>
+                <p id="line2" class="typing-text"></p>
+            </div>
+            <div id="breath-light" class="hidden"></div>
+        </div>
 
-        // ================= 步骤 0: 启动与打字 =================
-        scene0.addEventListener('click', () => {
-            scene0.classList.remove('active');
-            scene1.classList.add('active');
+        <!-- 第二阶段：锁屏界面 -->
+        <div id="lock-screen" class="screen hidden">
+            <div class="lock-header">
+                <div class="lock-icon">🔒</div>
+                <h1 class="live-time">00:00</h1>
+                <p class="live-date">1月1日 星期一</p>
+            </div>
             
-            // 播放一个无声音频解锁浏览器的限制
-            audio.play().catch(e => console.log("Audio autoplay restricted."));
+            <!-- 消息推送提示 -->
+            <div class="lock-notifications">
+                <div class="notification-card">
+                    <div class="noti-header">
+                        <span class="noti-app">SYSTEM</span>
+                        <span class="noti-time live-time">00:00</span>
+                    </div>
+                    <div class="noti-body">
+                        <strong>系统提示</strong>
+                        <p>请上滑解锁以验证身份</p>
+                    </div>
+                </div>
+            </div>
+
+            <div class="swipe-hint">
+                <div class="chevron-up"></div>
+                <p>向上滑动解锁</p>
+            </div>
+        </div>
+
+        <!-- 第三阶段：桌面系统 -->
+        <div id="home-screen" class="screen hidden">
+            <!-- 状态栏感应区 (用于下拉) -->
+            <div id="status-bar-trigger"></div>
             
-            setTimeout(typeWriter, 1000); // 延迟一秒开始打字
-        });
+            <!-- 顶部状态栏 -->
+            <div class="status-bar">
+                <div class="live-time-small live-time">00:00</div>
+                <div class="status-icons">
+                    <span>5G</span>
+                    <span>📶</span>
+                    <span>🔋</span>
+                </div>
+            </div>
 
-        function typeWriter() {
-            if (currentLine < lines.length) {
-                if (currentChar < lines[currentLine].length) {
-                    typeContainer.innerHTML += lines[currentLine].charAt(currentChar);
-                    
-                    // 每次敲击播放音效
-                    audio.currentTime = 0;
-                    audio.play().catch(e => {});
+            <!-- 下拉控制中心 -->
+            <div id="control-center" class="control-center">
+                <div class="cc-handle"></div>
+                <div class="cc-header">控制中心</div>
+                <div class="cc-widgets">
+                    <div class="cc-box">Wi-Fi: 已连接 (Qiao_5G)</div>
+                    <div class="cc-box">蓝牙: 已开启</div>
+                    <div class="cc-box slider">亮度: 80%</div>
+                    <div class="cc-box slider">音量: 50%</div>
+                </div>
+                <p class="cc-hint">向上滑动收起</p>
+            </div>
 
-                    currentChar++;
-                    setTimeout(typeWriter, typeSpeed);
-                } else {
-                    // 一句打完，换行
-                    typeContainer.innerHTML += "<br><br>";
-                    currentLine++;
-                    currentChar = 0;
-                    setTimeout(typeWriter, 800); // 句间停顿
-                }
-            } else {
-                // 打字全部结束，显示呼吸灯按钮
-                setTimeout(() => {
-                    document.getElementById('breath-btn').classList.add('show');
-                }, 500);
-            }
-        }
+            <!-- 网易云横幅通知 -->
+            <div id="banner-notification" class="banner-notification">
+                <div class="banner-icon">🎵</div>
+                <div class="banner-content">
+                    <h4>网易云音乐</h4>
+                    <p>一起听发来一条消息...</p>
+                </div>
+            </div>
 
-        // ================= 步骤 1: 进入锁屏 =================
-        document.getElementById('breath-btn').addEventListener('click', () => {
-            scene1.classList.remove('active');
-            scene2.classList.add('active');
-            updateClock(); // 立即更新一次时间
-        });
+            <!-- 桌面主网格 -->
+            <div class="app-grid">
+                <!-- 真实时间天气小部件 -->
+                <div class="widget-time-weather">
+                    <div class="widget-left">
+                        <h2 class="live-time">00:00</h2>
+                        <p class="live-date">1月1日</p>
+                    </div>
+                    <div class="widget-right">
+                        <div class="weather-icon">☀️</div>
+                        <p>晴 26°C</p>
+                        <span class="location">北海市</span>
+                    </div>
+                </div>
 
-        // ================= 时钟同步 =================
-        function updateClock() {
-            const now = new Date();
-            const h = String(now.getHours()).padStart(2, '0');
-            const m = String(now.getMinutes()).padStart(2, '0');
-            const month = now.getMonth() + 1;
-            const date = now.getDate();
-            const days = ['日', '一', '二', '三', '四', '五', '六'];
-            const day = days[now.getDay()];
+                <!-- 可点击的核心 APP -->
+                <div class="app-icon" data-app="music">
+                    <div class="icon-img music-bg">🎵</div>
+                    <div class="badge" id="badge-music">1</div>
+                    <span class="app-name">网易云音乐</span>
+                </div>
+                <div class="app-icon" data-app="wechat">
+                    <div class="icon-img wechat-bg">💬</div>
+                    <div class="badge" id="badge-wechat">999+</div>
+                    <span class="app-name">微信</span>
+                </div>
+                <div class="app-icon" data-app="qq">
+                    <div class="icon-img qq-bg">🐧</div>
+                    <div class="badge" id="badge-qq">99+</div>
+                    <span class="app-name">QQ</span>
+                </div>
+                <div class="app-icon" data-app="study">
+                    <div class="icon-img study-bg">🎓</div>
+                    <div class="badge" id="badge-study">1</div>
+                    <span class="app-name">学习通</span>
+                </div>
+                <div class="app-icon" data-app="game">
+                    <div class="icon-img game-bg">👑</div>
+                    <div class="badge" id="badge-game">1</div>
+                    <span class="app-name">王者荣耀</span>
+                </div>
+                <div class="app-icon" data-app="steam">
+                    <div class="icon-img steam-bg">♨️</div>
+                    <div class="badge" id="badge-steam">1</div>
+                    <span class="app-name">Steam</span>
+                </div>
 
-            document.getElementById('lock-time').innerText = `${h}:${m}`;
-            document.getElementById('lock-date').innerText = `${month}月${date}日 星期${day}`;
-        }
-        setInterval(updateClock, 1000);
+                <!-- 模糊的装饰 APP -->
+                <div class="app-icon blur-app"><div class="icon-img default-bg">⚙️</div><span class="app-name">设置</span></div>
+                <div class="app-icon blur-app"><div class="icon-img default-bg">📷</div><span class="app-name">相机</span></div>
+                <div class="app-icon blur-app"><div class="icon-img default-bg">📝</div><span class="app-name">备忘录</span></div>
+                <div class="app-icon blur-app"><div class="icon-img default-bg">🗺️</div><span class="app-name">地图</span></div>
+            </div>
 
-        // ================= 步骤 2: 解锁手机 =================
-        let startY = 0;
-        
-        function unlockPhone() {
-            scene2.style.transform = "translateY(-100%)";
-            scene2.style.opacity = "0";
-            
-            setTimeout(() => {
-                scene2.classList.remove('active');
-                scene3.classList.add('active');
-                
-                // 延迟 1 秒弹出网易云通知
-                setTimeout(() => {
-                    const notif = document.getElementById('notification');
-                    notif.classList.add('show');
-                    // 4 秒后自动收起
-                    setTimeout(() => {
-                        notif.classList.remove('show');
-                    }, 4000);
-                }, 1000);
-                
-            }, 500); // 等待上滑动画结束
-        }
+            <!-- 底部 Dock 栏 -->
+            <div class="dock">
+                <div class="app-icon blur-app"><div class="icon-img default-bg">📞</div></div>
+                <div class="app-icon blur-app"><div class="icon-img default-bg">✉️</div></div>
+                <div class="app-icon blur-app"><div class="icon-img default-bg">🌐</div></div>
+                <div class="app-icon blur-app"><div class="icon-img default-bg">📁</div></div>
+            </div>
+        </div>
 
-        // 支持点击解锁
-        document.getElementById('swipe-hint').addEventListener('click', unlockPhone);
+    </div>
 
-        // 支持触屏上滑解锁
-        scene2.addEventListener('touchstart', (e) => {
-            startY = e.touches[0].clientY;
-        });
-        scene2.addEventListener('touchend', (e) => {
-            let endY = e.changedTouches[0].clientY;
-            if (startY - endY > 50) { // 向上滑动超过 50px
-                unlockPhone();
-            }
-        });
-
-        // ================= 步骤 3: 桌面红点消除逻辑 =================
-        const apps = document.querySelectorAll('.active-app');
-        apps.forEach(app => {
-            app.addEventListener('click', function() {
-                const badge = this.querySelector('.badge');
-                if (badge && !badge.classList.contains('hide')) {
-                    // 消除红点动效
-                    badge.classList.add('hide');
-                    // 预留接口：你可以在这里添加 App 内部解密页面的跳转逻辑
-                    // alert('打开了: ' + this.querySelector('.app-name').innerText);
-                }
-            });
-        });
-    </script>
+    <script src="script.js"></script>
 </body>
 </html>
