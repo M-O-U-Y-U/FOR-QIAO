@@ -70,6 +70,10 @@
         .notif-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 2px; }
         .notif-desc { font-size: 0.8rem; opacity: 0.8; }
 
+        /* 数据丢失弹窗 */
+        .data-loss-toast { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0.8); background: rgba(200, 0, 0, 0.85); color: white; padding: 12px 25px; border-radius: 8px; font-family: monospace; font-size: 0.9rem; z-index: 1000; opacity: 0; pointer-events: none; transition: all 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid #ffaaaa; box-shadow: 0 0 20px rgba(255,0,0,0.5); white-space: nowrap; font-weight: bold; }
+        .data-loss-toast.show-toast { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+
         /* 下拉控制中心 & 音乐组件 */
         #control-center { position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 400; transition: top 0.4s cubic-bezier(0.25, 1, 0.5, 1); padding: 50px 20px; display: flex; flex-direction: column; color: #fff; }
         .cc-header { font-size: 1.5rem; font-weight: 500; margin-bottom: 20px; }
@@ -97,22 +101,20 @@
         .widget-weather h2 { font-size: 2rem; font-weight: 400; }
         .widget-weather .icon { font-size: 2rem; }
 
-        /* APP 网格与渐进式解锁机制 */
+        /* APP 网格 */
         .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 25px; column-gap: 15px; justify-items: center; position: relative; }
         .app-item { display: flex; flex-direction: column; align-items: center; position: relative; width: 60px; cursor: pointer; transition: transform 0.1s, filter 0.5s ease, opacity 0.5s ease; }
         .app-item:active { transform: scale(0.9); }
         .app-icon { width: 60px; height: 60px; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.15); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: #fff; font-weight: bold; transition: filter 0.5s ease, background 0.5s; }
         .app-name { color: #fff; font-size: 0.75rem; margin-top: 5px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); transition: opacity 0.5s ease; }
         
-        .locked-app { pointer-events: none; }
         .locked-app .app-icon { filter: blur(8px) grayscale(100%); opacity: 0.3; }
         .locked-app .app-name { opacity: 0; }
-        .app-blurred { pointer-events: none; }
         .app-blurred .app-icon { filter: blur(4px) grayscale(50%); opacity: 0.6; }
         .app-blurred .app-name { opacity: 0; }
 
-        /* 桌面重构 */
-        .dead-app { pointer-events: none; opacity: 0.3 !important; filter: grayscale(100%) blur(2px) !important; transition: all 1s ease; }
+        /* 桌面重构后的死寂应用 */
+        .dead-app { pointer-events: none !important; opacity: 0.3 !important; filter: grayscale(100%) blur(2px) !important; transition: all 1s ease; }
         .dead-widget { opacity: 0.2; filter: grayscale(100%); }
 
         /* 新生应用：郑巧的5.18 */
@@ -235,27 +237,35 @@
         .btn-next-scene { background: linear-gradient(135deg, #ff00aa, #ff5a5f); color:#fff; border:none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 0.95rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: all 0.5s ease; box-shadow: 0 0 20px rgba(255,0,170,0.4); }
         .btn-next-scene.show { opacity: 1; transform: translateY(0); }
 
-        /* 第二景：记忆碎片博物馆 */
-        .museum-container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; position: relative; }
+        /* ================= 第二景：失重记忆碎片博物馆 ================= */
+        .museum-container { flex: 1; display: flex; flex-direction: column; align-items: center; position: relative; overflow: hidden; }
+        .museum-header { position: absolute; top: 30px; left: 0; width: 100%; text-align: center; z-index: 20; pointer-events: none; }
         .museum-title { font-size: 1.3rem; font-weight: 500; color: #ff00aa; text-shadow: 0 0 10px rgba(255,0,170,0.5); margin-bottom: 10px; letter-spacing: 2px; }
-        .museum-subtitle { font-size: 0.85rem; color: #999; margin-bottom: 40px; }
-        .shards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; width: 100%; max-width: 320px; flex: 1; align-content: center; }
-        .shard-sphere { height: 110px; border-radius: 25px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.6) 100%); border: 1px solid rgba(255,255,255,0.15); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #ccc; cursor: pointer; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; animation: floatSphere 4s infinite ease-in-out; }
-        .shard-sphere::before { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, rgba(255,0,170,0.15) 0%, transparent 100%); opacity: 0; transition: opacity 0.5s; }
-        .shard-sphere.unlocked { border-color: #ff00aa; color: #fff; font-weight: bold; box-shadow: 0 0 20px rgba(255,0,170,0.3); }
-        .shard-sphere.unlocked::before { opacity: 1; }
-        .shard-icon { font-size: 1.8rem; margin-bottom: 8px; color: rgba(255,255,255,0.4); transition: color 0.5s; }
-        .shard-sphere.unlocked .shard-icon { color: #ff00aa; text-shadow: 0 0 10px rgba(255,0,170,0.5); }
-        .shard-name { font-size: 0.8rem; }
-        @keyframes floatSphere { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+        .museum-subtitle { font-size: 0.85rem; color: #999; }
+        
+        .shards-zone { position: absolute; top: 120px; bottom: 80px; left: 0; right: 0; }
+        
+        .shard-item { position: absolute; display: flex; flex-direction: column; justify-content: center; align-items: center; transition: all 0.5s; cursor: pointer; }
+        .shard-shape { background: rgba(255,255,255,0.05); backdrop-filter: blur(8px); -webkit-backdrop-filter: blur(8px); border: 1px solid rgba(255,255,255,0.2); box-shadow: inset 0 0 20px rgba(255,0,170,0.1); display: flex; justify-content: center; align-items: center; flex-direction: column; padding: 10px; color: #ccc; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .shard-shape.unlocked { background: rgba(255,0,170,0.2); border-color: #ff00aa; color: #fff; box-shadow: 0 0 15px rgba(255,0,170,0.4), inset 0 0 20px rgba(255,0,170,0.4); text-shadow: 0 0 8px rgba(255,255,255,0.8); }
+        
+        .shard-icon { font-size: 1.8rem; margin-bottom: 5px; transition: color 0.5s; }
+        .shard-name { font-size: 0.75rem; text-align: center; line-height: 1.2; font-weight: bold; }
+        
+        .shard-dummy { pointer-events: none; filter: blur(5px); opacity: 0.3; z-index: 1; animation: floatRandom1 8s infinite alternate ease-in-out; }
+        .shard-core { z-index: 10; animation: floatRandom2 6s infinite alternate ease-in-out; }
+        .shard-core.locked-final .shard-shape { filter: grayscale(100%) brightness(0.6); border-style: dashed; border-color: rgba(255,255,255,0.3); }
 
-        /* 碎片详情弹窗 */
+        @keyframes floatRandom1 { 0% { transform: translateY(0) translateX(0) rotate(0deg); } 100% { transform: translateY(-30px) translateX(20px) rotate(15deg); } }
+        @keyframes floatRandom2 { 0% { transform: translateY(0) translateX(0) rotate(0deg); } 100% { transform: translateY(30px) translateX(-20px) rotate(-15deg); } }
+        @keyframes floatRandom3 { 0% { transform: translateY(0) translateX(0) scale(1); } 100% { transform: translateY(-20px) translateX(15px) scale(1.05) rotate(10deg); } }
+
         .museum-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; padding: 25px; }
         .museum-modal.show { opacity: 1; pointer-events: auto; }
         .modal-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,0,170,0.3); border-radius: 20px; width: 100%; max-width: 320px; padding: 25px; text-align: center; color: #fff; box-shadow: 0 0 30px rgba(255,0,170,0.15); transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .museum-modal.show .modal-card { transform: scale(1); }
         .modal-title { font-size: 1.1rem; font-weight: bold; color: #ff00aa; margin-bottom: 15px; border-bottom: 1px dashed rgba(255,0,170,0.3); padding-bottom: 10px; }
-        .modal-body { font-size: 0.9rem; line-height: 1.7; color: rgba(255,255,255,0.85); text-align: left; margin-bottom: 25px; }
+        .modal-body { font-size: 0.9rem; line-height: 1.7; color: rgba(255,255,255,0.85); text-align: left; margin-bottom: 25px; white-space: pre-wrap; }
         .btn-modal-close { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color:#fff; padding: 8px 20px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; }
 
         /* 第三景：拥抱计划 */
@@ -264,7 +274,6 @@
         .hug-instructions h2 { font-size: 1.4rem; color: #ff00aa; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,0,170,0.5); }
         .hug-instructions p { font-size: 0.85rem; color: #999; line-height: 1.5; }
         
-        /* 核心互动沙盒 */
         .hug-sandbox { width: 100%; height: 200px; display: flex; align-items: center; justify-content: space-between; position: relative; padding: 0 30px; }
         .hug-node { width: 80px; height: 80px; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; position: relative; z-index: 10; transition: transform 0.1s, filter 0.3s; }
         .hug-node.mouyu { background: radial-gradient(circle, #007aff, #0040aa); box-shadow: 0 0 25px rgba(0,122,255,0.6); }
@@ -274,7 +283,6 @@
         .hug-node.holding .node-ripple { animation: ripple 1s infinite linear; }
         @keyframes ripple { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2.2); opacity: 0; } }
         
-        /* 距离电磁网阻断线 */
         .barrier-wire { position: absolute; left: 110px; right: 110px; height: 4px; background: rgba(120,120,120,0.6); z-index: 5; display: flex; justify-content: center; align-items: center; border-radius: 2px; }
         .wire-danger { position: absolute; width: 100%; height: 100%; background: repeating-linear-gradient(90deg, #555, #555 5px, red 5px, red 10px); animation: wireMove 0.5s infinite linear; border-radius: 2px; }
         .wire-text { position: absolute; background: #222; border: 1px solid #ff3b30; color: #ff3b30; font-family: monospace; font-size: 0.75rem; font-weight: bold; padding: 2px 8px; border-radius: 5px; transform: translateY(-15px); text-shadow: 0 0 5px red; }
@@ -283,23 +291,41 @@
         /* 第四景：终局大表白落幕 */
         .outro-illustration { position: absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 50% 50%, #1a0033 0%, #000 100%); z-index: 1; display: none; }
         .fireworks-canvas { position: absolute; top:0; left:0; width:100%; height:100%; z-index: 2; pointer-events: none; }
-        .final-card { position: absolute; z-index: 5; top: 10%; bottom: 10%; left: 8%; right: 8%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .final-card { position: absolute; z-index: 5; top: 5%; bottom: 5%; left: 8%; right: 8%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .final-title { font-size: 1.6rem; font-weight: bold; color: #ff00aa; text-shadow: 0 0 15px rgba(255,0,170,0.8); margin-bottom: 25px; letter-spacing: 3px; }
         .final-p { font-size: 0.95rem; line-height: 2; color: rgba(255,255,255,0.9); font-weight: 300; max-width: 90%; min-height: 250px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 
         /* 闪白遮罩 */
         #flash-white { position: absolute; top:0; left:0; width:100%; height:100%; background: #fff; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; }
 
+        /* 心意留言浮窗按钮与面板 */
+        .feedback-btn { position: absolute; bottom: 30px; right: 30px; background: rgba(255,255,255,0.1); border: 1px solid rgba(255,0,170,0.5); color: #ff00aa; padding: 10px 20px; border-radius: 20px; cursor: pointer; z-index: 20; backdrop-filter: blur(5px); font-size: 0.9rem; font-weight: bold; transition: all 0.3s; animation: floatBtn 2s infinite ease-in-out; display: none; }
+        .feedback-btn.show { display: block; }
+        .feedback-btn:active { transform: scale(0.95); background: rgba(255,0,170,0.2); }
+        @keyframes floatBtn { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-5px); } }
+
+        .feedback-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.8); backdrop-filter: blur(10px); z-index: 10000; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.3s ease; }
+        .feedback-modal.show { opacity: 1; pointer-events: auto; }
+        .feedback-content { background: rgba(20,20,20,0.9); border: 1px solid #ff00aa; border-radius: 15px; width: 85%; padding: 20px; position: relative; display: flex; flex-direction: column; align-items: center; box-shadow: 0 0 30px rgba(255,0,170,0.3); }
+        .feedback-content textarea { width: 100%; height: 150px; background: rgba(0,0,0,0.5); border: 1px solid #333; color: #fff; padding: 15px; border-radius: 10px; margin-bottom: 20px; font-size: 1rem; resize: none; outline: none; }
+        .feedback-content textarea:focus { border-color: #ff00aa; }
+        .close-feedback { position: absolute; top: 10px; right: 15px; color: #888; font-size: 1.5rem; cursor: pointer; }
+        .btn-submit { background: linear-gradient(135deg, #ff00aa, #ff5a5f); color: white; border: none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 1rem; cursor: pointer; width: 100%; transition: all 0.3s; }
+
     </style>
 </head>
 <body>
     <audio id="netease-bgm" src="music.mp3" loop preload="auto"></audio>
     <audio id="wechat-bgm" src="wechat_music.mp3" loop preload="auto"></audio>
+    <audio id="outro-bgm" src="neon_sweetheart.mp3" loop preload="auto"></audio>
 
     <div id="boot-screen">
         <div class="typewriter-text" id="type-text"></div>
         <div id="breathing-btn"></div>
     </div>
+
+    <!-- 数据丢失报错弹窗 -->
+    <div id="data-loss-toast" class="data-loss-toast hidden">⚠️ [Error]: 扇区损坏，数据已丢失</div>
 
     <!-- 手机主系统 -->
     <div id="os-container" class="hidden">
@@ -316,8 +342,6 @@
 
         <!-- 锁屏 -->
         <div id="lock-screen">
-            
-            <!-- 正常锁屏界面 -->
             <div id="lock-normal">
                 <div id="lock-time">00:00</div>
                 <div id="lock-date">5月18日 星期四</div>
@@ -349,7 +373,6 @@
                 </div>
                 <div class="passcode-cancel" onclick="hidePasscodeScreen()">取消</div>
             </div>
-
         </div>
 
         <div id="notification-banner">
@@ -397,9 +420,9 @@
                     <p id="widget-date">5月18日 星期四</p>
                 </div>
                 <div class="widget widget-weather">
-                    <div class="city"> 广西北海市</div>
-                    <div class="temp-icon"><div class="icon">⛅</div><h2>28°</h2></div>
-                    <div class="city" style="margin-top:5px; opacity:0.8">多云 | 空气优</div>
+                    <div class="city">📍 广西北海市</div>
+                    <div class="temp-icon"><div class="icon" id="desktop-weather-icon">⛅</div><h2 id="desktop-weather-temp">28°</h2></div>
+                    <div class="city" style="margin-top:5px; opacity:0.8" id="desktop-weather-desc">多云 | 空气优</div>
                 </div>
             </div>
 
@@ -414,12 +437,13 @@
                     <div class="app-name">微信</div>
                     <div class="badge hidden-badge" id="badge-wechat">999+</div>
                 </div>
-                <div class="app-item locked-app"><div class="app-icon icon-qq">🐧</div><div class="app-name">QQ</div></div>
-                <div class="app-item locked-app"><div class="app-icon icon-xxt">🎓</div><div class="app-name">学习通</div></div>
-                <div class="app-item locked-app"><div class="app-icon icon-honor">👑</div><div class="app-name">王者荣耀</div></div>
-                <div class="app-item locked-app"><div class="app-icon icon-steam">♨️</div><div class="app-name">Steam</div></div>
-                <div class="app-item app-blurred"><div class="app-icon icon-camera">📷</div><div class="app-name">相机</div></div>
-                <div class="app-item app-blurred"><div class="app-icon icon-settings">⚙️</div><div class="app-name">设置</div></div>
+                
+                <div class="app-item locked-app" onclick="showDataLossError()"><div class="app-icon icon-qq">🐧</div><div class="app-name">QQ</div></div>
+                <div class="app-item locked-app" onclick="showDataLossError()"><div class="app-icon icon-xxt">🎓</div><div class="app-name">学习通</div></div>
+                <div class="app-item locked-app" onclick="showDataLossError()"><div class="app-icon icon-honor">👑</div><div class="app-name">王者荣耀</div></div>
+                <div class="app-item locked-app" onclick="showDataLossError()"><div class="app-icon icon-steam">♨️</div><div class="app-name">Steam</div></div>
+                <div class="app-item app-blurred" onclick="showDataLossError()"><div class="app-icon icon-camera">📷</div><div class="app-name">相机</div></div>
+                <div class="app-item app-blurred" onclick="showDataLossError()"><div class="app-icon icon-settings">⚙️</div><div class="app-name">设置</div></div>
 
                 <!-- 真名新生应用：郑巧的5.18核心解锁按钮 -->
                 <div id="special-518-app" onclick="openBirthdayApp()">
@@ -528,7 +552,7 @@
                 <!-- 背景渲染画布 (气流、繁星、雨滴) -->
                 <canvas id="bday-ambient-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none;"></canvas>
 
-                <!-- 🌌 第一景：「共时空」浪漫星海 (已替换真名) -->
+                <!-- 🌌 第一景：「共时空」浪漫星海 -->
                 <div class="bday-scene" id="bday-scene-1">
                     <div class="sky-split">
                         <!-- 李雨鸿 (焦作) -->
@@ -558,34 +582,74 @@
                     </div>
                     <div class="bday-text-card">
                         <p class="narrative-p" id="scene1-type-text"></p>
-                        <button class="btn-next-scene" id="btn-to-scene2">向深处探索 ➔</button>
+                        <button class="btn-next-scene" id="btn-to-scene2">向星海深处探索 ➔</button>
                     </div>
                 </div>
 
-                <!-- 🔍 第二景：细节解密博物馆 -->
+                <!-- 🔍 第二景：细节解密博物馆 (碎片悬浮版) -->
                 <div class="bday-scene" id="bday-scene-2">
                     <div class="museum-container">
-                        <div class="museum-title">记忆碎片博物馆</div>
-                        <div class="museum-subtitle">点亮漂浮着的 4 个几何体以解锁档案</div>
-                        <div class="shards-grid">
-                            <div class="shard-sphere" id="shard-1" onclick="openShardModal(1)">
-                                <div class="shard-icon">🪐</div>
-                                <div class="shard-name">动漫偏好</div>
+                        <div class="museum-header">
+                            <div class="museum-title">碎片博物馆</div>
+                            <div class="museum-subtitle">点亮漂浮着的 4 个核心几何体以解锁档案</div>
+                        </div>
+                        
+                        <!-- 悬浮碎片区域 -->
+                        <div class="shards-zone">
+                            <!-- 虚假干扰碎片 (Dummy) -->
+                            <div class="shard-item shard-dummy" style="top: 10%; left: 10%; width: 60px; height: 70px; clip-path: polygon(50% 0%, 100% 25%, 100% 75%, 50% 100%, 0% 75%, 0% 25%); animation-delay: 0s;">
+                                <div class="shard-shape" style="width:100%; height:100%;"></div>
                             </div>
-                            <div class="shard-sphere" id="shard-2" onclick="openShardModal(2)">
-                                <div class="shard-icon">💾</div>
-                                <div class="shard-name">赛博大危机</div>
+                            <div class="shard-item shard-dummy" style="top: 70%; left: 80%; width: 40px; height: 50px; clip-path: polygon(20% 0%, 80% 0%, 100% 100%, 0% 100%); animation-delay: -2s;">
+                                <div class="shard-shape" style="width:100%; height:100%;"></div>
                             </div>
-                            <div class="shard-sphere" id="shard-3" onclick="openShardModal(3)">
-                                <div class="shard-icon">⚠️</div>
-                                <div class="shard-name">吞不吞动滑</div>
+                            <div class="shard-item shard-dummy" style="top: 80%; left: 15%; width: 80px; height: 60px; clip-path: polygon(0% 20%, 60% 20%, 60% 80%, 0% 80%); animation-delay: -4s;">
+                                <div class="shard-shape" style="width:100%; height:100%;"></div>
                             </div>
-                            <div class="shard-sphere" id="shard-4" onclick="openShardModal(4)">
-                                <div class="shard-icon">🎓</div>
-                                <div class="shard-name">网课代刷</div>
+                            <div class="shard-item shard-dummy" style="top: 20%; left: 70%; width: 50px; height: 90px; clip-path: polygon(50% 0%, 0% 100%, 100% 100%); animation-delay: -1s;">
+                                <div class="shard-shape" style="width:100%; height:100%;"></div>
+                            </div>
+                            <div class="shard-item shard-dummy" style="top: 45%; left: 85%; width: 70px; height: 70px; border-radius: 40% 60% 70% 30% / 40% 50% 60% 50%; animation-delay: -3s;">
+                                <div class="shard-shape" style="width:100%; height:100%;"></div>
+                            </div>
+
+                            <!-- 核心碎片 1 -->
+                            <div class="shard-item shard-core" id="shard-1" onclick="openShardModal(1)" style="top: 15%; left: 25%; width: 110px; height: 100px; animation-duration: 5s;">
+                                <div class="shard-shape" style="width:100%; height:100%; clip-path: polygon(25% 0%, 100% 0%, 75% 100%, 0% 100%);">
+                                    <div class="shard-icon">🔮</div>
+                                    <div class="shard-name" id="sname-1">未知碎片</div>
+                                </div>
+                            </div>
+                            
+                            <!-- 核心碎片 2 -->
+                            <div class="shard-item shard-core" id="shard-2" onclick="openShardModal(2)" style="top: 45%; left: 10%; width: 100px; height: 110px; animation-duration: 6s; animation-delay: -2s; animation-name: floatRandom3;">
+                                <div class="shard-shape" style="width:100%; height:100%; clip-path: polygon(50% 0%, 100% 38%, 82% 100%, 18% 100%, 0% 38%);">
+                                    <div class="shard-icon">🔮</div>
+                                    <div class="shard-name" id="sname-2">未知碎片</div>
+                                </div>
+                            </div>
+
+                            <!-- 核心碎片 3 -->
+                            <div class="shard-item shard-core" id="shard-3" onclick="openShardModal(3)" style="top: 65%; left: 50%; width: 120px; height: 90px; animation-duration: 7s; animation-delay: -1s;">
+                                <div class="shard-shape" style="width:100%; height:100%; border-radius: 30% 70% 70% 30% / 30% 30% 70% 70%;">
+                                    <div class="shard-icon">🔮</div>
+                                    <div class="shard-name" id="sname-3">未知碎片</div>
+                                </div>
+                            </div>
+
+                            <!-- 终极碎片 4 (锁定) -->
+                            <div class="shard-item shard-core locked-final" id="shard-4" onclick="openShardModal(4)" style="top: 30%; left: 60%; width: 100px; height: 120px; animation-duration: 4s; animation-delay: -3s; animation-name: floatRandom3;">
+                                <div class="shard-shape" style="width:100%; height:100%; clip-path: polygon(50% 0%, 100% 50%, 50% 100%, 0% 50%);">
+                                    <div class="shard-icon" id="sicon-4">🔒</div>
+                                    <div class="shard-name" id="sname-4">未知碎片</div>
+                                </div>
                             </div>
                         </div>
-                        <button class="btn-next-scene" id="btn-to-scene3" style="margin-top: 30px;">跨越距离, 云拥抱 ➔</button>
+
+                        <!-- 底部按钮 -->
+                        <div style="position: absolute; bottom: 30px; width: 100%; text-align: center; z-index: 20;">
+                            <button class="btn-next-scene" id="btn-to-scene3" style="margin: 0 auto; display: none;">继续深入 ➔</button>
+                        </div>
                     </div>
 
                     <!-- 碎片详情弹窗 -->
@@ -598,13 +662,13 @@
                     </div>
                 </div>
 
-                <!-- 🌐 第三景：距离清零拥抱计划 (已替换真名) -->
+                <!-- 🌐 第三景：距离清零拥抱计划 -->
                 <div class="bday-scene" id="bday-scene-3">
                     <div class="hug-container">
                         <div class="hug-instructions">
-                            <h2>云拥抱计划</h2>
+                            <h2>银河计划</h2>
                             <p>两端距离横亘，系统已将其硬性物理化</p>
-                            <p style="color:#ff3b30; margin-top:5px;">请用双指长按左右两颗发光体，启动融合仪式</p>
+                            <p style="color:#ff3b30; margin-top:5px;">请用双指长按左右两颗发光体，启动仪式</p>
                             <p style="color:#888; font-size:0.75rem; margin-top:3px;">(电脑端：单击 李雨鸿 后，长按 郑巧 即可启动)</p>
                         </div>
 
@@ -641,10 +705,26 @@
                         <div class="final-title">TO: 郑巧</div>
                         <p class="final-p" id="final-card-text"></p>
                     </div>
+
+                    <!-- 心意留言悬浮按钮 -->
+                    <div id="feedback-btn" class="feedback-btn" onclick="openFeedbackModal()">想对我说的话...</div>
                 </div>
 
             </div>
 
+        </div>
+
+        <!-- 留言提交模态框 -->
+        <div id="feedback-modal" class="feedback-modal">
+            <div class="feedback-content">
+                <span class="close-feedback" onclick="closeFeedbackModal()">×</span>
+                <h3 style="color:#ff00aa; margin-bottom:15px; font-size: 1.1rem; text-align: center;">现在有什么想对我说的吗？😊😊</h3>
+                <!-- 请在下方的 form action 里面填入你自己的 Formspree 链接 -->
+                <form id="feedback-form" action="https://formspree.io/f/xdajnpjk" method="POST" style="width: 100%;">
+                    <textarea name="message" id="feedback-text" placeholder="写下你的想法..."></textarea>
+                    <button type="button" class="btn-submit" id="btn-submit-feedback" onclick="submitFeedback()">发送给李雨鸿</button>
+                </form>
+            </div>
         </div>
 
         <!-- 全局 Glitch 崩溃特效层 -->
@@ -679,7 +759,7 @@
         let lineIdx = 0;
         let charIdx = 0;
 
-        // ================= 公共基础与全局组件 =================
+        // ================= 公共基础与全局组件 (时间/天气完全现实同步) =================
         const sleep = ms => new Promise(res => setTimeout(res, ms));
 
         function updateTime() {
@@ -687,12 +767,24 @@
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const timeString = `${hours}:${minutes}`;
+            
+            const month = now.getMonth() + 1;
+            const date = now.getDate();
+            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
+            const dayStr = days[now.getDay()];
+            const dateString = `${month}月${date}日 ${dayStr}`;
+
             const statusTime = document.getElementById('status-time');
             const lockTime = document.getElementById('lock-time');
             const widgetTime = document.getElementById('widget-time');
+            const lockDate = document.getElementById('lock-date');
+            const widgetDate = document.getElementById('widget-date');
+            
             if (statusTime) statusTime.innerText = timeString;
             if (lockTime) lockTime.innerText = timeString;
             if (widgetTime) widgetTime.innerText = timeString;
+            if (lockDate) lockDate.innerText = dateString;
+            if (widgetDate) widgetDate.innerText = dateString;
         }
         setInterval(updateTime, 1000); updateTime();
 
@@ -733,12 +825,37 @@
                 const osContainer = document.getElementById("os-container");
                 if (bootScreen) bootScreen.classList.add("fade-out");
                 if (osContainer) osContainer.classList.remove("hidden");
+                fetchDesktopWeather();
             });
+        }
+
+        async function fetchDesktopWeather() {
+            try {
+                const res = await fetch("https://api.open-meteo.com/v1/forecast?latitude=21.48&longitude=109.12&current_weather=true");
+                const data = await res.json();
+                const temp = Math.round(data.current_weather.temperature);
+                const code = data.current_weather.weathercode;
+                
+                const tempEl = document.getElementById('desktop-weather-temp');
+                const descEl = document.getElementById('desktop-weather-desc');
+                const iconEl = document.getElementById('desktop-weather-icon');
+                
+                if (tempEl) tempEl.innerText = temp + '°';
+                if (descEl) descEl.innerText = getWeatherDesc(code);
+                
+                if (iconEl) {
+                    let icon = '⛅';
+                    if(code === 0) icon = '☀️';
+                    if(code >= 60) icon = '🌧️';
+                    iconEl.innerText = icon;
+                }
+            } catch(e) {}
         }
 
         // ================= 音乐播放器全局逻辑 =================
         const bgmNetease = document.getElementById('netease-bgm');
         const bgmWechat = document.getElementById('wechat-bgm');
+        const bgmOutro = document.getElementById('outro-bgm'); 
         const ccPlayBtn = document.getElementById('cc-play-btn');
         currentBgm = bgmNetease || null;
 
@@ -751,6 +868,10 @@
                 musicTitle.innerText = '微信BGM';
                 musicArtist.innerText = '专属歌单';
                 musicCover.style.background = 'linear-gradient(135deg, #07c160, #06ad56)';
+            } else if (currentBgm === bgmOutro) {
+                musicTitle.innerText = '霓虹甜心';
+                musicArtist.innerText = '李雨鸿的专属电台';
+                musicCover.style.background = 'linear-gradient(135deg, #ff00aa, #aa0055)';
             } else {
                 musicTitle.innerText = '不属于地球上的';
                 musicArtist.innerText = '江楠江楠';
@@ -769,14 +890,9 @@
         function syncPlayIcon() { if (ccPlayBtn) ccPlayBtn.innerText = '⏸'; }
         function syncPauseIcon() { if (ccPlayBtn) ccPlayBtn.innerText = '▶'; }
 
-        if (bgmNetease) {
-            bgmNetease.addEventListener('play', syncPlayIcon);
-            bgmNetease.addEventListener('pause', syncPauseIcon);
-        }
-        if (bgmWechat) {
-            bgmWechat.addEventListener('play', syncPlayIcon);
-            bgmWechat.addEventListener('pause', syncPauseIcon);
-        }
+        if (bgmNetease) { bgmNetease.addEventListener('play', syncPlayIcon); bgmNetease.addEventListener('pause', syncPauseIcon); }
+        if (bgmWechat) { bgmWechat.addEventListener('play', syncPlayIcon); bgmWechat.addEventListener('pause', syncPauseIcon); }
+        if (bgmOutro) { bgmOutro.addEventListener('play', syncPlayIcon); bgmOutro.addEventListener('pause', syncPauseIcon); }
 
         // ================= 锁屏与密码解锁系统 =================
         const lockScreen = document.getElementById("lock-screen");
@@ -893,6 +1009,27 @@
             });
         }
 
+        // ================= 数据丢失报错彩蛋 =================
+        function showDataLossError() {
+            const desktop = document.getElementById('desktop');
+            const toast = document.getElementById('data-loss-toast');
+            
+            if (desktop) desktop.classList.add('shake-dots');
+            if (navigator.vibrate) navigator.vibrate([100, 50, 100]); 
+            if (toast) {
+                toast.classList.remove('hidden');
+                toast.classList.add('show-toast');
+            }
+
+            setTimeout(() => { if (desktop) desktop.classList.remove('shake-dots'); }, 400);
+            setTimeout(() => {
+                if (toast) {
+                    toast.classList.remove('show-toast');
+                    toast.classList.add('hidden');
+                }
+            }, 2500);
+        }
+
         // 下拉控制中心
         const touchZone = document.getElementById("status-bar-touch-zone");
         const cc = document.getElementById("control-center");
@@ -960,7 +1097,7 @@
             if (statusBar) statusBar.classList.remove('dark-mode');
         }
 
-        // ================= 模块1：网易云逻辑 =================
+        // ================= 模块1：网易云逻辑 (放缓节奏) =================
         async function addNeteaseChat(who, text, isImg=false, blurred=false) {
             const box = document.getElementById('netease-chat-box');
             if (!box) return;
@@ -971,7 +1108,7 @@
             msgDiv.innerHTML = `${avatar}${content}`;
             box.appendChild(msgDiv);
             box.scrollTop = box.scrollHeight;
-            await sleep(blurred ? 150 : 800);
+            await sleep(blurred ? 200 : 1200); 
         }
 
         async function askChoice(monologue, choices) {
@@ -997,7 +1134,7 @@
                     } else {
                         panel.classList.remove('show');
                         chatBox.style.paddingBottom = "120px";
-                        await sleep(400); resolveChoice(opt.id);
+                        await sleep(600); resolveChoice(opt.id); 
                     }
                 };
                 container.appendChild(btn);
@@ -1009,7 +1146,7 @@
         }
 
         async function startNeteaseGame() {
-            neteaseStarted = true; await sleep(1000);
+            neteaseStarted = true; await sleep(1500); 
             await addNeteaseChat('left', 'cpdd？');
             await askChoice("内心OS：等等，网易云真的能捞到人？这不会是诈骗吧？我该怎么回她？",
                 [{ id: 'A', text: "A. 不回，装高冷。", correct: false, failMsg: "Game Over！你成功凭实力单身，重选！" }, { id: 'B', text: "B. 回个省略号，看看她想干嘛。", correct: true }]
@@ -1023,14 +1160,14 @@
                 panel.classList.add('show');
                 monologueText.innerText = "内心OS：有点意思，看看她要干什么...";
                 container.innerHTML = ''; 
-                await sleep(1500); 
+                await sleep(2500); 
                 panel.classList.remove('show');
             }
 
             const fillerChats = ["在干嘛", "听歌", "好巧我也在听", "这歌不错", "是的", "你平时喜欢干嘛", "打游戏看剧", "哦哦", "那你呢"];
             for(let i=0; i<fillerChats.length; i++) await addNeteaseChat(i%2===0 ? 'left':'right', fillerChats[i], false, true);
             
-            await addNeteaseChat('left', '……'); await sleep(800);
+            await addNeteaseChat('left', '……'); await sleep(1200);
             await addNeteaseChat('left', '看你这头像，你平时肯定特别喜欢看动漫吧？');
             
             await askChoice("内心OS：？她是福尔摩斯吗？这都能看出来？不行，我得给她亮点真家伙。",
@@ -1039,7 +1176,7 @@
 
             await addNeteaseChat('right', '你看看这人，你猜他看不看'); await addNeteaseChat('right', '', true);
 
-            await sleep(1500);
+            await sleep(2000); 
             const neteasePage = document.getElementById('app-netease-page');
             const bpmVal = document.getElementById('bpm-val');
             const heartRate = document.getElementById('heart-rate');
@@ -1095,7 +1232,7 @@
             );
 
             await addNeteaseChat('right', '😁😁😁 实在演不下去了 😁😁😁'); await addNeteaseChat('left', '笑死我了');
-            await sleep(2000);
+            await sleep(2500); 
             const outro = document.getElementById('game-outro');
             const badgeNetease = document.getElementById('badge-netease');
             if (outro) outro.classList.add('show');
@@ -1117,7 +1254,7 @@
                     badgeWechat.classList.remove('hidden-badge');
                     badgeWechat.style.animation = 'pulse 1s infinite';
                 }
-            }, 500);
+            }, 800); 
         }
 
         // ================= 模块2：微信剧情与崩溃 =================
@@ -1129,7 +1266,7 @@
                 if (wcFriendReq) wcFriendReq.style.display = 'none'; 
                 if (wcInputBar) wcInputBar.classList.add('show');
                 startWechatSequence();
-            }, 500);
+            }, 800);
         }
 
         async function addWechatChat(who, text, isImg=false, blurred=false, customSleep=0) {
@@ -1154,7 +1291,7 @@
             box.scrollTop = box.scrollHeight;
             
             if (customSleep > 0) { await sleep(customSleep); } 
-            else if(!blurred) { await sleep(800); }
+            else if(!blurred) { await sleep(1200); } 
         }
 
         async function typeAndSend(text, typeSpeed=150) {
@@ -1167,23 +1304,23 @@
                 if (inputBox) inputBox.innerText += text[i];
                 await sleep(typeSpeed + (Math.random()*50));
             }
-            await sleep(300);
+            await sleep(400); 
             if (inputBox) inputBox.innerText = '';
             await addWechatChat('right', text, false, false, 800);
             if (box) box.scrollTop = box.scrollHeight;
         }
 
         async function startWechatSequence() {
-            await sleep(1000);
+            await sleep(1500);
             
-            await addWechatChat('right', '我通过了你的朋友验证请求，现在我们可以开始聊天了', false, false, 800);
-            await sleep(500);
-            await addWechatChat('left', '勉强同意', false, false, 1000);
-            await typeAndSend('😁😁😁', 200);
-            await addWechatChat('left', '', true, false, 1000);
+            await addWechatChat('right', '我通过了你的朋友验证请求，现在我们可以开始聊天了', false, false, 1200);
+            await sleep(800);
+            await addWechatChat('left', '勉强同意', false, false, 1500);
+            await typeAndSend('😁😁😁', 250);
+            await addWechatChat('left', '', true, false, 1200);
             
             const startTime = Date.now();
-            const DURATION = 6000; // 优化为 6 秒快速刷屏，防止等待过长失去焦点
+            const DURATION = 6000; 
             const dummyPool = ["[表情包]", "一个老奶奶把恶的老人推下海", "好懂哦", "干嘛打哈哈", "你人还怪好捏", "救命", "一个人带不动啊", "没借老", "没人给我推", "这人还挺好玩", "撤回了一条消息", "哈哈哈哈"];
             
             while (Date.now() - startTime < DURATION) {
@@ -1194,21 +1331,21 @@
                 await addWechatChat(who, text, isImg, true, 0);
 
                 let elapsed = Date.now() - startTime;
-                let currentDelay = Math.max(20, 300 - (280 * (elapsed / DURATION)));
+                let currentDelay = Math.max(30, 400 - (350 * (elapsed / DURATION)));
                 await sleep(currentDelay);
             }
 
-            await sleep(1500); 
+            await sleep(3500); 
             
-            await typeAndSend('你哪号生日？', 200); 
-            await sleep(800);
-            await addWechatChat('left', '18', false, false, 800);
+            await typeAndSend('你哪号生日？', 300); 
+            await sleep(1500);
+            await addWechatChat('left', '18', false, false, 1200);
             
-            await typeAndSend('几月？', 200);
-            await sleep(800);
-            await addWechatChat('left', '5', false, false, 800);
+            await typeAndSend('几月？', 300);
+            await sleep(1500);
+            await addWechatChat('left', '5', false, false, 1200);
 
-            await typeAndSend('好', 300);
+            await typeAndSend('好', 400);
 
             // ================= 触发 GLITCH =================
             triggerGlitch();
@@ -1233,7 +1370,6 @@
         async function triggerGlitch() {
             if (bgmWechat) bgmWechat.pause();
 
-            // 深度修复：确保 Glitch Overlay 层能够正确渲染与捕获
             const glitchOverlay = document.getElementById('glitch-overlay');
             if (glitchOverlay) {
                 glitchOverlay.style.background = 'transparent';
@@ -1243,7 +1379,6 @@
             
             playStaticNoise();
             
-            // 重置与挂载 Matrix 矩阵
             const matrixBox = document.getElementById('matrix-bg');
             if (matrixBox) {
                 matrixBox.style.display = 'flex';
@@ -1264,7 +1399,6 @@
             const warn2 = document.getElementById('warn-2');
             const warn3 = document.getElementById('warn-3');
             
-            // 确保警告框能够二次显示
             if (warn1) { warn1.style.display = 'block'; warn1.classList.remove('show'); }
             if (warn2) { warn2.style.display = 'block'; warn2.classList.remove('show'); }
             if (warn3) { warn3.style.display = 'block'; warn3.classList.remove('show'); }
@@ -1276,9 +1410,8 @@
             await sleep(800); 
             if (warn3) warn3.classList.add('show');
 
-            await sleep(2000);
+            await sleep(2500); 
             
-            // 崩溃收尾，切入纯黑背景
             if (glitchOverlay) glitchOverlay.style.background = '#000';
             if (warn1) warn1.style.display = 'none';
             if (warn2) warn2.style.display = 'none';
@@ -1289,7 +1422,7 @@
             closeApp(); 
             reconstructDesktop(); 
 
-            await sleep(1000);
+            await sleep(1500); 
             if (glitchOverlay) {
                 glitchOverlay.style.opacity = '0';
                 setTimeout(() => { glitchOverlay.style.display = 'none'; }, 500);
@@ -1299,19 +1432,23 @@
         function reconstructDesktop() {
             const widgets = document.getElementById('os-widgets');
             if (widgets) widgets.classList.add('dead-widget');
+            
             document.querySelectorAll('.app-item').forEach(app => {
-                app.classList.remove('core-app');
-                app.classList.add('dead-app');
+                if (app.id !== 'special-518-app') {
+                    app.classList.remove('core-app');
+                    app.classList.add('dead-app');
+                    app.onclick = showDataLossError;
+                }
             });
             const badgeWechat = document.getElementById('badge-wechat');
             if (badgeWechat) badgeWechat.classList.add('hidden-badge');
 
             const special518 = document.getElementById('special-518-app');
-            if (special518) setTimeout(() => { special518.classList.add('reveal'); }, 1000);
+            if (special518) setTimeout(() => { special518.classList.add('reveal'); }, 1500);
         }
 
         // ==============================================================
-        // 🎁 郑巧的 5.18 生日主线核心模块 (已全面替换真名)
+        // 🎁 郑巧的 5.18 生日主线核心模块 
         // ==============================================================
 
         function openBirthdayApp() {
@@ -1349,7 +1486,7 @@
                 "郑巧，你看，虽然我此刻没办法抱到你，\n" +
                 "但此时此刻，我们正吹着同一阵风，看着同一片星空。";
             
-            await sleep(1200);
+            await sleep(2000); 
             const tempQiaoEl = document.getElementById('weather-temp-qiao');
             const tempMouEl = document.getElementById('weather-temp-mouyu');
             let tempQiao = tempQiaoEl ? tempQiaoEl.innerText.replace('°C', '') : '--';
@@ -1362,33 +1499,6 @@
                 .replace('${mouyuTemp}', tempMou);
 
             typeNarrative(formattedText);
-        }
-
-        async function fetchDualCityWeather() {
-            const tempQiao = document.getElementById('weather-temp-qiao');
-            const descQiao = document.getElementById('weather-desc-qiao');
-            const tempMouyu = document.getElementById('weather-temp-mouyu');
-            const descMouyu = document.getElementById('weather-desc-mouyu');
-
-            try {
-                const qiaoRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=21.48&longitude=109.12&current_weather=true");
-                const qiaoData = await qiaoRes.json();
-                if (tempQiao) tempQiao.innerText = Math.round(qiaoData.current_weather.temperature) + '°C';
-                if (descQiao) descQiao.innerText = getWeatherDesc(qiaoData.current_weather.weathercode);
-            } catch(e) {
-                if (tempQiao) tempQiao.innerText = '28°C';
-                if (descQiao) descQiao.innerText = '微风 晴朗';
-            }
-
-            try {
-                const mouRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.24&longitude=113.24&current_weather=true");
-                const mouData = await mouRes.json();
-                if (tempMouyu) tempMouyu.innerText = Math.round(mouData.current_weather.temperature) + '°C';
-                if (descMouyu) descMouyu.innerText = getWeatherDesc(mouData.current_weather.weathercode);
-            } catch(e) {
-                if (tempMouyu) tempMouyu.innerText = '20°C';
-                if (descMouyu) descMouyu.innerText = '微风 舒适';
-            }
         }
 
         function getWeatherDesc(code) {
@@ -1406,9 +1516,12 @@
             container.innerText = '';
             for(let i=0; i<text.length; i++) {
                 container.innerHTML += text[i] === '\n' ? '<br>' : text[i];
-                await sleep(65);
+                await sleep(85); 
             }
-            if (nextSceneBtn) nextSceneBtn.classList.add('show');
+            if (nextSceneBtn) {
+                nextSceneBtn.style.display = "inline-block";
+                setTimeout(() => nextSceneBtn.classList.add('show'), 100);
+            }
         }
 
         function initAmbientCanvas() {
@@ -1478,44 +1591,79 @@
         }
 
         const shardsUnlocked = { 1: false, 2: false, 3: false, 4: false };
-        // 已全面替换真名
         const shardData = {
             1: {
-                title: "🪐 动漫偏好档案",
-                body: "你以为你隐藏得很好，其实那天在网易云，我一眼就看穿了你的动漫头像。为了能接住你所有的梗，那天晚上我偷偷连夜把那部动漫的前 10 集全部看完了。这是属于 李雨鸿 的第一级预谋。"
+                title: "同频共振",
+                body: "那天，听说原来你也看过《我推的孩子》《推しの子》，刚好我正在追第三季。当看见全新 OP 里面那个娃娃出现的瞬间，我觉得它特别好看，而脑子里浮现的第一个想法，就是必须偷偷买一个送给你。\n原来在这个巨大的互联网里，我们连喜欢的番剧和审美都能撞上，真巧。"
             },
             2: {
-                title: "💾 赛博隐私大危机",
-                body: "4月1日那天，我这辈子干过最蠢的事，就是自己把带 QQ 号的资料截图送货上门，还试图嘴硬假装是自己的朋友。结果因为网易云和 QQ 名字一模一样被你当场抓包。当时我表面高呼‘信息泄露’，其实心里的小鹿已经把焦作撞出了地震。"
+                title: "漏洞报告",
+                body: "那天，我干了这辈子最蠢的一件事——自己把带 QQ 号的资料截图送货上门，甚至还垂死挣扎试图假装那是‘我的朋友’。结果因为网易云和 QQ 名字一模一样，被你当场无情抓包，光速翻车。\n那些所有手忙脚乱的慌张和不知所措，现在回过头看，其实都发生得，正巧。"
             },
             3: {
-                title: "⚠️ 吞不吞动滑（信号干扰）",
-                body: "‘您猜他吞不吞动滑’——这个至今没破解的错别字，是我当时因为被你发现真相，手指发抖打出来的。这些可爱的错别字，是互联网信号在 1800 公里传递时，因为极度心动产生的幸福杂音。"
+                title: "闪光瞬间",
+                body: "那天，当我看见你戴着银饰的照片。月光、银光和屏幕的光好像在那一刻重合了，你不知道，你那个样子我偷偷看了很久，也记了很久。\n屏幕那头的你，闪闪发光，是我心中最独一无二的，珍巧。"
             },
             4: {
-                title: "🎓 全能代刷网课业务",
-                body: "虽然天天在学习通里帮你刷高数 and 各种作业题，但其实我最想研究的课题，只有‘今天郑巧有没有想我’这一门。"
+                title: "终极课题",
+                body: "虽然我能天天在学习通里帮你做各种各样的作业题，刷各种复杂的网课，但在我这里，这辈子最想花心思去钻研、且永远拿不到满分的唯一课题，其实只有‘今天你有没有想我’这一门。\n1800 公里很远，但我的心一直很近。郑巧。"
             }
         };
 
         function openShardModal(id) {
+            if(id === 4) {
+                if(!shardsUnlocked[1] || !shardsUnlocked[2] || !shardsUnlocked[3]) {
+                    const s4 = document.getElementById('shard-4');
+                    if (s4) {
+                        s4.style.transform = 'translateX(10px)';
+                        setTimeout(() => s4.style.transform = 'translateX(-10px)', 100);
+                        setTimeout(() => s4.style.transform = 'translateX(0)', 200);
+                    }
+                    
+                    const mTitle = document.getElementById('modal-title');
+                    const mBody = document.getElementById('modal-body');
+                    if (mTitle) mTitle.innerText = "🔒 访问受限";
+                    if (mBody) mBody.innerText = "请先收集并点亮散落的其他三块记忆碎片...";
+                    const mModal = document.getElementById('museum-modal');
+                    if (mModal) {
+                        mModal.style.display = 'flex'; 
+                        setTimeout(() => mModal.classList.add('show'), 10);
+                    }
+                    return;
+                }
+            }
+
             const data = shardData[id];
             const mTitle = document.getElementById('modal-title');
             const mBody = document.getElementById('modal-body');
             const mModal = document.getElementById('museum-modal');
-            const shardEl = document.getElementById(`shard-${id}`);
+            const shardShape = document.querySelector(`#shard-${id} .shard-shape`);
+            const sName = document.getElementById(`sname-${id}`);
             const toScene3Btn = document.getElementById('btn-to-scene3');
             
-            if (mTitle) mTitle.innerText = data.title;
+            if (mTitle) mTitle.innerText = `🔮 ${data.title}`;
             if (mBody) mBody.innerText = data.body;
-            if (mModal) mModal.style.display = 'flex'; 
-            if (mModal) setTimeout(() => mModal.classList.add('show'), 10);
+            if (mModal) {
+                mModal.style.display = 'flex'; 
+                setTimeout(() => mModal.classList.add('show'), 10);
+            }
             
             shardsUnlocked[id] = true;
-            if (shardEl) shardEl.classList.add('unlocked');
+            if (shardShape) shardShape.classList.add('unlocked');
+            if (sName) sName.innerText = data.title;
+
+            if(shardsUnlocked[1] && shardsUnlocked[2] && shardsUnlocked[3]) {
+                const s4 = document.getElementById('shard-4');
+                const s4Icon = document.getElementById('sicon-4');
+                if(s4) s4.classList.remove('locked-final');
+                if(s4Icon && !shardsUnlocked[4]) s4Icon.innerText = '🔮';
+            }
 
             if(Object.values(shardsUnlocked).every(v => v === true)) {
-                if (toScene3Btn) toScene3Btn.classList.add('show');
+                if (toScene3Btn) {
+                    toScene3Btn.style.display = 'inline-block';
+                    setTimeout(() => toScene3Btn.classList.add('show'), 10);
+                }
             }
         }
 
@@ -1683,11 +1831,19 @@
             }
         }
 
-        // ================= 终局落幕：最深情的告白 =================
+        // ================= 终局落幕 =================
         async function triggerFinalMerge() {
             const flash = document.getElementById('flash-white');
             if (flash) flash.style.opacity = '1';
-            await sleep(800);
+            await sleep(1500); 
+
+            if(currentBgm) currentBgm.pause();
+            currentBgm = bgmOutro;
+            updateMusicUI();
+            if (currentBgm) {
+                currentBgm.currentTime = 0;
+                currentBgm.play().catch(e => console.log("Audio blocked:", e));
+            }
 
             const s3 = document.getElementById('bday-scene-3');
             const widgets = document.getElementById('os-widgets');
@@ -1703,8 +1859,8 @@
             if (flash) flash.style.opacity = '0';
 
             startFireworks();
+            await sleep(2000); 
 
-            // 已替换真名并增加指定结尾段落
             const finalLoveText = 
                 "5.18 生日快乐，郑巧。\n\n" +
                 "在网页的代码里，我可以用 3 秒钟让两颗心融合，把距离清零。\n" +
@@ -1719,14 +1875,80 @@
 
         async function typeFinalLoveLetter(text) {
             const container = document.getElementById('final-card-text');
+            const btn = document.getElementById('feedback-btn');
             if (!container) return;
             container.innerText = '';
             for(let i=0; i<text.length; i++) {
                 container.innerHTML += text[i] === '\n' ? '<br>' : text[i];
-                await sleep(95); 
+                await sleep(150); 
+            }
+            if (btn) {
+                await sleep(1000);
+                btn.classList.add('show');
             }
         }
 
+        // ================= 留言反馈收集系统 =================
+        function openFeedbackModal() {
+            const modal = document.getElementById('feedback-modal');
+            if(modal) modal.classList.add('show');
+        }
+
+        function closeFeedbackModal() {
+            const modal = document.getElementById('feedback-modal');
+            if(modal) modal.classList.remove('show');
+        }
+
+        async function submitFeedback() {
+            const textArea = document.getElementById('feedback-text');
+            const btn = document.getElementById('btn-submit-feedback');
+            const form = document.getElementById('feedback-form');
+            const text = textArea ? textArea.value.trim() : '';
+
+            if(!text) {
+                const originalText = btn.innerText;
+                btn.innerText = '请写下你想说的话...';
+                setTimeout(() => { btn.innerText = originalText; }, 1500);
+                return;
+            }
+
+            if(btn) btn.innerText = '发送中...';
+
+            try {
+                // 真实 Formspree 提交逻辑，带上 application/json Header 防止 CORS 跨域等问题
+                const actionUrl = form.getAttribute('action');
+                if (actionUrl && actionUrl.includes("formspree.io/f/") && !actionUrl.includes("YOUR_ENDPOINT_HERE")) {
+                    await fetch(actionUrl, {
+                        method: 'POST',
+                        headers: { 
+                            'Content-Type': 'application/json',
+                            'Accept': 'application/json'
+                        },
+                        body: JSON.stringify({ message: text })
+                    });
+                } else {
+                    await sleep(1500);
+                }
+
+                if(btn) {
+                    btn.innerText = '发送成功！💖';
+                    btn.style.background = '#07c160';
+                }
+                
+                setTimeout(() => {
+                    closeFeedbackModal();
+                    if(btn) {
+                        btn.innerText = '发送给李雨鸿';
+                        btn.style.background = 'linear-gradient(135deg, #ff00aa, #ff5a5f)';
+                    }
+                    if(textArea) textArea.value = '';
+                }, 2000);
+            } catch(e) {
+                if(btn) btn.innerText = '发送失败，请重试';
+            }
+        }
+
+        // ================= 烟花渲染系统 =================
         function startFireworks() {
             const canvas = document.getElementById('fireworks-canvas');
             if (!canvas) return;
