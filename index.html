@@ -4,17 +4,15 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Qiao OS</title>
-    <!-- 引入 Font Awesome 图标库，用于更逼真的 App 内部图标 -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        /* ================= 0. 基础重置与全局设定 ================= */
+        /* ================= 基础重置与全局设定 ================= */
         * { margin: 0; padding: 0; box-sizing: border-box; user-select: none; -webkit-user-select: none; }
         body, html { width: 100%; height: 100%; background-color: #000; font-family: -apple-system, BlinkMacSystemFont, "Helvetica Neue", Helvetica, Arial, sans-serif; overflow: hidden; }
         .hidden { display: none !important; }
         .fade-out { opacity: 0; transition: opacity 0.8s ease; pointer-events: none; }
         .fade-in { opacity: 1; transition: opacity 0.8s ease; }
 
-        /* ================= 1. 第一幕：黑屏打字机 ================= */
+        /* ================= 剧本：黑屏打字机 ================= */
         #boot-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; color: #fff; display: flex; flex-direction: column; justify-content: center; align-items: center; z-index: 1000; padding: 20px; text-align: center; }
         .typewriter-text { font-size: 1.1rem; line-height: 1.8; min-height: 80px; font-weight: 300; letter-spacing: 1px; color: rgba(255, 255, 255, 0.9); }
         .cursor { display: inline-block; width: 2px; height: 1.2rem; background-color: #fff; animation: blink 0.8s infinite; vertical-align: middle; margin-left: 2px; }
@@ -22,32 +20,30 @@
         #breathing-btn { margin-top: 50px; width: 30px; height: 30px; background: radial-gradient(circle, rgba(255,255,255,0.8) 0%, rgba(255,255,255,0) 70%); border-radius: 50%; opacity: 0; cursor: pointer; animation: breathe 2s infinite alternate; transition: opacity 1s ease; }
         @keyframes breathe { from { transform: scale(0.8); opacity: 0.3; } to { transform: scale(1.2); opacity: 0.8; } }
 
-        /* ================= 2. 手机系统外壳 & 状态栏 ================= */
+        /* ================= 手机系统外壳 & 桌面 ================= */
         #os-container { position: relative; width: 100%; height: 100%; background-color: #000; overflow: hidden; }
         
         #status-bar { position: absolute; top: 0; left: 0; width: 100%; height: 40px; display: flex; justify-content: space-between; align-items: center; padding: 0 20px; color: #fff; z-index: 500; font-size: 0.85rem; font-weight: 500; text-shadow: 0 1px 2px rgba(0,0,0,0.5); transition: color 0.3s ease; }
-        /* 当进入白色背景APP时，状态栏变黑 */
         #status-bar.dark-mode { color: #000; text-shadow: none; }
         #status-bar.dark-mode .battery { border-color: #000; }
         #status-bar.dark-mode .battery::after { background: #000; }
         #status-bar.dark-mode .battery-level { background: #000; }
 
         .status-right { display: flex; gap: 5px; align-items: center; }
-        .battery { width: 22px; height: 11px; border: 1px solid rgba(255,255,255,0.8); border-radius: 3px; position: relative; transition: border-color 0.3s ease; }
-        .battery::after { content: ''; position: absolute; top: 2px; right: -3px; width: 2px; height: 5px; background: rgba(255,255,255,0.8); border-radius: 0 1px 1px 0; transition: background 0.3s ease; }
-        .battery-level { width: 80%; height: 100%; background: #fff; border-radius: 1px; transition: background 0.3s ease; }
+        .battery { width: 22px; height: 11px; border: 1px solid rgba(255,255,255,0.8); border-radius: 3px; position: relative; }
+        .battery::after { content: ''; position: absolute; top: 2px; right: -3px; width: 2px; height: 5px; background: rgba(255,255,255,0.8); border-radius: 0 1px 1px 0; }
+        .battery-level { width: 80%; height: 100%; background: #fff; border-radius: 1px; }
 
-        /* ================= 3. 第二幕：锁屏界面 ================= */
-        #lock-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat; z-index: 200; display: flex; flex-direction: column; align-items: center; justify-content: flex-start; padding-top: 80px; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease; }
+        /* 锁屏 */
+        #lock-screen { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat; z-index: 200; display: flex; flex-direction: column; align-items: center; padding-top: 80px; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease; }
         #lock-time { font-size: 5rem; font-weight: 200; color: #fff; text-shadow: 0 2px 10px rgba(0,0,0,0.2); letter-spacing: -2px; }
         #lock-date { font-size: 1.2rem; color: #fff; text-shadow: 0 1px 5px rgba(0,0,0,0.3); margin-top: -10px; }
         .unlock-hint { position: absolute; bottom: 40px; color: #fff; font-size: 0.9rem; opacity: 0.8; animation: bounceHint 2s infinite; display: flex; flex-direction: column; align-items: center; }
         .unlock-bar { width: 120px; height: 5px; background: #fff; border-radius: 10px; margin-top: 10px; }
         @keyframes bounceHint { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* ================= 4. 桌面层 ================= */
-        #desktop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat; z-index: 100; padding: 50px 20px 20px 20px; display: flex; flex-direction: column; transition: transform 0.3s ease, filter 0.3s ease; }
-        
+        /* 桌面 */
+        #desktop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat; z-index: 100; padding: 50px 20px 20px 20px; display: flex; flex-direction: column; transition: transform 0.4s ease, filter 0.4s ease; }
         .widgets-container { display: flex; gap: 15px; margin-bottom: 30px; margin-top: 20px; }
         .widget { flex: 1; height: 120px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; justify-content: center; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.2); }
         .widget-time h2 { font-size: 2.2rem; font-weight: 400; margin-bottom: 5px; }
@@ -64,7 +60,7 @@
         .app-name { color: #fff; font-size: 0.75rem; margin-top: 5px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); }
         
         .app-blurred .app-icon { filter: blur(3px) grayscale(50%); opacity: 0.7; }
-        .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: #fff; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: transform 0.3s ease, opacity 0.3s ease; z-index: 5; }
+        .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: #fff; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: transform 0.3s ease, opacity 0.3s ease; }
         
         .icon-netease { background: linear-gradient(135deg, #ff5a5f, #e00024); }
         .icon-wechat { background: linear-gradient(135deg, #07c160, #06ad56); }
@@ -76,61 +72,102 @@
         .icon-settings { background: #555; }
         .icon-notes { background: #f1c40f; }
 
-        /* 通知横幅 */
-        #notification-banner { position: absolute; top: -100px; left: 5%; width: 90%; background: rgba(255, 255, 255, 0.2); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 15px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 600; transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); border: 1px solid rgba(255,255,255,0.3); color: #fff; cursor: pointer; }
-        .notif-icon { width: 40px; height: 40px; border-radius: 10px; background: linear-gradient(135deg, #ff5a5f, #e00024); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
+        /* 系统通知横幅 (复用以支持剧情) */
+        #notification-banner { position: absolute; top: -100px; left: 5%; width: 90%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 15px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 600; transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: #000; }
+        .notif-icon { width: 40px; height: 40px; border-radius: 10px; background: #07c160; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: white; }
         .notif-content { flex: 1; }
         .notif-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 2px; }
-        .notif-desc { font-size: 0.8rem; opacity: 0.9; }
+        .notif-desc { font-size: 0.8rem; opacity: 0.8; }
 
-        /* ================= 5. App 内部视图层 (SPA核心设计) ================= */
+        /* ================= APP 内部视图底层逻辑 (SPA) ================= */
         .app-view-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; pointer-events: none; }
-        .app-page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; transform: scale(0.9) translateY(100%); opacity: 0; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease; pointer-events: none; overflow-y: auto; padding-top: 40px; }
-        /* 激活状态的 App 页面 */
+        .app-page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; transform: scale(0.9) translateY(100%); opacity: 0; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease; pointer-events: none; overflow: hidden; display: flex; flex-direction: column; }
         .app-page.active { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
-
-        /* 统一的返回主屏幕指示条 (Home Indicator) */
+        
         .home-indicator-zone { position: fixed; bottom: 0; left: 0; width: 100%; height: 30px; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 8px; z-index: 1000; cursor: pointer; pointer-events: auto; }
         .home-bar { width: 130px; height: 5px; background: rgba(0,0,0,0.8); border-radius: 10px; transition: background 0.3s ease; }
         .dark-mode-app .home-bar { background: rgba(255,255,255,0.8); }
+        .app-header { height: 80px; padding: 40px 20px 10px; display: flex; align-items: center; justify-content: center; font-weight: 500; position: relative; border-bottom: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+        .app-header .btn-back { position: absolute; left: 20px; font-size: 1.2rem; cursor: pointer; }
 
-        /* --- 特定 App 样式：网易云音乐 --- */
-        #app-netease-page { background: #121212; color: #fff; }
-        .netease-header { padding: 10px 20px; display: flex; align-items: center; justify-content: space-between; border-bottom: 1px solid #333; }
-        .netease-header h3 { font-size: 1.1rem; font-weight: 500; }
-        .netease-body { padding: 20px; display: flex; flex-direction: column; align-items: center; justify-content: center; height: calc(100% - 100px); text-align: center; }
-        .vinyl-record { width: 200px; height: 200px; border-radius: 50%; background: radial-gradient(circle at center, #111 0%, #333 100%); border: 5px solid #000; display: flex; justify-content: center; align-items: center; box-shadow: 0 0 20px rgba(0,0,0,0.5); animation: spin 10s linear infinite; margin-bottom: 30px; }
-        .vinyl-cover { width: 100px; height: 100px; border-radius: 50%; background: url('https://images.unsplash.com/photo-1518609878373-06d740f60d8b?q=80&w=200&auto=format&fit=crop') center/cover; border: 2px solid #222; }
-        @keyframes spin { 100% { transform: rotate(360deg); } }
-        .listen-invite { background: rgba(255, 90, 95, 0.1); border: 1px solid #ff5a5f; padding: 20px; border-radius: 15px; width: 100%; margin-top: 20px; }
-        .listen-invite h4 { color: #ff5a5f; margin-bottom: 10px; font-size: 1.1rem; }
-        .listen-invite p { font-size: 0.9rem; color: #ccc; line-height: 1.5; margin-bottom: 15px; }
-        .btn-join { background: #ff5a5f; color: #fff; padding: 10px 30px; border-radius: 20px; font-weight: bold; border: none; cursor: pointer; }
+        /* ================= 网易云互动游戏引擎样式 ================= */
+        #app-netease-page { background: #1a1a1a; color: #fff; font-family: sans-serif; }
+        
+        /* 顶部 HUD */
+        .game-hud { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(0,0,0,0.5); font-size: 0.8rem; border-bottom: 1px solid #333; flex-shrink: 0; }
+        .hud-player { display: flex; align-items: center; gap: 8px; }
+        .hud-avatar { width: 30px; height: 30px; border-radius: 50%; background: #444; display: flex; justify-content: center; align-items: center; font-weight: bold; }
+        .hud-heartrate { color: #ff3b30; font-family: monospace; font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
+        .heart-icon { animation: pulse 1s infinite; }
+        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
+        
+        /* 音乐背景信息 */
+        .song-info-bg { text-align: center; padding: 15px; opacity: 0.5; font-size: 0.8rem; flex-shrink: 0; }
+
+        /* 聊天滚动区 */
+        .chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; padding-bottom: 120px; }
+        .chat-msg { display: flex; max-width: 85%; animation: slideInUp 0.3s ease forwards; opacity: 0; transform: translateY(10px); }
+        .chat-msg.left { align-self: flex-start; }
+        .chat-msg.right { align-self: flex-end; flex-direction: row-reverse; }
+        .chat-avatar { width: 35px; height: 35px; border-radius: 50%; background: #666; margin: 0 10px; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; flex-shrink: 0; }
+        .chat-bubble { padding: 10px 15px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; word-break: break-all; }
+        .chat-msg.left .chat-bubble { background: #333; color: #fff; border-top-left-radius: 4px; }
+        .chat-msg.right .chat-bubble { background: #ff5a5f; color: #fff; border-top-right-radius: 4px; }
+        @keyframes slideInUp { to { opacity: 1; transform: translateY(0); } }
+
+        /* 特殊聊天元素 */
+        .fake-qq-card { width: 200px; height: 120px; background: #e0e0e0; border-radius: 10px; padding: 10px; color: #000; position: relative; overflow: hidden; margin-top: 5px; }
+        .fake-qq-card::before { content: 'QQ资料卡截图'; display: block; font-weight: bold; margin-bottom: 10px; border-bottom: 1px solid #ccc; padding-bottom: 5px; }
+        .fake-qq-card::after { content: 'QQ号: 1234****\n网名: MOU-YU'; white-space: pre-line; font-size: 0.8rem; color: #333; }
+
+        /* 快速划过的模糊聊天特效 */
+        .fast-scroll-blur { filter: blur(2px); opacity: 0.5; }
+
+        /* 互动 UI (内心戏与选择) */
+        .interaction-panel { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,1) 40%, rgba(0,0,0,0.8) 80%, transparent); padding: 20px; display: flex; flex-direction: column; gap: 15px; z-index: 10; transform: translateY(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .interaction-panel.show { transform: translateY(-20px); } /* 留出底部Home条空间 */
+        
+        .monologue { color: #87ceeb; font-style: italic; font-size: 0.95rem; text-align: center; line-height: 1.5; padding: 10px; border: 1px dashed #87ceeb; border-radius: 10px; background: rgba(135, 206, 235, 0.1); }
+        
+        .btn-choice { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 15px; border-radius: 12px; font-size: 1rem; text-align: left; cursor: pointer; transition: all 0.2s; position: relative; overflow: hidden; }
+        .btn-choice:active { transform: scale(0.98); background: rgba(255,255,255,0.2); }
+        
+        /* 震动与警告特效 */
+        .shake-screen { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
+        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
+        
+        .red-flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 0, 0, 0.3); pointer-events: none; z-index: 999; opacity: 0; animation: flashRed 1s ease-out; }
+        @keyframes flashRed { 0% { opacity: 1; } 100% { opacity: 0; } }
+
+        /* 结局黑屏 */
+        .game-outro { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 2s ease; padding: 30px; text-align: center; }
+        .game-outro.show { opacity: 1; pointer-events: auto; }
+        .game-outro p { font-size: 1.1rem; line-height: 2; margin-bottom: 20px; opacity: 0.9; }
+        .game-outro .btn-finish { background: #07c160; color: white; padding: 12px 30px; border-radius: 25px; font-weight: bold; border: none; margin-top: 30px; }
 
     </style>
 </head>
 <body>
 
-    <!-- 第一幕：黑屏打字机预热 -->
+    <!-- 第一幕：打字机开场 -->
     <div id="boot-screen">
         <div class="typewriter-text" id="type-text"></div>
         <div id="breathing-btn"></div>
     </div>
 
-    <!-- 手机系统外壳 -->
+    <!-- 手机主系统 -->
     <div id="os-container" class="hidden">
         
-        <!-- 顶部状态栏 -->
+        <!-- 状态栏 -->
         <div id="status-bar">
             <div id="status-time">00:00</div>
             <div class="status-right">
-                <i class="fa-solid fa-signal"></i>
-                <i class="fa-solid fa-wifi"></i>
+                <span>📶</span> <span>LTE</span>
                 <div class="battery"><div class="battery-level"></div></div>
             </div>
         </div>
 
-        <!-- 第二幕：锁屏界面 -->
+        <!-- 锁屏 -->
         <div id="lock-screen">
             <div id="lock-time">00:00</div>
             <div id="lock-date">5月18日 星期四</div>
@@ -140,16 +177,16 @@
             </div>
         </div>
 
-        <!-- 网易云通知横幅 -->
+        <!-- 剧情复用：系统通知横幅 (微信申请) -->
         <div id="notification-banner">
-            <div class="notif-icon"><i class="fa-solid fa-music"></i></div>
+            <div class="notif-icon">💬</div>
             <div class="notif-content">
-                <div class="notif-title">网易云音乐</div>
-                <div class="notif-desc">一起听：收到一条新消息</div>
+                <div class="notif-title">微信</div>
+                <div class="notif-desc">天然呆萌泪- 请求添加你为好友</div>
             </div>
         </div>
 
-        <!-- 第三幕/第四幕：桌面 -->
+        <!-- 桌面 -->
         <div id="desktop">
             <div class="widgets-container">
                 <div class="widget widget-time">
@@ -164,74 +201,88 @@
             </div>
 
             <div class="app-grid">
-                <!-- 点击触发打开网易云 -->
+                <!-- 点击触发网易云剧情 -->
                 <div class="app-item core-app" onclick="openApp('netease')">
-                    <div class="app-icon icon-netease"><i class="fa-solid fa-music"></i></div>
+                    <div class="app-icon icon-netease">🎵</div>
                     <div class="app-name">网易云音乐</div>
                     <div class="badge" id="badge-netease">1</div>
                 </div>
-                <!-- 其他 APP 暂时只消除红点 -->
-                <div class="app-item core-app" onclick="clearBadge(this)">
-                    <div class="app-icon icon-wechat"><i class="fa-solid fa-comment"></i></div>
+                <!-- 预留微信入口 -->
+                <div class="app-item core-app" id="app-wechat-icon" onclick="clearBadge(this)">
+                    <div class="app-icon icon-wechat">💬</div>
                     <div class="app-name">微信</div>
-                    <div class="badge">999+</div>
-                </div>
-                <div class="app-item core-app" onclick="clearBadge(this)">
-                    <div class="app-icon icon-qq"><i class="fa-brands fa-qq"></i></div>
-                    <div class="app-name">QQ</div>
-                    <div class="badge">99+</div>
-                </div>
-                <div class="app-item core-app" onclick="clearBadge(this)">
-                    <div class="app-icon icon-xxt"><i class="fa-solid fa-graduation-cap"></i></div>
-                    <div class="app-name">学习通</div>
-                    <div class="badge">1个待办</div>
-                </div>
-                <div class="app-item core-app" onclick="clearBadge(this)">
-                    <div class="app-icon icon-honor"><i class="fa-solid fa-gamepad"></i></div>
-                    <div class="app-name">王者荣耀</div>
-                    <div class="badge">1个邀请</div>
-                </div>
-                <div class="app-item core-app" onclick="clearBadge(this)">
-                    <div class="app-icon icon-steam"><i class="fa-brands fa-steam"></i></div>
-                    <div class="app-name">Steam</div>
-                    <div class="badge">1个提醒</div>
+                    <div class="badge" id="badge-wechat">999+</div>
                 </div>
                 
-                <div class="app-item app-blurred"><div class="app-icon icon-camera"><i class="fa-solid fa-camera"></i></div><div class="app-name">相机</div></div>
-                <div class="app-item app-blurred"><div class="app-icon icon-settings"><i class="fa-solid fa-gear"></i></div><div class="app-name">设置</div></div>
-                <div class="app-item app-blurred"><div class="app-icon icon-notes"><i class="fa-solid fa-note-sticky"></i></div><div class="app-name">备忘录</div></div>
+                <div class="app-item core-app" onclick="clearBadge(this)"><div class="app-icon icon-qq">🐧</div><div class="app-name">QQ</div><div class="badge">99+</div></div>
+                <div class="app-item core-app" onclick="clearBadge(this)"><div class="app-icon icon-xxt">🎓</div><div class="app-name">学习通</div><div class="badge">1个待办</div></div>
+                <div class="app-item core-app" onclick="clearBadge(this)"><div class="app-icon icon-honor">👑</div><div class="app-name">王者荣耀</div><div class="badge">1个邀请</div></div>
+                <div class="app-item core-app" onclick="clearBadge(this)"><div class="app-icon icon-steam">♨️</div><div class="app-name">Steam</div><div class="badge">1个提醒</div></div>
+                
+                <!-- 模糊装饰 -->
+                <div class="app-item app-blurred"><div class="app-icon icon-camera">📷</div><div class="app-name">相机</div></div>
+                <div class="app-item app-blurred"><div class="app-icon icon-settings">⚙️</div><div class="app-name">设置</div></div>
+                <div class="app-item app-blurred"><div class="app-icon icon-notes">📝</div><div class="app-name">备忘录</div></div>
             </div>
         </div>
 
-        <!-- ================= APP 内部视图容器 ================= -->
+        <!-- ================= APP 内部视图容器 (SPA核心) ================= -->
         <div class="app-view-container">
             
-            <!-- 1. 网易云音乐内部解密页 -->
+            <!-- 网易云游戏解密模块 -->
             <div id="app-netease-page" class="app-page dark-mode-app">
-                <div class="netease-header">
-                    <i class="fa-solid fa-chevron-left" onclick="closeApp()"></i>
-                    <h3>一起听</h3>
-                    <i class="fa-solid fa-ellipsis-vertical"></i>
+                <div class="red-flash" id="game-red-flash"></div>
+                
+                <div class="app-header">
+                    <div class="btn-back" onclick="closeApp()">‹ 返回</div>
+                    <div>一起听</div>
                 </div>
-                <div class="netease-body">
-                    <div class="vinyl-record"><div class="vinyl-cover"></div></div>
-                    <h3>《遇到》</h3>
-                    <p style="color:#888; font-size:0.9rem; margin-top:5px;">方雅贤 - 恶作剧之吻</p>
-                    
-                    <div class="listen-invite">
-                        <h4>收到一个跨越1800km的邀请</h4>
-                        <p>“我们虽然不在同一个经纬度，但此时此刻，我想和你听同一段旋律。”</p>
-                        <button class="btn-join">加入一起听</button>
+                
+                <!-- 游戏 HUD -->
+                <div class="game-hud">
+                    <div class="hud-player">
+                        <div class="hud-avatar" style="background:#ff9a9e">呆</div>
+                        <span>天然呆萌泪-</span>
                     </div>
+                    <div class="hud-heartrate" id="heart-rate">
+                        <span class="heart-icon">❤️</span>
+                        <span id="bpm-val">80</span> bpm
+                    </div>
+                    <div class="hud-player">
+                        <span>MOU-YU</span>
+                        <div class="hud-avatar" style="background:#a18cd1">M</div>
+                    </div>
+                </div>
+
+                <div class="song-info-bg">
+                    🎵 正在播放：江楠江楠 - 《不属于地球上的》
+                </div>
+
+                <!-- 聊天气泡渲染区 -->
+                <div class="chat-container" id="chat-box">
+                    <!-- 动态插入聊天内容 -->
+                    <div style="text-align:center; color:#666; font-size:0.8rem; margin: 10px 0;">-- 记忆同步已开启 --</div>
+                </div>
+
+                <!-- 底部互动操作台 -->
+                <div class="interaction-panel" id="interaction-panel">
+                    <div class="monologue" id="monologue-text"></div>
+                    <div id="choices-container" style="display:flex; flex-direction:column; gap:10px;">
+                        <!-- 按钮动态生成 -->
+                    </div>
+                </div>
+
+                <!-- 结局黑屏 -->
+                <div class="game-outro" id="game-outro">
+                    <p>至此，一段（真巧）的旅程开始了。</p>
+                    <p style="color:#ff5a5f;">网易云红点清除成功 ➔</p>
+                    <button class="btn-finish" onclick="finishGame()">返回桌面解锁微信</button>
                 </div>
             </div>
 
-            <!-- 这里可以无限添加其他APP的页面，如： -->
-            <!-- <div id="app-wechat-page" class="app-page">微信聊天界面代码...</div> -->
-            
         </div>
 
-        <!-- 全局返回主屏幕的白条/黑条 -->
+        <!-- 全局返回主屏幕条 -->
         <div class="home-indicator-zone" id="home-indicator" onclick="closeApp()" style="display:none;">
             <div class="home-bar"></div>
         </div>
@@ -239,43 +290,33 @@
     </div>
 
     <script>
-        // --- 实时时间同步 ---
+        // --- 基础OS系统功能 ---
         function updateTime() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const timeString = `${hours}:${minutes}`;
-            const month = now.getMonth() + 1;
-            const date = now.getDate();
-            const days = ['星期日', '星期一', '星期二', '星期三', '星期四', '星期五', '星期六'];
-            const dateString = `${month}月${date}日 ${days[now.getDay()]}`;
-
             document.getElementById('status-time').innerText = timeString;
             document.getElementById('lock-time').innerText = timeString;
-            document.getElementById('lock-date').innerText = dateString;
             document.getElementById('widget-time').innerText = timeString;
-            document.getElementById('widget-date').innerText = dateString;
         }
         setInterval(updateTime, 1000); updateTime();
 
-        // --- 剧本 1：黑屏打字机 ---
+        // 剧情开场
         const textLines = ["你在互联网的角落里，捡到了一部手机……", "它跨越了 1800 公里，从河南焦作，流落到了广西北海。"];
         const typeTextContainer = document.getElementById("type-text");
         let lineIdx = 0, charIdx = 0;
         function typeWriter() {
             if (lineIdx < textLines.length) {
-                if (charIdx < textLines[lineIdx].length) {
+                if (charIdx < textLines[lineLines[lineIdx].length) {
                     typeTextContainer.innerHTML = textLines[lineIdx].substring(0, charIdx + 1) + '<span class="cursor"></span>';
                     charIdx++;
                     setTimeout(typeWriter, 80);
                 } else {
                     typeTextContainer.innerHTML = textLines[lineIdx];
                     lineIdx++; charIdx = 0;
-                    if(lineIdx < textLines.length) {
-                        setTimeout(() => { typeTextContainer.innerHTML = ""; typeWriter(); }, 1500);
-                    } else {
-                        setTimeout(() => { document.getElementById("breathing-btn").style.opacity = 1; }, 500);
-                    }
+                    if(lineIdx < textLines.length) setTimeout(() => { typeTextContainer.innerHTML = ""; typeWriter(); }, 1500);
+                    else setTimeout(() => { document.getElementById("breathing-btn").style.opacity = 1; }, 500);
                 }
             }
         }
@@ -285,48 +326,25 @@
             document.getElementById("os-container").classList.remove("hidden");
         });
 
-        // --- 剧本 2/3：上滑解锁 ---
+        // 解锁
         const lockScreen = document.getElementById("lock-screen");
-        let startY = 0, currentY = 0, isDragging = false;
-        
-        function handleUnlock(diff) {
-            if (diff < -100) {
-                lockScreen.style.transform = `translateY(-100vh)`;
-                lockScreen.style.opacity = 0;
-                setTimeout(() => {
-                    const banner = document.getElementById("notification-banner");
-                    banner.style.top = "50px";
-                    setTimeout(() => { banner.style.top = "-100px"; }, 4000);
-                }, 1000);
-            } else {
-                lockScreen.style.transform = `translateY(0)`;
-                lockScreen.style.opacity = 1;
-            }
-        }
-
-        lockScreen.addEventListener("touchstart", (e) => { startY = e.touches[0].clientY; isDragging = true; lockScreen.style.transition = "none"; });
-        lockScreen.addEventListener("touchmove", (e) => {
-            if (!isDragging) return; currentY = e.touches[0].clientY; const diff = currentY - startY;
-            if (diff < 0) { lockScreen.style.transform = `translateY(${diff}px)`; lockScreen.style.opacity = 1 - Math.abs(diff) / 500; }
-        });
-        lockScreen.addEventListener("touchend", (e) => {
-            isDragging = false; lockScreen.style.transition = "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease";
-            handleUnlock(currentY - startY);
-        });
         document.getElementById("unlock-hint").addEventListener("click", () => {
-            lockScreen.style.transition = "transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.4s ease";
-            handleUnlock(-150); 
+            lockScreen.style.transform = `translateY(-100vh)`;
+            lockScreen.style.opacity = 0;
         });
         
-        // 点击通知栏也可以进入网易云
-        document.getElementById("notification-banner").addEventListener("click", () => {
-            document.getElementById("notification-banner").style.top = "-100px";
-            openApp('netease');
+        let startY=0, currentY=0, isDragging=false;
+        lockScreen.addEventListener("touchstart", e => { startY = e.touches[0].clientY; isDragging = true; lockScreen.style.transition="none"; });
+        lockScreen.addEventListener("touchmove", e => {
+            if(!isDragging) return; currentY = e.touches[0].clientY; const diff = currentY - startY;
+            if(diff<0) { lockScreen.style.transform = `translateY(${diff}px)`; }
+        });
+        lockScreen.addEventListener("touchend", e => {
+            isDragging = false; lockScreen.style.transition = "transform 0.4s ease, opacity 0.4s ease";
+            if((currentY - startY) < -100) { lockScreen.style.transform = `translateY(-100vh)`; lockScreen.style.opacity = 0; }
+            else { lockScreen.style.transform = `translateY(0)`; }
         });
 
-        // --- 剧本 4：SPA 架构 - App 打开与关闭逻辑 ---
-        
-        // 消除红点通用函数
         function clearBadge(el) {
             const badge = el.querySelector('.badge');
             if(badge && !badge.classList.contains('hidden')) {
@@ -336,40 +354,230 @@
             }
         }
 
-        // 打开特定 App
         function openApp(appId) {
-            // 消除桌面上的红点
-            const badge = document.getElementById(`badge-${appId}`);
-            if(badge) { badge.style.transform = 'scale(0)'; badge.style.opacity = '0'; }
-
             const page = document.getElementById(`app-${appId}-page`);
             if(page) {
                 page.classList.add('active');
                 document.getElementById('desktop').style.transform = 'scale(0.95)';
                 document.getElementById('desktop').style.filter = 'blur(5px)';
-                
-                // 显示底部的 Home 返回条
                 document.getElementById('home-indicator').style.display = 'flex';
-
-                // 判断是否是需要黑色状态栏的白底App（网易云是黑底，不需要变色）
-                if(!page.classList.contains('dark-mode-app')) {
-                    document.getElementById('status-bar').classList.add('dark-mode');
+                if(!page.classList.contains('dark-mode-app')) document.getElementById('status-bar').classList.add('dark-mode');
+                
+                if(appId === 'netease' && !gameStarted) {
+                    startGame();
                 }
             }
         }
 
-        // 关闭 App（返回桌面）
         function closeApp() {
-            const activePages = document.querySelectorAll('.app-page.active');
-            activePages.forEach(page => {
-                page.classList.remove('active');
-            });
-            
+            document.querySelectorAll('.app-page.active').forEach(p => p.classList.remove('active'));
             document.getElementById('desktop').style.transform = 'scale(1)';
             document.getElementById('desktop').style.filter = 'blur(0)';
             document.getElementById('home-indicator').style.display = 'none';
             document.getElementById('status-bar').classList.remove('dark-mode');
         }
+
+        // ==============================================================
+        // 网易云互动游戏引擎逻辑
+        // ==============================================================
+        const chatBox = document.getElementById('chat-box');
+        const interactionPanel = document.getElementById('interaction-panel');
+        const monologueText = document.getElementById('monologue-text');
+        const choicesContainer = document.getElementById('choices-container');
+        const bpmVal = document.getElementById('bpm-val');
+        const pageContainer = document.getElementById('app-netease-page');
+        let gameStarted = false;
+        let resolveChoice = null; // 用于挂起等待玩家选择
+
+        const sleep = ms => new Promise(res => setTimeout(res, ms));
+        
+        // 渲染对话气泡 (who: 'left' = 她, 'right' = 我)
+        async function addChat(who, text, isCard=false, fast=false) {
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-msg ${who} ${fast ? 'fast-scroll-blur' : ''}`;
+            const avatarHtml = who === 'left' ? `<div class="chat-avatar" style="background:#ff9a9e">呆</div>` : `<div class="chat-avatar" style="background:#a18cd1">M</div>`;
+            const contentHtml = isCard ? `<div class="fake-qq-card"></div>` : `<div class="chat-bubble">${text}</div>`;
+            msgDiv.innerHTML = `${avatarHtml}${contentHtml}`;
+            chatBox.appendChild(msgDiv);
+            chatBox.scrollTop = chatBox.scrollHeight; // 滚动到底部
+            if(!fast) await sleep(800); // 正常说话停顿
+            else await sleep(150); // 快速略过
+        }
+
+        // 呼出内心戏与选项
+        async function askChoice(monologue, choices) {
+            monologueText.innerText = monologue;
+            choicesContainer.innerHTML = '';
+            
+            choices.forEach(opt => {
+                const btn = document.createElement('div');
+                btn.className = 'btn-choice';
+                btn.innerText = opt.text;
+                btn.onclick = () => handleChoice(opt);
+                choicesContainer.appendChild(btn);
+            });
+
+            interactionPanel.classList.add('show');
+            
+            // 挂起进程，等待玩家点击
+            return new Promise(resolve => {
+                resolveChoice = resolve;
+            });
+        }
+
+        // 处理点击
+        async function handleChoice(opt) {
+            if(!opt.correct) {
+                // 选错了：红屏闪烁，提示信息，不收起面板
+                document.getElementById('game-red-flash').style.animation = 'none';
+                void document.getElementById('game-red-flash').offsetWidth; // 触发重绘
+                document.getElementById('game-red-flash').style.animation = 'flashRed 1s ease-out';
+                monologueText.innerHTML = `<span style="color:#ff3b30; font-weight:bold;">[ERROR] ${opt.failMsg}</span>`;
+            } else {
+                // 选对了：收起面板，继续剧情
+                interactionPanel.classList.remove('show');
+                await sleep(500);
+                resolveChoice(opt.id); // 恢复进程
+            }
+        }
+
+        // 修改心率
+        function setBPM(val) {
+            let current = parseInt(bpmVal.innerText);
+            let diff = val - current;
+            let step = diff > 0 ? 2 : -2;
+            let timer = setInterval(() => {
+                current += step;
+                bpmVal.innerText = current;
+                if(Math.abs(current - val) <= 2) { bpmVal.innerText = val; clearInterval(timer); }
+            }, 50);
+        }
+
+        // ================= 核心剧本时间轴 =================
+        async function startGame() {
+            gameStarted = true;
+            await sleep(1000);
+
+            // 【第一幕：cpdd】
+            await addChat('left', 'cpdd？');
+            
+            let choice1 = await askChoice(
+                "内心OS：等等，网易云真的能捞到人？这不会是愚人节诈骗吧？我该怎么回她？",
+                [
+                    { id: 'A', text: "A. 不回，装高冷。", correct: false, failMsg: "Game Over！你成功凭实力单身，由于你过于高冷，故事在这里大结局了。请重新选择！" },
+                    { id: 'B', text: "B. 回个省略号，看看她想干嘛。", correct: true }
+                ]
+            );
+
+            await addChat('right', '……？');
+            await addChat('left', 'dd');
+            await addChat('right', 'dd');
+
+            // 间幕：快速略过的聊天
+            interactionPanel.classList.add('show');
+            monologueText.innerText = "内心OS：有点意思，看看她要干什么...";
+            choicesContainer.innerHTML = ''; // 清空选项
+            await sleep(1500);
+            interactionPanel.classList.remove('show');
+
+            for(let i=0; i<6; i++) {
+                await addChat(i%2===0 ? 'left':'right', "阿巴阿巴聊了一些日常废话".substring(0, Math.random()*8+4), false, true);
+            }
+            await sleep(500);
+
+            // 【第二幕：福尔摩斯】
+            await addChat('left', '看你这头像，你平时肯定特别喜欢看动漫吧？');
+            
+            let choice2 = await askChoice(
+                "内心OS：？她是福尔摩斯吗？这都能看出来？不行，我得给她亮点真家伙。",
+                [
+                    { id: 'A', text: "A. 嘴硬否认：“我不看，你猜错了。”", correct: false, failMsg: "太假了，我这头像明摆着呢，重选！" },
+                    { id: 'B', text: "B. 假装这个人不是我，甩出QQ资料卡让她分析", correct: true }
+                ]
+            );
+
+            await addChat('right', '你看看这人', false);
+            await addChat('right', '', true); // 发送伪造名片
+
+            // 【第三幕：微信惊魂】
+            await sleep(1500);
+            // OS级系统震动与通知
+            pageContainer.classList.add('shake-screen');
+            setBPM(140);
+            document.getElementById('heart-rate').style.color = '#ff0000';
+            document.getElementById('heart-rate').style.transform = 'scale(1.3)';
+            document.getElementById("notification-banner").style.top = "50px";
+            
+            interactionPanel.classList.add('show');
+            monologueText.innerHTML = `<span style="color:#ff3b30">内心OS：等一下！！！我微信怎么弹信息了？！她怎么直接把我的微信加进来了？！大数据杀我？黑客开我户？！</span>`;
+            await sleep(3000);
+            
+            document.getElementById("notification-banner").style.top = "-100px";
+            interactionPanel.classList.remove('show');
+            pageContainer.classList.remove('shake-screen');
+
+            // 慌张聊天
+            await addChat('right', '你咋找的 😳😳😳', false, true);
+            await addChat('left', '？开户', false, true);
+            await addChat('right', '信息泄露了 😳😳😳', false, true);
+            await addChat('right', '😳😳😳', false, true);
+            await addChat('left', '😱😱😱 没关系', false, true);
+            await addChat('right', '吗 😁😁😁', false, true);
+            await addChat('left', '😐');
+
+            interactionPanel.classList.add('show');
+            monologueText.innerText = "内心OS：等一下，我的CPU终于转过来了……我刚刚是不是发了张带QQ号的截图过去？搞不好她是顺着QQ摸过来的……";
+            await sleep(3000);
+            interactionPanel.classList.remove('show');
+
+            await addChat('right', 'qq号搜的吧 😏');
+            await addChat('left', '你咋知道，笑死我了');
+            await addChat('right', '因为我记得我绑定qq号了 😕😕😕');
+            await addChat('left', '那你猜对了');
+            setBPM(110); // 稍微冷静
+
+            // 【第四幕：直男挽尊】
+            let choice3 = await askChoice(
+                "内心OS：可恶，主动权全在她手里了，我得强行挽回一下局面，假装这其实不是我！",
+                [
+                    { id: 'A', text: "A. 发送：对，是我朋友，不是我。", correct: false, failMsg: "不，当时不是这样子发的，请还原历史！" },
+                    { id: 'B', text: "B. 回避问题，发送：你猜他看不看动漫", correct: true }
+                ]
+            );
+
+            await addChat('right', '其实不是我');
+            await addChat('left', '？是你朋友吗');
+            await addChat('right', '你猜他看不看动漫');
+            await addChat('left', '你逗我呢，你们名字都一样，笑死我了');
+
+            // 心跳停止
+            setBPM(0);
+            document.getElementById('heart-rate').innerHTML = `<span style="color:#666">0 bpm (已社死)</span>`;
+            
+            interactionPanel.classList.add('show');
+            monologueText.innerText = "内心OS：（啪！）……寄。我忘了我网易云和QQ网名一模一样了。世界上怎么会有我这么蠢的人，根本演不下去了啊啊啊！";
+            await sleep(3500);
+            interactionPanel.classList.remove('show');
+
+            await addChat('right', '😁😁😁 实在演不下去了 😁😁😁');
+            await addChat('left', '笑死我了');
+
+            // 【结局】
+            await sleep(1500);
+            document.getElementById('game-outro').classList.add('show');
+            // 清除桌面的网易云红点
+            clearBadge(document.querySelector('.icon-netease').parentElement);
+        }
+
+        // 结束网易云游戏，引导去微信
+        function finishGame() {
+            closeApp();
+            // 提示用户可以去点微信了（预留逻辑）
+            const wechatBadge = document.getElementById('badge-wechat');
+            wechatBadge.style.animation = 'pulse 1s infinite';
+            wechatBadge.style.background = '#07c160'; // 把微信红点变绿提示可点击
+        }
+
     </script>
 </body>
 </html>
