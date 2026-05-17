@@ -192,6 +192,27 @@
         .wc-input-box { flex: 1; background: #fff; border-radius: 5px; min-height: 40px; padding: 10px; font-size: 1rem; display: flex; align-items: center; }
         .wc-cursor { display: inline-block; width: 2px; height: 1.2rem; background: #07c160; animation: blink 1s infinite; margin-left: 2px; }
 
+        /* ================= 第四阶段：GLITCH 特效 ================= */
+        #glitch-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; opacity: 0; display: none; overflow: hidden; }
+        .glitch-noise { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: repeating-radial-gradient(circle at 17% 32%, #fff, #000 0.00085px); animation: tv-static 0.1s infinite; opacity: 0.4; mix-blend-mode: difference; }
+        @keyframes tv-static { 0% { background-position: 0 0; } 100% { background-position: 100% 100%; } }
+        .matrix-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; color: #ff0000; font-family: monospace; font-size: 12px; overflow: hidden; opacity: 0.8; }
+        .matrix-col { flex: 1; text-align: center; animation: fall linear infinite; }
+        @keyframes fall { 0% { transform: translateY(-100%); } 100% { transform: translateY(1000%); } }
+
+        .glitch-core-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 6rem; font-weight: 900; color: #000; text-shadow: 0 0 20px red, 0 0 40px red; animation: glitchTextAnim 0.2s infinite; z-index: 10; white-space: nowrap; }
+        @keyframes glitchTextAnim {
+            0% { transform: translate(-50%, -50%) skew(0deg); color: #fff; }
+            20% { transform: translate(-52%, -50%) skew(-10deg); color: #ff0000; }
+            40% { transform: translate(-50%, -48%) skew(10deg); color: #00ffff; }
+            60% { transform: translate(-48%, -50%) skew(-5deg); color: #fff; }
+            80% { transform: translate(-50%, -52%) skew(5deg); color: #ff0000; }
+            100% { transform: translate(-50%, -50%) skew(0deg); color: #fff; }
+        }
+
+        .sys-warning-modal { position: absolute; background: rgba(200, 0, 0, 0.9); border: 2px solid #fff; color: #fff; padding: 15px; font-family: monospace; font-weight: bold; font-size: 0.9rem; box-shadow: 10px 10px 0 rgba(0,0,0,0.8); opacity: 0; transform: scale(0.8); z-index: 20; }
+        .sys-warning-modal.show { opacity: 1; transform: scale(1); transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+
         /* ================= 真正好玩、极具互动性的生日主线模块 ================= */
         #app-birthday-page { background: #000; overflow: hidden; position: relative; width:100%; height:100%; display:block;}
         .bday-scene { position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 1s ease, transform 1s ease; transform: scale(1.05); }
@@ -629,6 +650,25 @@
     </div>
 
     <script>
+        // ================= 全局状态与控制变量（前置置顶，防止TDZ ReferenceError） =================
+        let neteaseStarted = false;
+        let wechatStarted = false;
+        let bdayStarted = false;
+        let currentBgm = null;
+        let resolveChoice = null;
+        let bdayAudioCtx = null;
+        let ambientCanvas = null;
+        let ambientCtx = null;
+        let currentPasscode = "";
+        let mouyuHeld = false;
+        let qiaoHeld = false;
+        let hugProgress = 0; // 0 到 100
+        let hugInterval = null;
+        let heartbeatTimer = null;
+        let currentBPM = 80;
+        let lineIdx = 0;
+        let charIdx = 0;
+
         // ================= 公共基础与全局组件 =================
         const sleep = ms => new Promise(res => setTimeout(res, ms));
 
@@ -637,78 +677,112 @@
             const hours = String(now.getHours()).padStart(2, '0');
             const minutes = String(now.getMinutes()).padStart(2, '0');
             const timeString = `${hours}:${minutes}`;
-            document.getElementById('status-time').innerText = timeString;
-            document.getElementById('lock-time').innerText = timeString;
-            document.getElementById('widget-time').innerText = timeString;
+            const statusTime = document.getElementById('status-time');
+            const lockTime = document.getElementById('lock-time');
+            const widgetTime = document.getElementById('widget-time');
+            if (statusTime) statusTime.innerText = timeString;
+            if (lockTime) lockTime.innerText = timeString;
+            if (widgetTime) widgetTime.innerText = timeString;
         }
         setInterval(updateTime, 1000); updateTime();
 
         // 黑屏打字机
         const textLines = ["你在互联网的角落里，捡到了一部手机……", "它跨越了 1800 公里，从河南焦作，流落到了广西北海。"];
         const typeTextContainer = document.getElementById("type-text");
-        let lineIdx = 0, charIdx = 0;
         function typeWriter() {
             if (lineIdx < textLines.length) {
                 if (charIdx < textLines[lineIdx].length) {
-                    typeTextContainer.innerHTML = textLines[lineIdx].substring(0, charIdx + 1) + '<span class="cursor"></span>';
+                    if (typeTextContainer) {
+                        typeTextContainer.innerHTML = textLines[lineIdx].substring(0, charIdx + 1) + '<span class="cursor"></span>';
+                    }
                     charIdx++;
                     setTimeout(typeWriter, 80);
                 } else {
-                    typeTextContainer.innerHTML = textLines[lineIdx];
+                    if (typeTextContainer) {
+                        typeTextContainer.innerHTML = textLines[lineIdx];
+                    }
                     lineIdx++; charIdx = 0;
-                    if(lineIdx < textLines.length) setTimeout(() => { typeTextContainer.innerHTML = ""; typeWriter(); }, 1500);
-                    else setTimeout(() => { document.getElementById("breathing-btn").style.opacity = 1; }, 500);
+                    if(lineIdx < textLines.length) {
+                        setTimeout(() => { 
+                            if (typeTextContainer) typeTextContainer.innerHTML = ""; 
+                            typeWriter(); 
+                        }, 1500);
+                    } else {
+                        const breathBtn = document.getElementById("breathing-btn");
+                        if (breathBtn) setTimeout(() => { breathBtn.style.opacity = 1; }, 500);
+                    }
                 }
             }
         }
         setTimeout(typeWriter, 1000);
-        document.getElementById("breathing-btn").addEventListener("click", () => {
-            document.getElementById("boot-screen").classList.add("fade-out");
-            document.getElementById("os-container").classList.remove("hidden");
-        });
+        
+        const breathBtn = document.getElementById("breathing-btn");
+        if (breathBtn) {
+            breathBtn.addEventListener("click", () => {
+                const bootScreen = document.getElementById("boot-screen");
+                const osContainer = document.getElementById("os-container");
+                if (bootScreen) bootScreen.classList.add("fade-out");
+                if (osContainer) osContainer.classList.remove("hidden");
+            });
+        }
 
-        // ================= 音乐播放器动态全局逻辑 =================
+        // ================= 音乐播放器全局逻辑 =================
         const bgmNetease = document.getElementById('netease-bgm');
         const bgmWechat = document.getElementById('wechat-bgm');
         const ccPlayBtn = document.getElementById('cc-play-btn');
-        let currentBgm = bgmNetease;
+        currentBgm = bgmNetease || null;
 
         function updateMusicUI() {
+            const musicTitle = document.getElementById('cc-music-title');
+            const musicArtist = document.getElementById('cc-music-artist');
+            const musicCover = document.getElementById('cc-music-cover');
+            if (!musicTitle || !musicArtist || !musicCover) return;
             if(currentBgm === bgmWechat) {
-                document.getElementById('cc-music-title').innerText = '微信BGM';
-                document.getElementById('cc-music-artist').innerText = '专属歌单';
-                document.getElementById('cc-music-cover').style.background = 'linear-gradient(135deg, #07c160, #06ad56)';
+                musicTitle.innerText = '微信BGM';
+                musicArtist.innerText = '专属歌单';
+                musicCover.style.background = 'linear-gradient(135deg, #07c160, #06ad56)';
             } else {
-                document.getElementById('cc-music-title').innerText = '不属于地球上的';
-                document.getElementById('cc-music-artist').innerText = '江楠江楠';
-                document.getElementById('cc-music-cover').style.background = 'linear-gradient(135deg, #ff5a5f, #e00024)';
+                musicTitle.innerText = '不属于地球上的';
+                musicArtist.innerText = '江楠江楠';
+                musicCover.style.background = 'linear-gradient(135deg, #ff5a5f, #e00024)';
             }
         }
 
-        ccPlayBtn.addEventListener('click', () => {
-            if (currentBgm.paused) { currentBgm.play(); } else { currentBgm.pause(); }
-        });
+        if (ccPlayBtn) {
+            ccPlayBtn.addEventListener('click', () => {
+                if (currentBgm) {
+                    if (currentBgm.paused) { currentBgm.play().catch(e => {}); } else { currentBgm.pause(); }
+                }
+            });
+        }
 
-        function syncPlayIcon() { ccPlayBtn.innerText = '⏸'; }
-        function syncPauseIcon() { ccPlayBtn.innerText = '▶'; }
+        function syncPlayIcon() { if (ccPlayBtn) ccPlayBtn.innerText = '⏸'; }
+        function syncPauseIcon() { if (ccPlayBtn) ccPlayBtn.innerText = '▶'; }
 
-        bgmNetease.addEventListener('play', syncPlayIcon);
-        bgmNetease.addEventListener('pause', syncPauseIcon);
-        bgmWechat.addEventListener('play', syncPlayIcon);
-        bgmWechat.addEventListener('pause', syncPauseIcon);
+        if (bgmNetease) {
+            bgmNetease.addEventListener('play', syncPlayIcon);
+            bgmNetease.addEventListener('pause', syncPauseIcon);
+        }
+        if (bgmWechat) {
+            bgmWechat.addEventListener('play', syncPlayIcon);
+            bgmWechat.addEventListener('pause', syncPauseIcon);
+        }
 
         // ================= 锁屏与密码解锁系统 =================
         const lockScreen = document.getElementById("lock-screen");
-        let currentPasscode = "";
 
         function showPasscodeScreen() {
-            document.getElementById('lock-normal').style.opacity = '0';
-            document.getElementById('passcode-overlay').classList.add('show');
+            const lockNormal = document.getElementById('lock-normal');
+            const passcodeOverlay = document.getElementById('passcode-overlay');
+            if (lockNormal) lockNormal.style.opacity = '0';
+            if (passcodeOverlay) passcodeOverlay.classList.add('show');
         }
 
         function hidePasscodeScreen() {
-            document.getElementById('lock-normal').style.opacity = '1';
-            document.getElementById('passcode-overlay').classList.remove('show');
+            const lockNormal = document.getElementById('lock-normal');
+            const passcodeOverlay = document.getElementById('passcode-overlay');
+            if (lockNormal) lockNormal.style.opacity = '1';
+            if (passcodeOverlay) passcodeOverlay.classList.remove('show');
             clearPasscode();
         }
 
@@ -753,90 +827,133 @@
                 setTimeout(hidePasscodeScreen, 500); 
             } else {
                 const dotsContainer = document.querySelector('.passcode-dots');
-                dotsContainer.classList.add('shake-dots');
-                setTimeout(() => {
-                    dotsContainer.classList.remove('shake-dots');
-                    clearPasscode();
-                }, 400);
+                if (dotsContainer) {
+                    dotsContainer.classList.add('shake-dots');
+                    setTimeout(() => {
+                        dotsContainer.classList.remove('shake-dots');
+                        clearPasscode();
+                    }, 400);
+                }
             }
         }
 
         function triggerUnlock() {
-            lockScreen.style.transform = `translateY(-100vh)`;
-            lockScreen.style.opacity = 0;
+            if (lockScreen) {
+                lockScreen.style.transform = `translateY(-100vh)`;
+                lockScreen.style.opacity = 0;
+            }
             setTimeout(() => { 
-                document.getElementById('notif-title').innerText = '网易云音乐';
-                document.getElementById('notif-desc').innerText = '一起听：收到一条新消息';
-                document.getElementById('notif-icon').innerText = '🎵';
-                document.getElementById('notif-icon').style.background = 'linear-gradient(135deg, #ff5a5f, #e00024)';
-                document.getElementById("notification-banner").style.top = "50px";
-                setTimeout(() => { document.getElementById("notification-banner").style.top = "-100px"; }, 4000);
+                const notifTitle = document.getElementById('notif-title');
+                const notifDesc = document.getElementById('notif-desc');
+                const notifIcon = document.getElementById('notif-icon');
+                const banner = document.getElementById("notification-banner");
+                if (notifTitle) notifTitle.innerText = '网易云音乐';
+                if (notifDesc) notifDesc.innerText = '一起听：收到一条新消息';
+                if (notifIcon) {
+                    notifIcon.innerText = '🎵';
+                    notifIcon.style.background = 'linear-gradient(135deg, #ff5a5f, #e00024)';
+                }
+                if (banner) {
+                    banner.style.top = "50px";
+                    setTimeout(() => { banner.style.top = "-100px"; }, 4000);
+                }
             }, 1500);
         }
 
-        document.getElementById("unlock-hint").addEventListener("click", showPasscodeScreen);
-        let startY=0, currentY=0, isDragging=false;
-        lockScreen.addEventListener("touchstart", e => { 
-            if(!document.getElementById('passcode-overlay').classList.contains('show')){
-                startY = e.touches[0].clientY; isDragging = true; 
-            }
-        });
-        lockScreen.addEventListener("touchmove", e => {
-            if(!isDragging) return; currentY = e.touches[0].clientY; const diff = currentY - startY;
-        });
-        lockScreen.addEventListener("touchend", e => {
-            if(!isDragging) return;
-            isDragging = false; 
-            if((currentY - startY) < -50) { 
-                showPasscodeScreen();
-            }
-        });
+        const unlockHint = document.getElementById("unlock-hint");
+        if (unlockHint) unlockHint.addEventListener("click", showPasscodeScreen);
+        
+        if (lockScreen) {
+            let startY=0, currentY=0, isDragging=false;
+            lockScreen.addEventListener("touchstart", e => { 
+                const passcodeOverlay = document.getElementById('passcode-overlay');
+                if(passcodeOverlay && !passcodeOverlay.classList.contains('show')){
+                    startY = e.touches[0].clientY; isDragging = true; 
+                }
+            });
+            lockScreen.addEventListener("touchmove", e => {
+                if(!isDragging) return; currentY = e.touches[0].clientY;
+            });
+            lockScreen.addEventListener("touchend", e => {
+                if(!isDragging) return;
+                isDragging = false; 
+                if((currentY - startY) < -50) { 
+                    showPasscodeScreen();
+                }
+            });
+        }
 
         // 下拉控制中心
         const touchZone = document.getElementById("status-bar-touch-zone");
         const cc = document.getElementById("control-center");
         let ccStartY=0, ccCurrentY=0, ccIsDragging=false, ccIsOpen=false;
-        touchZone.addEventListener("touchstart", e => { if(lockScreen.style.opacity === "0" && !document.querySelector('.app-page.active')) { ccStartY = e.touches[0].clientY; ccIsDragging = true; cc.style.transition = "none"; }});
-        touchZone.addEventListener("touchmove", e => { if(!ccIsDragging) return; ccCurrentY = e.touches[0].clientY; const diff = ccCurrentY - ccStartY; if(diff>0) cc.style.top = `${-100 + (diff/window.innerHeight)*100}%`; });
-        touchZone.addEventListener("touchend", e => { if(!ccIsDragging) return; ccIsDragging = false; cc.style.transition = "top 0.4s ease"; if(ccCurrentY - ccStartY > 100) { cc.style.top = "0"; ccIsOpen = true; } else { cc.style.top = "-100%"; }});
-        cc.addEventListener("touchstart", e => { if(ccIsOpen) { ccStartY = e.touches[0].clientY; ccIsDragging = true; cc.style.transition = "none"; }});
-        cc.addEventListener("touchmove", e => { if(!ccIsDragging) return; ccCurrentY = e.touches[0].clientY; const diff = ccCurrentY - ccStartY; if(diff<0) cc.style.top = `${(diff/window.innerHeight)*100}%`; });
-        cc.addEventListener("touchend", e => { if(!ccIsDragging) return; ccIsDragging = false; cc.style.transition = "top 0.4s ease"; if(ccCurrentY - ccStartY < -50) { cc.style.top = "-100%"; ccIsOpen = false; } else { cc.style.top = "0"; }});
+        
+        if (touchZone && cc) {
+            touchZone.addEventListener("touchstart", e => { 
+                if(lockScreen && lockScreen.style.opacity === "0" && !document.querySelector('.app-page.active')) { 
+                    ccStartY = e.touches[0].clientY; ccIsDragging = true; cc.style.transition = "none"; 
+                }
+            });
+            touchZone.addEventListener("touchmove", e => { 
+                if(!ccIsDragging) return; 
+                ccCurrentY = e.touches[0].clientY; 
+                const diff = ccCurrentY - ccStartY; 
+                if(diff > 0) cc.style.top = `${-100 + (diff/window.innerHeight)*100}%`; 
+            });
+            touchZone.addEventListener("touchend", e => { 
+                if(!ccIsDragging) return; 
+                ccIsDragging = false; 
+                cc.style.transition = "top 0.4s ease"; 
+                if(ccCurrentY - ccStartY > 100) { cc.style.top = "0"; ccIsOpen = true; } else { cc.style.top = "-100%"; }
+            });
+            cc.addEventListener("touchstart", e => { if(ccIsOpen) { ccStartY = e.touches[0].clientY; ccIsDragging = true; cc.style.transition = "none"; }});
+            cc.addEventListener("touchmove", e => { if(!ccIsDragging) return; ccCurrentY = e.touches[0].clientY; const diff = ccCurrentY - ccStartY; if(diff<0) cc.style.top = `${(diff/window.innerHeight)*100}%`; });
+            cc.addEventListener("touchend", e => { if(!ccIsDragging) return; ccIsDragging = false; cc.style.transition = "top 0.4s ease"; if(ccCurrentY - ccStartY < -50) { cc.style.top = "-100%"; ccIsOpen = false; } else { cc.style.top = "0"; }});
+        }
 
         // APP 打开关闭
         function openApp(appId) {
             const page = document.getElementById(`app-${appId}-page`);
             if(page) {
                 page.classList.add('active');
-                document.getElementById('desktop').style.transform = 'scale(0.95)';
-                document.getElementById('desktop').style.filter = 'blur(5px)';
-                if(!page.classList.contains('dark-mode-app')) document.getElementById('status-bar').classList.add('dark-mode');
+                const desktop = document.getElementById('desktop');
+                const statusBar = document.getElementById('status-bar');
+                if (desktop) {
+                    desktop.style.transform = 'scale(0.95)';
+                    desktop.style.filter = 'blur(5px)';
+                }
+                if(statusBar && !page.classList.contains('dark-mode-app')) {
+                    statusBar.classList.add('dark-mode');
+                }
                 
                 if(appId === 'netease' && !neteaseStarted) {
                     currentBgm = bgmNetease;
                     updateMusicUI();
-                    currentBgm.play().catch(e => console.log("Audio API blocked:", e));
+                    if (currentBgm) currentBgm.play().catch(e => console.log("Audio API blocked:", e));
                     startNeteaseGame();
                 } else if(appId === 'wechat' && !wechatStarted) {
                     wechatStarted = true;
                     currentBgm = bgmWechat;
                     updateMusicUI();
-                    currentBgm.play().catch(e => console.log("Audio API blocked:", e));
+                    if (currentBgm) currentBgm.play().catch(e => console.log("Audio API blocked:", e));
                 }
             }
         }
         function closeApp() {
             document.querySelectorAll('.app-page.active').forEach(p => p.classList.remove('active'));
-            document.getElementById('desktop').style.transform = 'scale(1)';
-            document.getElementById('desktop').style.filter = 'blur(0)';
-            document.getElementById('status-bar').classList.remove('dark-mode');
+            const desktop = document.getElementById('desktop');
+            const statusBar = document.getElementById('status-bar');
+            if (desktop) {
+                desktop.style.transform = 'scale(1)';
+                desktop.style.filter = 'blur(0)';
+            }
+            if (statusBar) statusBar.classList.remove('dark-mode');
         }
 
         // ================= 模块1：网易云逻辑 =================
-        let resolveChoice = null;
-        
         async function addNeteaseChat(who, text, isImg=false, blurred=false) {
             const box = document.getElementById('netease-chat-box');
+            if (!box) return;
             const msgDiv = document.createElement('div');
             msgDiv.className = `chat-msg ${who} ${blurred ? 'fast-scroll-blur' : ''}`;
             const avatar = who === 'left' ? `<div class="chat-avatar" style="background:#ff9a9e; color:white;">呆</div>` : `<div class="chat-avatar" style="background:#a18cd1; color:white;">M</div>`;
@@ -848,29 +965,36 @@
         }
 
         async function askChoice(monologue, choices) {
-            document.getElementById('monologue-text').innerHTML = monologue;
+            const monologueText = document.getElementById('monologue-text');
+            if (monologueText) monologueText.innerHTML = monologue;
             const container = document.getElementById('choices-container');
+            const panel = document.getElementById('interaction-panel');
+            const chatBox = document.getElementById('netease-chat-box');
+            if (!container || !panel || !chatBox) return;
             container.innerHTML = '';
             choices.forEach(opt => {
                 const btn = document.createElement('div');
                 btn.className = 'btn-choice'; btn.innerText = opt.text;
                 btn.onclick = async () => {
                     if(!opt.correct) {
-                        document.getElementById('game-red-flash').style.animation = 'none';
-                        void document.getElementById('game-red-flash').offsetWidth;
-                        document.getElementById('game-red-flash').style.animation = 'flashRed 1s ease-out';
-                        document.getElementById('monologue-text').innerHTML = `<span style="color:#ff3b30; font-weight:bold;">[ERROR] ${opt.failMsg}</span>`;
+                        const redFlash = document.getElementById('game-red-flash');
+                        if (redFlash) {
+                            redFlash.style.animation = 'none';
+                            void redFlash.offsetWidth;
+                            redFlash.style.animation = 'flashRed 1s ease-out';
+                        }
+                        if (monologueText) monologueText.innerHTML = `<span style="color:#ff3b30; font-weight:bold;">[ERROR] ${opt.failMsg}</span>`;
                     } else {
-                        document.getElementById('interaction-panel').classList.remove('show');
-                        document.getElementById('netease-chat-box').style.paddingBottom = "120px";
+                        panel.classList.remove('show');
+                        chatBox.style.paddingBottom = "120px";
                         await sleep(400); resolveChoice(opt.id);
                     }
                 };
                 container.appendChild(btn);
             });
-            document.getElementById('interaction-panel').classList.add('show');
-            document.getElementById('netease-chat-box').style.paddingBottom = "350px";
-            setTimeout(() => { document.getElementById('netease-chat-box').scrollTop = document.getElementById('netease-chat-box').scrollHeight; }, 100);
+            panel.classList.add('show');
+            chatBox.style.paddingBottom = "350px";
+            setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 100);
             return new Promise(resolve => { resolveChoice = resolve; });
         }
 
@@ -882,10 +1006,16 @@
             );
             await addNeteaseChat('right', '……？'); await addNeteaseChat('left', 'dd'); await addNeteaseChat('right', 'dd');
 
-            document.getElementById('interaction-panel').classList.add('show');
-            document.getElementById('monologue-text').innerText = "内心OS：有点意思，看看她要干什么...";
-            document.getElementById('choices-container').innerHTML = ''; 
-            await sleep(1500); document.getElementById('interaction-panel').classList.remove('show');
+            const panel = document.getElementById('interaction-panel');
+            const monologueText = document.getElementById('monologue-text');
+            const container = document.getElementById('choices-container');
+            if (panel && monologueText && container) {
+                panel.classList.add('show');
+                monologueText.innerText = "内心OS：有点意思，看看她要干什么...";
+                container.innerHTML = ''; 
+                await sleep(1500); 
+                panel.classList.remove('show');
+            }
 
             const fillerChats = ["在干嘛", "听歌", "好巧我也在听", "这歌不错", "是的", "你平时喜欢干嘛", "打游戏看剧", "哦哦", "那你呢"];
             for(let i=0; i<fillerChats.length; i++) await addNeteaseChat(i%2===0 ? 'left':'right', fillerChats[i], false, true);
@@ -900,22 +1030,36 @@
             await addNeteaseChat('right', '你看看这人，你猜他看不看'); await addNeteaseChat('right', '', true);
 
             await sleep(1500);
-            document.getElementById('app-netease-page').classList.add('shake-screen');
-            document.getElementById('bpm-val').innerText = '140';
-            document.getElementById('heart-rate').style.color = '#ff0000';
-            document.getElementById('heart-rate').style.transform = 'scale(1.3)';
+            const neteasePage = document.getElementById('app-netease-page');
+            const bpmVal = document.getElementById('bpm-val');
+            const heartRate = document.getElementById('heart-rate');
+            const notifTitle = document.getElementById('notif-title');
+            const notifDesc = document.getElementById('notif-desc');
+            const notifIcon = document.getElementById('notif-icon');
+            const banner = document.getElementById("notification-banner");
             
-            document.getElementById('notif-title').innerText = '微信';
-            document.getElementById('notif-desc').innerText = '祈愿 请求添加你为好友';
-            document.getElementById('notif-icon').innerText = '💬';
-            document.getElementById('notif-icon').style.background = '#07c160';
-            document.getElementById("notification-banner").style.top = "50px";
-            setTimeout(() => { document.getElementById("notification-banner").style.top = "-100px"; }, 4000);
+            if (neteasePage) neteasePage.classList.add('shake-screen');
+            if (bpmVal) bpmVal.innerText = '140';
+            if (heartRate) {
+                heartRate.style.color = '#ff0000';
+                heartRate.style.transform = 'scale(1.3)';
+            }
+            
+            if (notifTitle) notifTitle.innerText = '微信';
+            if (notifDesc) notifDesc.innerText = '祈愿 请求添加你为好友';
+            if (notifIcon) {
+                notifIcon.innerText = '💬';
+                notifIcon.style.background = '#07c160';
+            }
+            if (banner) {
+                banner.style.top = "50px";
+                setTimeout(() => { banner.style.top = "-100px"; }, 4000);
+            }
             
             await askChoice(`<span style="color:#ff3b30; font-size:1.1rem; font-weight:bold;">内心OS：等一下！！！我微信怎么弹信息了？！她怎么直接把我的微信加进来了？！大数据杀我？黑客开我户？！</span>`,
                 [{ id: 'CONT', text: "点击屏幕继续 (疯狂冒冷汗中...)", correct: true }]
             );
-            document.getElementById('app-netease-page').classList.remove('shake-screen');
+            if (neteasePage) neteasePage.classList.remove('shake-screen');
 
             await addNeteaseChat('right', '你咋找的 😳😳😳'); await addNeteaseChat('left', '？开户');
             await addNeteaseChat('right', '信息泄露了 😳😳😳'); await addNeteaseChat('right', '😳😳😳');
@@ -927,7 +1071,7 @@
 
             await addNeteaseChat('right', 'qq号搜的吧 😏'); await addNeteaseChat('left', '你咋知道，笑死我了');
             await addNeteaseChat('right', 'because我记得我绑定qq号了 😕😕😕'); await addNeteaseChat('left', '那你猜对了');
-            document.getElementById('bpm-val').innerText = '110';
+            if (bpmVal) bpmVal.innerText = '110';
 
             await askChoice("内心OS：可恶，主动权全在她手里了，我得强行挽回一下局面，假装这其实不是我！",
                 [{ id: 'A', text: "A. 发送：对，是我朋友，不是我。", correct: false, failMsg: "不，当时不是这样子发的，请还原历史！" }, { id: 'B', text: "B. 回避问题，发送：你猜他看不看动漫", correct: true }]
@@ -935,42 +1079,52 @@
             await addNeteaseChat('right', '其实不是我'); await addNeteaseChat('left', '？是你朋友吗');
             await addNeteaseChat('right', '你猜他看不看动漫'); await addNeteaseChat('left', '你逗我呢，你们名字都一样，笑死我了');
 
-            document.getElementById('heart-rate').innerHTML = `<span style="color:#666">0 bpm (已社死)</span>`;
+            if (heartRate) heartRate.innerHTML = `<span style="color:#666">0 bpm (已社死)</span>`;
             await askChoice("内心OS：（啪！）……寄。我忘了我网易云和QQ网名一模一样了。世界上怎么会有我这么蠢的人，根本演不下去了啊啊啊！",
                 [{ id: 'CONT', text: "放弃抵抗，原地躺平", correct: true }]
             );
 
             await addNeteaseChat('right', '😁😁😁 实在演不下去了 😁😁😁'); await addNeteaseChat('left', '笑死我了');
             await sleep(2000);
-            document.getElementById('game-outro').classList.add('show');
-            document.getElementById('badge-netease').classList.add('hidden-badge');
+            const outro = document.getElementById('game-outro');
+            const badgeNetease = document.getElementById('badge-netease');
+            if (outro) outro.classList.add('show');
+            if (badgeNetease) badgeNetease.classList.add('hidden-badge');
         }
 
         function finishGame() {
-            bgmNetease.pause();
+            if (bgmNetease) bgmNetease.pause();
             closeApp();
             
             const wechatItem = document.getElementById('app-icon-wechat');
-            wechatItem.classList.remove('locked-app');
-            wechatItem.classList.add('core-app');
+            if (wechatItem) {
+                wechatItem.classList.remove('locked-app');
+                wechatItem.classList.add('core-app');
+            }
             setTimeout(() => {
-                document.getElementById('badge-wechat').classList.remove('hidden-badge');
-                document.getElementById('badge-wechat').style.animation = 'pulse 1s infinite';
+                const badgeWechat = document.getElementById('badge-wechat');
+                if (badgeWechat) {
+                    badgeWechat.classList.remove('hidden-badge');
+                    badgeWechat.style.animation = 'pulse 1s infinite';
+                }
             }, 500);
         }
 
         // ================= 模块2：微信剧情与崩溃 =================
         async function acceptWechatFriend() {
-            document.getElementById('wc-friend-req').style.opacity = 0;
+            const wcFriendReq = document.getElementById('wc-friend-req');
+            const wcInputBar = document.getElementById('wc-input-bar');
+            if (wcFriendReq) wcFriendReq.style.opacity = 0;
             setTimeout(() => { 
-                document.getElementById('wc-friend-req').style.display = 'none'; 
-                document.getElementById('wc-input-bar').classList.add('show');
+                if (wcFriendReq) wcFriendReq.style.display = 'none'; 
+                if (wcInputBar) wcInputBar.classList.add('show');
                 startWechatSequence();
             }, 500);
         }
 
         async function addWechatChat(who, text, isImg=false, blurred=false, customSleep=0) {
             const box = document.getElementById('wechat-chat-box');
+            if (!box) return;
             const msgDiv = document.createElement('div');
             msgDiv.className = `chat-msg ${who} ${blurred ? 'fast-scroll-blur' : ''}`;
             
@@ -997,16 +1151,16 @@
             const inputBox = document.getElementById('wc-type-text');
             const cursor = document.getElementById('wc-cursor');
             const box = document.getElementById('wechat-chat-box');
-            cursor.style.display = 'inline-block';
-            inputBox.innerText = '';
+            if (cursor) cursor.style.display = 'inline-block';
+            if (inputBox) inputBox.innerText = '';
             for(let i=0; i<text.length; i++) {
-                inputBox.innerText += text[i];
+                if (inputBox) inputBox.innerText += text[i];
                 await sleep(typeSpeed + (Math.random()*50));
             }
             await sleep(300);
-            inputBox.innerText = '';
+            if (inputBox) inputBox.innerText = '';
             await addWechatChat('right', text, false, false, 800);
-            box.scrollTop = box.scrollHeight;
+            if (box) box.scrollTop = box.scrollHeight;
         }
 
         async function startWechatSequence() {
@@ -1067,98 +1221,114 @@
         }
 
         async function triggerGlitch() {
-            bgmWechat.pause();
+            if (bgmWechat) bgmWechat.pause();
 
             const glitchOverlay = document.getElementById('glitch-overlay');
-            glitchOverlay.style.display = 'block';
-            glitchOverlay.style.opacity = '1';
+            if (glitchOverlay) {
+                glitchOverlay.style.display = 'block';
+                glitchOverlay.style.opacity = '1';
+            }
             
             playStaticNoise();
             
             const matrixBox = document.getElementById('matrix-bg');
-            for(let i=0; i<20; i++) {
-                let col = document.createElement('div');
-                col.className = 'matrix-col';
-                col.style.animationDuration = (Math.random()*1+0.5) + 's';
-                col.innerText = "01001100 01001111 01010110 01000101 OVERRIDE QIAO 5.18 SYSTEM FAILURE ROOT GRANTED".split(" ").join("\n");
-                matrixBox.appendChild(col);
+            if (matrixBox) {
+                for(let i=0; i<20; i++) {
+                    let col = document.createElement('div');
+                    col.className = 'matrix-col';
+                    col.style.animationDuration = (Math.random()*1+0.5) + 's';
+                    col.innerText = "01001100 01001111 01010110 01000101 OVERRIDE QIAO 5.18 SYSTEM FAILURE ROOT GRANTED".split(" ").join("\n");
+                    matrixBox.appendChild(col);
+                }
             }
 
-            await sleep(500); document.getElementById('warn-1').classList.add('show');
-            await sleep(800); document.getElementById('warn-2').classList.add('show');
-            await sleep(800); document.getElementById('warn-3').classList.add('show');
+            await sleep(500); 
+            const warn1 = document.getElementById('warn-1');
+            const warn2 = document.getElementById('warn-2');
+            const warn3 = document.getElementById('warn-3');
+            const glitchText = document.querySelector('.glitch-core-text');
+            
+            if (warn1) warn1.classList.add('show');
+            await sleep(800); 
+            if (warn2) warn2.classList.add('show');
+            await sleep(800); 
+            if (warn3) warn3.classList.add('show');
 
             await sleep(2000);
-            glitchOverlay.style.background = '#000';
-            document.getElementById('warn-1').style.display = 'none';
-            document.getElementById('warn-2').style.display = 'none';
-            document.getElementById('warn-3').style.display = 'none';
-            document.querySelector('.glitch-core-text').style.display = 'none';
-            matrixBox.style.display = 'none';
+            if (glitchOverlay) glitchOverlay.style.background = '#000';
+            if (warn1) warn1.style.display = 'none';
+            if (warn2) warn2.style.display = 'none';
+            if (warn3) warn3.style.display = 'none';
+            if (glitchText) glitchText.style.display = 'none';
+            if (matrixBox) matrixBox.style.display = 'none';
 
             closeApp(); 
             reconstructDesktop(); 
 
             await sleep(1000);
-            glitchOverlay.style.opacity = '0';
-            setTimeout(() => { glitchOverlay.style.display = 'none'; }, 500);
+            if (glitchOverlay) {
+                glitchOverlay.style.opacity = '0';
+                setTimeout(() => { glitchOverlay.style.display = 'none'; }, 500);
+            }
         }
 
         function reconstructDesktop() {
-            document.getElementById('os-widgets').classList.add('dead-widget');
+            const widgets = document.getElementById('os-widgets');
+            if (widgets) widgets.classList.add('dead-widget');
             document.querySelectorAll('.app-item').forEach(app => {
                 app.classList.remove('core-app');
                 app.classList.add('dead-app');
             });
-            document.getElementById('badge-wechat').classList.add('hidden-badge');
+            const badgeWechat = document.getElementById('badge-wechat');
+            if (badgeWechat) badgeWechat.classList.add('hidden-badge');
 
-            setTimeout(() => { document.getElementById('special-518-app').classList.add('reveal'); }, 1000);
+            const special518 = document.getElementById('special-518-app');
+            if (special518) setTimeout(() => { special518.classList.add('reveal'); }, 1000);
         }
 
         // ==============================================================
-        // 🎁 生日主线核心模块逻辑 (核心重构)
-        // ==============================================================
-        let bdayAudioCtx = null;
-        let ambientCanvas = null;
-        let ambientCtx = null;
-        let bdayStarted = false;
+        // 🎁 生日主线核心模块逻辑 (核心重构与完美合并) ==============================================================
 
         // 解锁开启主视图
         function openBirthdayApp() {
             const page = document.getElementById(`app-birthday-page`);
-            page.classList.add('active');
-            document.getElementById('desktop').style.transform = 'scale(0.95)';
-            document.getElementById('desktop').style.filter = 'blur(5px)';
-            if(!bdayStarted) {
-                bdayStarted = true;
-                initBirthdayModule();
+            if (page) {
+                page.classList.add('active');
+                const desktop = document.getElementById('desktop');
+                const statusBar = document.getElementById('status-bar');
+                if (desktop) {
+                    desktop.style.transform = 'scale(0.95)';
+                    desktop.style.filter = 'blur(5px)';
+                }
+                if (statusBar) statusBar.classList.add('dark-mode');
+                if(!bdayStarted) {
+                    bdayStarted = true;
+                    initBirthdayModule();
+                }
             }
         }
 
         async function initBirthdayModule() {
-            // 初始化音频接口（延后激活避免受限）
             try { bdayAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
             
-            // 运行背景Canvas粒子星云系统
             initAmbientCanvas();
 
-            // 切换到第一景
-            document.getElementById('bday-scene-1').classList.add('active');
+            const scene1 = document.getElementById('bday-scene-1');
+            if (scene1) scene1.classList.add('active');
 
-            // 1. 获取焦作与北海的温度数据 (采用免费免Key气象服务API，安全可靠)
             fetchDualCityWeather();
 
-            // 2. 第一景慢打字叙事
             const narrativeText = 
                 "北海今晚的天气是 ${qiaoTemp}℃，焦作是 ${mouyuTemp}℃。\n" +
                 "我们的直线距离是 1780 公里。\n" +
                 "祈愿，你看，虽然我此刻没办法抱到你，\n" +
                 "但此时此刻，我们正吹着同一阵风，看着同一片星空。";
             
-            // 模拟动态数据代入
             await sleep(1200);
-            let tempQiao = document.getElementById('weather-temp-qiao').innerText.replace('°C', '');
-            let tempMou = document.getElementById('weather-temp-mouyu').innerText.replace('°C', '');
+            const tempQiaoEl = document.getElementById('weather-temp-qiao');
+            const tempMouEl = document.getElementById('weather-temp-mouyu');
+            let tempQiao = tempQiaoEl ? tempQiaoEl.innerText.replace('°C', '') : '--';
+            let tempMou = tempMouEl ? tempMouEl.innerText.replace('°C', '') : '--';
             if(tempQiao === '--') tempQiao = '28';
             if(tempMou === '--') tempMou = '20';
 
@@ -1169,28 +1339,30 @@
             typeNarrative(formattedText);
         }
 
-        // 真实温度数据获取与接口降级保护
         async function fetchDualCityWeather() {
+            const tempQiao = document.getElementById('weather-temp-qiao');
+            const descQiao = document.getElementById('weather-desc-qiao');
+            const tempMouyu = document.getElementById('weather-temp-mouyu');
+            const descMouyu = document.getElementById('weather-desc-mouyu');
+
             try {
-                // 北海坐标：21.48, 109.12
                 const qiaoRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=21.48&longitude=109.12&current_weather=true");
                 const qiaoData = await qiaoRes.json();
-                document.getElementById('weather-temp-qiao').innerText = Math.round(qiaoData.current_weather.temperature) + '°C';
-                document.getElementById('weather-desc-qiao').innerText = getWeatherDesc(qiaoData.current_weather.weathercode);
+                if (tempQiao) tempQiao.innerText = Math.round(qiaoData.current_weather.temperature) + '°C';
+                if (descQiao) descQiao.innerText = getWeatherDesc(qiaoData.current_weather.weathercode);
             } catch(e) {
-                document.getElementById('weather-temp-qiao').innerText = '28°C';
-                document.getElementById('weather-desc-qiao').innerText = '微风 晴朗';
+                if (tempQiao) tempQiao.innerText = '28°C';
+                if (descQiao) descQiao.innerText = '微风 晴朗';
             }
 
             try {
-                // 焦作坐标：35.24, 113.24
                 const mouRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.24&longitude=113.24&current_weather=true");
                 const mouData = await mouRes.json();
-                document.getElementById('weather-temp-mouyu').innerText = Math.round(mouData.current_weather.temperature) + '°C';
-                document.getElementById('weather-desc-mouyu').innerText = getWeatherDesc(mouData.current_weather.weathercode);
+                if (tempMouyu) tempMouyu.innerText = Math.round(mouData.current_weather.temperature) + '°C';
+                if (descMouyu) descMouyu.innerText = getWeatherDesc(mouData.current_weather.weathercode);
             } catch(e) {
-                document.getElementById('weather-temp-mouyu').innerText = '20°C';
-                document.getElementById('weather-desc-mouyu').innerText = '微风 舒适';
+                if (tempMouyu) tempMouyu.innerText = '20°C';
+                if (descMouyu) descMouyu.innerText = '微风 舒适';
             }
         }
 
@@ -1202,26 +1374,25 @@
             return "偶有阵雨";
         }
 
-        // 打字机渲染文字
         async function typeNarrative(text) {
             const container = document.getElementById('scene1-type-text');
+            const nextSceneBtn = document.getElementById('btn-to-scene2');
+            if (!container) return;
             container.innerText = '';
             for(let i=0; i<text.length; i++) {
                 container.innerHTML += text[i] === '\n' ? '<br>' : text[i];
                 await sleep(65);
             }
-            // 显示跳转下一景按钮
-            document.getElementById('btn-to-scene2').classList.add('show');
+            if (nextSceneBtn) nextSceneBtn.classList.add('show');
         }
 
-        // 背景渲染
         function initAmbientCanvas() {
             ambientCanvas = document.getElementById('bday-ambient-canvas');
+            if (!ambientCanvas) return;
             ambientCtx = ambientCanvas.getContext('2d');
             resizeAmbientCanvas();
             window.addEventListener('resize', resizeAmbientCanvas);
 
-            // 粒子系统
             let particles = [];
             for(let i=0; i<60; i++) {
                 particles.push({
@@ -1235,17 +1406,15 @@
             }
 
             function animate() {
-                if(!bdayStarted) return;
+                if(!bdayStarted || !ambientCanvas || !ambientCtx) return;
                 ambientCtx.clearRect(0,0,ambientCanvas.width, ambientCanvas.height);
                 
-                // 绘制分割区的天气光影
                 const mid = ambientCanvas.width / 2;
                 ambientCtx.fillStyle = 'rgba(0, 122, 255, 0.03)';
                 ambientCtx.fillRect(0, 0, mid, ambientCanvas.height);
                 ambientCtx.fillStyle = 'rgba(255, 45, 85, 0.03)';
                 ambientCtx.fillRect(mid, 0, mid, ambientCanvas.height);
 
-                // 星空/风粒子动画
                 particles.forEach(p => {
                     p.x += p.vx;
                     p.y += p.vy;
@@ -1273,10 +1442,15 @@
         }
 
         // ================= 第二景：解密博物馆 =================
-        document.getElementById('btn-to-scene2').addEventListener('click', () => {
-            document.getElementById('bday-scene-1').classList.remove('active');
-            document.getElementById('bday-scene-2').classList.add('active');
-        });
+        const toScene2Btn = document.getElementById('btn-to-scene2');
+        if (toScene2Btn) {
+            toScene2Btn.addEventListener('click', () => {
+                const s1 = document.getElementById('bday-scene-1');
+                const s2 = document.getElementById('bday-scene-2');
+                if (s1) s1.classList.remove('active');
+                if (s2) s2.classList.add('active');
+            });
+        }
 
         const shardsUnlocked = { 1: false, 2: false, 3: false, 4: false };
         const shardData = {
@@ -1294,45 +1468,51 @@
             },
             4: {
                 title: "🎓 全能代刷网课业务",
-                body: "虽然天天在学习通里帮你刷高数和各种作业题，但其实我最想研究的课题，只有‘今天祈愿有没有想我’这一门。"
+                body: "虽然天天在学习通里帮你刷高数 and 各种作业题，但其实我最想研究的课题，只有‘今天祈愿有没有想我’这一门。"
             }
         };
 
         function openShardModal(id) {
             const data = shardData[id];
-            document.getElementById('modal-title').innerText = data.title;
-            document.getElementById('modal-body').innerText = data.body;
-            document.getElementById('museum-modal').classList.add('show');
+            const mTitle = document.getElementById('modal-title');
+            const mBody = document.getElementById('modal-body');
+            const mModal = document.getElementById('museum-modal');
+            const shardEl = document.getElementById(`shard-${id}`);
+            const toScene3Btn = document.getElementById('btn-to-scene3');
             
-            // 标记解锁
+            if (mTitle) mTitle.innerText = data.title;
+            if (mBody) mBody.innerText = data.body;
+            if (mModal) mModal.style.display = 'flex'; 
+            if (mModal) setTimeout(() => mModal.classList.add('show'), 10);
+            
             shardsUnlocked[id] = true;
-            document.getElementById(`shard-${id}`).classList.add('unlocked');
+            if (shardEl) shardEl.classList.add('unlocked');
 
-            // 检查全部解锁
             if(Object.values(shardsUnlocked).every(v => v === true)) {
-                document.getElementById('btn-to-scene3').classList.add('show');
+                if (toScene3Btn) toScene3Btn.classList.add('show');
             }
         }
 
         function closeShardModal() {
-            document.getElementById('museum-modal').classList.remove('show');
+            const mModal = document.getElementById('museum-modal');
+            if (mModal) {
+                mModal.classList.remove('show');
+                setTimeout(() => mModal.style.display = 'none', 400);
+            }
         }
 
         // ================= 第三景：拥抱仪式 (重低音心跳生成) =================
-        document.getElementById('btn-to-scene3').addEventListener('click', () => {
-            document.getElementById('bday-scene-2').classList.remove('active');
-            document.getElementById('bday-scene-3').classList.add('active');
-            initHugRitual();
-        });
+        const toScene3Btn = document.getElementById('btn-to-scene3');
+        if (toScene3Btn) {
+            toScene3Btn.addEventListener('click', () => {
+                const s2 = document.getElementById('bday-scene-2');
+                const s3 = document.getElementById('bday-scene-3');
+                if (s2) s2.classList.remove('active');
+                if (s3) s3.classList.add('active');
+                initHugRitual();
+            });
+        }
 
-        let mouyuHeld = false;
-        let qiaoHeld = false;
-        let hugProgress = 0; // 0 到 100
-        let hugInterval = null;
-        let heartbeatTimer = null;
-        let currentBPM = 80;
-
-        // 动态脉宽调制低音鼓点 (合成心跳声)
         function playDoubleHeartbeat() {
             if(!bdayAudioCtx) return;
             try {
@@ -1340,7 +1520,6 @@
                 let gain = bdayAudioCtx.createGain();
                 osc.type = 'sine';
                 
-                // 第一声：低沉 thud
                 osc.frequency.setValueAtTime(65, bdayAudioCtx.currentTime);
                 osc.frequency.exponentialRampToValueAtTime(20, bdayAudioCtx.currentTime + 0.15);
                 gain.gain.setValueAtTime(0.5, bdayAudioCtx.currentTime);
@@ -1349,7 +1528,6 @@
                 osc.connect(gain); gain.connect(bdayAudioCtx.destination);
                 osc.start(); osc.stop(bdayAudioCtx.currentTime + 0.16);
 
-                // 第二声：稍弱稍迟 delay
                 setTimeout(() => {
                     let osc2 = bdayAudioCtx.createOscillator();
                     let gain2 = bdayAudioCtx.createGain();
@@ -1364,7 +1542,6 @@
             } catch(e){}
         }
 
-        // 动态自适应调节心率声律
         function runHeartbeatLoop() {
             if(!mouyuHeld && !qiaoHeld) {
                 currentBPM = 80;
@@ -1373,10 +1550,10 @@
             } else {
                 currentBPM = 100;
             }
-            document.getElementById('hug-bpm').innerText = currentBPM;
+            const hugBpmEl = document.getElementById('hug-bpm');
+            if (hugBpmEl) hugBpmEl.innerText = currentBPM;
             playDoubleHeartbeat();
 
-            // 根据心率调节下一次播放时间
             let interval = (60 / currentBPM) * 1000;
             heartbeatTimer = setTimeout(runHeartbeatLoop, interval);
         }
@@ -1384,11 +1561,10 @@
         function initHugRitual() {
             const nm = document.getElementById('node-mouyu');
             const nq = document.getElementById('node-qiao');
+            if (!nm || !nq) return;
 
-            // 运行全局心跳机制
             runHeartbeatLoop();
 
-            // 移动端：双指长按支持
             function touchStartHandler(e, isMouyu) {
                 e.preventDefault();
                 if(bdayAudioCtx && bdayAudioCtx.state === 'suspended') bdayAudioCtx.resume();
@@ -1409,7 +1585,6 @@
             nq.addEventListener('touchstart', e => touchStartHandler(e, false));
             nq.addEventListener('touchend', e => touchEndHandler(e, false));
 
-            // 电脑端特殊测试兼容：单击MOUYU锁定状态，随后长按祈愿进行触发
             let mouyuClicked = false;
             nm.addEventListener('mousedown', (e) => {
                 if(bdayAudioCtx && bdayAudioCtx.state === 'suspended') bdayAudioCtx.resume();
@@ -1436,7 +1611,6 @@
 
         function checkAndProgressHug() {
             if(mouyuHeld && qiaoHeld) {
-                // 开启进度推动
                 if(!hugInterval) {
                     hugInterval = setInterval(updateHugProgress, 40);
                 }
@@ -1453,30 +1627,31 @@
         }
 
         function updateHugProgress() {
-            hugProgress += 0.8; // 速度
+            hugProgress += 0.8;
             if(hugProgress >= 100) {
                 hugProgress = 100;
                 stopHugProgress();
                 clearTimeout(heartbeatTimer);
-                // 触发融合
                 triggerFinalMerge();
             }
 
-            // 更新距离文案和融合动效
             const currentDist = Math.round(1800 * (1 - hugProgress/100));
-            document.getElementById('wire-dist-text').innerText = currentDist + ' km';
-            
-            // 阻隔网溶解与缩放
+            const distText = document.getElementById('wire-dist-text');
             const wire = document.getElementById('barrier-wire');
-            wire.style.opacity = (1 - hugProgress/100);
-            wire.style.transform = `scaleY(${1 - hugProgress/100})`;
+            const nodem = document.getElementById('node-mouyu');
+            const nodeq = document.getElementById('node-qiao');
+            
+            if (distText) distText.innerText = currentDist + ' km';
+            
+            if (wire) {
+                wire.style.opacity = (1 - hugProgress/100);
+                wire.style.transform = `scaleY(${1 - hugProgress/100})`;
+            }
 
-            // 结点物理靠拢
-            const pxOffset = hugProgress * 1.1; // 自适应平滑偏移量
-            document.getElementById('node-mouyu').style.transform = `translateX(${pxOffset}px) scale(${1 + hugProgress/200})`;
-            document.getElementById('node-qiao').style.transform = `translateX(${-pxOffset}px) scale(${1 + hugProgress/200})`;
+            const pxOffset = hugProgress * 1.1; 
+            if (nodem) nodem.style.transform = `translateX(${pxOffset}px) scale(${1 + hugProgress/200})`;
+            if (nodeq) nodeq.style.transform = `translateX(${-pxOffset}px) scale(${1 + hugProgress/200})`;
 
-            // 设备震动
             if(navigator.vibrate && Math.random() > 0.5) {
                 navigator.vibrate(30);
             }
@@ -1484,25 +1659,25 @@
 
         // ================= 终极：大表白落幕 (Canvas 绚丽粒子烟花) =================
         async function triggerFinalMerge() {
-            // 闪白致盲
             const flash = document.getElementById('flash-white');
-            flash.style.opacity = '1';
+            if (flash) flash.style.opacity = '1';
             await sleep(800);
 
-            // 切换隐藏系统外壳
-            document.getElementById('bday-scene-3').classList.remove('active');
-            document.getElementById('os-widgets').style.display = 'none';
-            document.getElementById('os-app-grid').style.display = 'none';
-            document.getElementById('status-bar').style.display = 'none';
+            const s3 = document.getElementById('bday-scene-3');
+            const widgets = document.getElementById('os-widgets');
+            const appGrid = document.getElementById('os-app-grid');
+            const statusBar = document.getElementById('status-bar');
+            const outroIllu = document.getElementById('outro-illustration');
             
-            // 展示第四景插画
-            document.getElementById('outro-illustration').style.display = 'block';
-            flash.style.opacity = '0';
+            if (s3) s3.classList.remove('active');
+            if (widgets) widgets.style.display = 'none';
+            if (appGrid) appGrid.style.display = 'none';
+            if (statusBar) statusBar.style.display = 'none';
+            if (outroIllu) outroIllu.style.display = 'block';
+            if (flash) flash.style.opacity = '0';
 
-            // 运行超级Canvas烟花
             startFireworks();
 
-            // 打印最后的情书文案
             const finalLoveText = 
                 "5.18 生日快乐，祈愿。\n\n" +
                 "在网页的代码里，我可以用 3 秒钟让两颗心融合，把距离清零。\n" +
@@ -1514,16 +1689,17 @@
 
         async function typeFinalLoveLetter(text) {
             const container = document.getElementById('final-card-text');
+            if (!container) return;
             container.innerText = '';
             for(let i=0; i<text.length; i++) {
                 container.innerHTML += text[i] === '\n' ? '<br>' : text[i];
-                await sleep(95); // 缓缓浮现，浪漫深情
+                await sleep(95); 
             }
         }
 
-        // canvas 高性能烟花渲染器
         function startFireworks() {
             const canvas = document.getElementById('fireworks-canvas');
+            if (!canvas) return;
             const ctx = canvas.getContext('2d');
             
             function resizeCanvas() {
