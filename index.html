@@ -43,18 +43,33 @@
         .unlock-bar { width: 120px; height: 5px; background: #fff; border-radius: 10px; margin-top: 10px; }
         @keyframes bounceHint { 0%, 100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
 
-        /* 下拉控制中心 */
+        /* 系统通知横幅 */
+        #notification-banner { position: absolute; top: -100px; left: 5%; width: 90%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); border-radius: 15px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 600; transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: #000; }
+        .notif-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: white; }
+        .notif-content { flex: 1; }
+        .notif-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 2px; }
+        .notif-desc { font-size: 0.8rem; opacity: 0.8; }
+
+        /* 下拉控制中心 & 音乐组件 */
         #control-center { position: absolute; top: -100%; left: 0; width: 100%; height: 100%; background: rgba(0, 0, 0, 0.6); backdrop-filter: blur(25px); -webkit-backdrop-filter: blur(25px); z-index: 400; transition: top 0.4s cubic-bezier(0.25, 1, 0.5, 1); padding: 50px 20px; display: flex; flex-direction: column; color: #fff; }
         .cc-header { font-size: 1.5rem; font-weight: 500; margin-bottom: 20px; }
         .cc-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 15px; }
         .cc-card { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 20px; display: flex; align-items: center; gap: 15px; }
         .cc-icon { width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.2); display: flex; justify-content: center; align-items: center; font-size: 1.2rem; }
         .cc-handle { position: absolute; bottom: 20px; left: 50%; transform: translateX(-50%); width: 50px; height: 5px; background: rgba(255,255,255,0.5); border-radius: 10px; }
+        
+        .cc-music-card { background: rgba(255,255,255,0.1); border-radius: 15px; padding: 15px; display: flex; align-items: center; gap: 15px; margin-top: 15px; }
+        .music-cover { width: 50px; height: 50px; border-radius: 10px; background: linear-gradient(135deg, #ff5a5f, #e00024); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; }
+        .music-info { flex: 1; }
+        .music-title { font-weight: bold; font-size: 1rem; margin-bottom: 4px; }
+        .music-artist { font-size: 0.8rem; opacity: 0.7; }
+        .music-controls { display: flex; gap: 15px; font-size: 1.5rem; }
+        .m-btn { cursor: pointer; display: flex; align-items: center; justify-content: center; width: 30px; height: 30px; }
 
         /* 桌面 */
         #desktop { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: url('https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?q=80&w=1000&auto=format&fit=crop') center/cover no-repeat; z-index: 100; padding: 50px 20px 20px 20px; display: flex; flex-direction: column; transition: transform 0.4s ease, filter 0.4s ease; }
         .widgets-container { display: flex; gap: 15px; margin-bottom: 30px; margin-top: 20px; }
-        .widget { flex: 1; height: 120px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; justify-content: center; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.2); }
+        .widget { flex: 1; height: 120px; background: rgba(255, 255, 255, 0.15); backdrop-filter: blur(15px); border-radius: 20px; padding: 15px; display: flex; flex-direction: column; justify-content: center; color: #fff; box-shadow: 0 4px 15px rgba(0,0,0,0.1); border: 1px solid rgba(255,255,255,0.2); transition: all 0.5s; }
         .widget-time h2 { font-size: 2.2rem; font-weight: 400; margin-bottom: 5px; }
         .widget-time p { font-size: 0.85rem; opacity: 0.9; }
         .widget-weather .city { font-size: 0.9rem; opacity: 0.9; margin-bottom: 5px; }
@@ -63,21 +78,29 @@
         .widget-weather .icon { font-size: 2rem; }
 
         /* APP 网格与渐进式解锁机制 */
-        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 25px; column-gap: 15px; justify-items: center; }
+        .app-grid { display: grid; grid-template-columns: repeat(4, 1fr); row-gap: 25px; column-gap: 15px; justify-items: center; position: relative; }
         .app-item { display: flex; flex-direction: column; align-items: center; position: relative; width: 60px; cursor: pointer; transition: transform 0.1s, filter 0.5s ease, opacity 0.5s ease; }
         .app-item:active { transform: scale(0.9); }
-        .app-icon { width: 60px; height: 60px; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.15); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: #fff; font-weight: bold; transition: filter 0.5s ease; }
+        .app-icon { width: 60px; height: 60px; border-radius: 14px; box-shadow: 0 2px 10px rgba(0,0,0,0.15); display: flex; justify-content: center; align-items: center; font-size: 1.5rem; color: #fff; font-weight: bold; transition: filter 0.5s ease, background 0.5s; }
         .app-name { color: #fff; font-size: 0.75rem; margin-top: 5px; text-shadow: 0 1px 3px rgba(0,0,0,0.5); transition: opacity 0.5s ease; }
         
-        /* 锁定状态的 APP */
         .locked-app { pointer-events: none; }
         .locked-app .app-icon { filter: blur(8px) grayscale(100%); opacity: 0.3; }
         .locked-app .app-name { opacity: 0; }
-        
-        /* 永远模糊的背景 APP */
         .app-blurred { pointer-events: none; }
         .app-blurred .app-icon { filter: blur(4px) grayscale(50%); opacity: 0.6; }
         .app-blurred .app-name { opacity: 0; }
+
+        /* 桌面重构 */
+        .dead-app { pointer-events: none; opacity: 0.3 !important; filter: grayscale(100%) blur(2px) !important; transition: all 1s ease; }
+        .dead-widget { opacity: 0.2; filter: grayscale(100%); }
+
+        /* 新生应用：郑巧的5.18 */
+        #special-518-app { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); opacity: 0; transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 200; pointer-events: none; }
+        #special-518-app.reveal { transform: translate(-50%, -50%) scale(1.5); opacity: 1; pointer-events: auto; animation: floatIcon 3s infinite ease-in-out; }
+        .icon-gift { background: linear-gradient(135deg, #ff00aa, #ff5a5f); box-shadow: 0 0 30px rgba(255, 0, 170, 0.8), 0 0 60px rgba(255, 90, 95, 0.5); font-size: 2rem !important; }
+        .special-name { font-size: 0.9rem; font-weight: bold; color: #ff00aa; text-shadow: 0 0 10px rgba(255,0,170,0.8); margin-top: 10px; white-space: nowrap; }
+        @keyframes floatIcon { 0%, 100% { transform: translate(-50%, -50%) scale(1.5) translateY(0); } 50% { transform: translate(-50%, -50%) scale(1.5) translateY(-10px); } }
 
         .badge { position: absolute; top: -5px; right: -5px; background: #ff3b30; color: #fff; font-size: 0.7rem; font-weight: bold; padding: 2px 6px; border-radius: 10px; border: 2px solid rgba(255,255,255,0.2); box-shadow: 0 2px 5px rgba(0,0,0,0.3); transition: transform 0.3s ease, opacity 0.3s ease; }
         .badge.hidden-badge { opacity: 0; transform: scale(0); pointer-events: none; }
@@ -90,81 +113,90 @@
         .icon-steam { background: linear-gradient(135deg, #171a21, #1b2838); }
         .icon-camera { background: #333; }
         .icon-settings { background: #555; }
-        .icon-notes { background: #f1c40f; }
 
-        /* 系统通知横幅 */
-        #notification-banner { position: absolute; top: -100px; left: 5%; width: 90%; background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(20px); -webkit-backdrop-filter: blur(20px); border-radius: 15px; padding: 15px; display: flex; align-items: center; gap: 15px; box-shadow: 0 10px 30px rgba(0,0,0,0.2); z-index: 600; transition: top 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); color: #000; }
-        .notif-icon { width: 40px; height: 40px; border-radius: 10px; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; color: white; }
-        .notif-content { flex: 1; }
-        .notif-title { font-size: 0.9rem; font-weight: bold; margin-bottom: 2px; }
-        .notif-desc { font-size: 0.8rem; opacity: 0.8; }
-
-        /* ================= APP 内部视图容器 (SPA核心) ================= */
+        /* ================= APP 内部视图 ================= */
         .app-view-container { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 300; pointer-events: none; }
         .app-page { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #fff; transform: scale(0.9) translateY(100%); opacity: 0; transition: transform 0.4s cubic-bezier(0.25, 1, 0.5, 1), opacity 0.3s ease; pointer-events: none; overflow: hidden; display: flex; flex-direction: column; }
         .app-page.active { transform: scale(1) translateY(0); opacity: 1; pointer-events: auto; }
         
-        .home-indicator-zone { position: fixed; bottom: 0; left: 0; width: 100%; height: 30px; display: flex; justify-content: center; align-items: flex-end; padding-bottom: 8px; z-index: 1000; cursor: pointer; pointer-events: auto; }
-        .home-bar { width: 130px; height: 5px; background: rgba(0,0,0,0.8); border-radius: 10px; transition: background 0.3s ease; }
-        .dark-mode-app .home-bar { background: rgba(255,255,255,0.8); }
-        .app-header { height: 80px; padding: 40px 20px 10px; display: flex; align-items: center; justify-content: center; font-weight: 500; position: relative; border-bottom: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; }
+        .app-header { height: 80px; padding: 40px 20px 10px; display: flex; align-items: center; justify-content: center; font-weight: 500; position: relative; border-bottom: 1px solid rgba(255,255,255,0.1); flex-shrink: 0; z-index: 10; background: inherit; }
         .app-header .btn-back { position: absolute; left: 20px; font-size: 1.2rem; cursor: pointer; }
 
-        /* ================= 网易云互动游戏引擎样式 ================= */
-        #app-netease-page { background: #1a1a1a; color: #fff; font-family: sans-serif; }
-        
+        /* 网易云模块样式 */
+        #app-netease-page { background: #1a1a1a; color: #fff; }
         .game-hud { display: flex; justify-content: space-between; align-items: center; padding: 10px 20px; background: rgba(0,0,0,0.5); font-size: 0.8rem; border-bottom: 1px solid #333; flex-shrink: 0; }
         .hud-player { display: flex; align-items: center; gap: 8px; }
         .hud-avatar { width: 30px; height: 30px; border-radius: 50%; background: #444; display: flex; justify-content: center; align-items: center; font-weight: bold; }
         .hud-heartrate { color: #ff3b30; font-family: monospace; font-size: 1.2rem; font-weight: bold; display: flex; align-items: center; gap: 5px; }
-        .heart-icon { animation: pulse 1s infinite; }
-        @keyframes pulse { 0% { transform: scale(1); } 50% { transform: scale(1.2); } 100% { transform: scale(1); } }
         
-        .song-info-bg { text-align: center; padding: 15px; opacity: 0.5; font-size: 0.8rem; flex-shrink: 0; }
-
         .chat-container { flex: 1; overflow-y: auto; padding: 20px; display: flex; flex-direction: column; gap: 15px; scroll-behavior: smooth; padding-bottom: 120px; transition: padding-bottom 0.4s ease; }
         .chat-msg { display: flex; max-width: 85%; animation: slideInUp 0.3s ease forwards; opacity: 0; transform: translateY(10px); }
         .chat-msg.left { align-self: flex-start; }
         .chat-msg.right { align-self: flex-end; flex-direction: row-reverse; }
-        .chat-avatar { width: 35px; height: 35px; border-radius: 50%; background: #666; margin: 0 10px; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; flex-shrink: 0; }
-        .chat-bubble { padding: 10px 15px; border-radius: 18px; font-size: 0.95rem; line-height: 1.4; word-break: break-all; }
-        .chat-msg.left .chat-bubble { background: #333; color: #fff; border-top-left-radius: 4px; }
-        .chat-msg.right .chat-bubble { background: #ff5a5f; color: #fff; border-top-right-radius: 4px; }
+        .chat-avatar { width: 35px; height: 35px; border-radius: 5px; background: #666; margin: 0 10px; display: flex; justify-content: center; align-items: center; font-size: 0.8rem; flex-shrink: 0; overflow: hidden; }
+        .chat-avatar img { width: 100%; height: 100%; object-fit: cover; }
         
-        .chat-img-wrapper { max-width: 220px; border-radius: 10px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); display: flex; }
+        .chat-bubble { padding: 10px 15px; border-radius: 10px; font-size: 0.95rem; line-height: 1.4; word-break: break-all; position: relative; }
+        #app-netease-page .chat-msg.left .chat-bubble { background: #333; color: #fff; }
+        #app-netease-page .chat-msg.right .chat-bubble { background: #ff5a5f; color: #fff; }
+        .chat-img-wrapper { max-width: 220px; border-radius: 5px; overflow: hidden; border: 1px solid rgba(255,255,255,0.1); display: flex; margin: 0 10px;}
         .chat-img-wrapper img { width: 100%; height: auto; display: block; }
-        
-        /* 快速划过的模糊聊天特效 */
         .fast-scroll-blur { filter: blur(3px); opacity: 0.6; transition: all 0.5s ease; }
-        
         @keyframes slideInUp { to { opacity: 1; transform: translateY(0); } }
 
-        /* 互动 UI (内心戏与选择) */
         .interaction-panel { position: absolute; bottom: 0; left: 0; width: 100%; background: linear-gradient(to top, rgba(0,0,0,1) 40%, rgba(0,0,0,0.9) 80%, transparent); padding: 20px; padding-bottom: 40px; display: flex; flex-direction: column; gap: 15px; z-index: 10; transform: translateY(120%); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
         .interaction-panel.show { transform: translateY(0); } 
-        
         .monologue { color: #87ceeb; font-style: italic; font-size: 0.95rem; text-align: center; line-height: 1.5; padding: 10px; border: 1px dashed #87ceeb; border-radius: 10px; background: rgba(135, 206, 235, 0.1); }
         .btn-choice { background: rgba(255, 255, 255, 0.1); border: 1px solid rgba(255,255,255,0.3); color: #fff; padding: 15px; border-radius: 12px; font-size: 1rem; text-align: left; cursor: pointer; transition: all 0.2s; }
-        .btn-choice:active { transform: scale(0.98); background: rgba(255,255,255,0.2); }
-        
-        .shake-screen { animation: shake 0.5s cubic-bezier(.36,.07,.19,.97) both; }
-        @keyframes shake { 10%, 90% { transform: translate3d(-2px, 0, 0); } 20%, 80% { transform: translate3d(4px, 0, 0); } 30%, 50%, 70% { transform: translate3d(-6px, 0, 0); } 40%, 60% { transform: translate3d(6px, 0, 0); } }
-        
-        .red-flash { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(255, 0, 0, 0.3); pointer-events: none; z-index: 999; opacity: 0; animation: flashRed 1s ease-out; }
-        @keyframes flashRed { 0% { opacity: 1; } 100% { opacity: 0; } }
-
         .game-outro { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: #000; z-index: 50; display: flex; flex-direction: column; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 2s ease; padding: 30px; text-align: center; }
         .game-outro.show { opacity: 1; pointer-events: auto; }
-        .game-outro p { font-size: 1.1rem; line-height: 2; margin-bottom: 20px; opacity: 0.9; }
-        .game-outro .btn-finish { background: #07c160; color: white; padding: 12px 30px; border-radius: 25px; font-weight: bold; border: none; margin-top: 30px; }
+        .btn-finish { background: #07c160; color: white; padding: 12px 30px; border-radius: 25px; font-weight: bold; border: none; margin-top: 30px; }
 
+        /* 微信模块专属样式 */
+        #app-wechat-page { background: #ededed; color: #333; }
+        #app-wechat-page .app-header { background: #ededed; border-bottom: 1px solid #d9d9d9; color: #000; padding-top: 45px; height: 85px;}
+        #app-wechat-page .chat-msg.left .chat-bubble { background: #fff; color: #333; }
+        #app-wechat-page .chat-msg.right .chat-bubble { background: #95ec69; color: #333; }
+        #app-wechat-page .chat-avatar { background: #fff; border-radius: 5px; }
+        #app-wechat-page .chat-img-wrapper { border: none; border-radius: 8px; }
+
+        .wechat-add-friend { position: absolute; top: 85px; left: 0; width: 100%; height: calc(100% - 85px); background: #fff; z-index: 20; display: flex; flex-direction: column; align-items: center; padding-top: 50px; transition: opacity 0.5s; }
+        .add-actions { display: flex; gap: 20px; width: 80%; }
+        .btn-reject { flex: 1; padding: 12px; border-radius: 8px; border: 1px solid #ccc; background: #f5f5f5; color: #999; font-weight: bold; text-decoration: line-through; position: relative; overflow: hidden; pointer-events: none;}
+        .btn-reject::after { content: 'X'; position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); color: red; font-size: 2rem; opacity: 0.4; }
+        .btn-accept { flex: 1; padding: 12px; border-radius: 8px; border: none; background: #07c160; color: #fff; font-weight: bold; font-size: 1rem; cursor: pointer; }
+
+        .wechat-input-bar { position: absolute; bottom: 0; left: 0; width: 100%; background: #f7f7f7; border-top: 1px solid #e5e5e5; padding: 10px 15px; padding-bottom: 30px; display: flex; align-items: center; gap: 10px; z-index: 10; transform: translateY(100%); transition: transform 0.3s; }
+        .wechat-input-bar.show { transform: translateY(0); }
+        .wc-icon { width: 30px; height: 30px; border-radius: 50%; border: 1.5px solid #333; display: flex; justify-content: center; align-items: center; font-size: 1.2rem; opacity: 0.8; }
+        .wc-input-box { flex: 1; background: #fff; border-radius: 5px; min-height: 40px; padding: 10px; font-size: 1rem; display: flex; align-items: center; }
+        .wc-cursor { display: inline-block; width: 2px; height: 1.2rem; background: #07c160; animation: blink 1s infinite; margin-left: 2px; }
+
+        /* ================= 第四阶段：GLITCH 特效 ================= */
+        #glitch-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; opacity: 0; display: none; overflow: hidden; }
+        .glitch-noise { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: repeating-radial-gradient(circle at 17% 32%, #fff, #000 0.00085px); animation: tv-static 0.1s infinite; opacity: 0.4; mix-blend-mode: difference; }
+        @keyframes tv-static { 0% { background-position: 0 0; } 100% { background-position: 100% 100%; } }
+        .matrix-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; color: #ff0000; font-family: monospace; font-size: 12px; overflow: hidden; opacity: 0.8; }
+        .matrix-col { flex: 1; text-align: center; animation: fall linear infinite; }
+        @keyframes fall { 0% { transform: translateY(-100%); } 100% { transform: translateY(1000%); } }
+
+        .glitch-core-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 6rem; font-weight: 900; color: #000; text-shadow: 0 0 20px red, 0 0 40px red; animation: glitchTextAnim 0.2s infinite; z-index: 10; white-space: nowrap; }
+        @keyframes glitchTextAnim {
+            0% { transform: translate(-50%, -50%) skew(0deg); color: #fff; }
+            20% { transform: translate(-52%, -50%) skew(-10deg); color: #ff0000; }
+            40% { transform: translate(-50%, -48%) skew(10deg); color: #00ffff; }
+            60% { transform: translate(-48%, -50%) skew(-5deg); color: #fff; }
+            80% { transform: translate(-50%, -52%) skew(5deg); color: #ff0000; }
+            100% { transform: translate(-50%, -50%) skew(0deg); color: #fff; }
+        }
+
+        .sys-warning-modal { position: absolute; background: rgba(200, 0, 0, 0.9); border: 2px solid #fff; color: #fff; padding: 15px; font-family: monospace; font-weight: bold; font-size: 0.9rem; box-shadow: 10px 10px 0 rgba(0,0,0,0.8); opacity: 0; transform: scale(0.8); z-index: 20; }
+        .sys-warning-modal.show { opacity: 1; transform: scale(1); transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
     </style>
 </head>
 <body>
-    <!-- 音乐播放器 (请在GitHub仓库根目录上传 music.mp3) -->
     <audio id="netease-bgm" src="music.mp3" loop preload="auto"></audio>
 
-    <!-- 第一幕：打字机开场 -->
     <div id="boot-screen">
         <div class="typewriter-text" id="type-text"></div>
         <div id="breathing-btn"></div>
@@ -180,9 +212,9 @@
                 <div class="battery"><div class="battery-level"></div></div>
             </div>
         </div>
+
         <div id="status-bar-touch-zone"></div>
 
-        <!-- 锁屏 -->
         <div id="lock-screen">
             <div id="lock-time">00:00</div>
             <div id="lock-date">5月18日 星期四</div>
@@ -192,7 +224,15 @@
             </div>
         </div>
 
-        <!-- 下拉控制中心 -->
+        <div id="notification-banner">
+            <div class="notif-icon" id="notif-icon">💬</div>
+            <div class="notif-content">
+                <div class="notif-title" id="notif-title">微信</div>
+                <div class="notif-desc" id="notif-desc">通知内容</div>
+            </div>
+        </div>
+
+        <!-- 下拉控制中心 & 音乐组件 -->
         <div id="control-center">
             <div class="cc-header">控制中心</div>
             <div class="cc-grid">
@@ -205,21 +245,25 @@
                     <div>蜂窝数据<br><small style="opacity:0.6">中国移动</small></div>
                 </div>
             </div>
-            <div class="cc-handle"></div>
-        </div>
-
-        <!-- 通知横幅 (共用) -->
-        <div id="notification-banner">
-            <div class="notif-icon" id="notif-icon">💬</div>
-            <div class="notif-content">
-                <div class="notif-title" id="notif-title">微信</div>
-                <div class="notif-desc" id="notif-desc">通知内容</div>
+            <!-- 新增：音乐播放器组件 -->
+            <div class="cc-music-card">
+                <div class="music-cover">🎵</div>
+                <div class="music-info">
+                    <div class="music-title">不属于地球上的</div>
+                    <div class="music-artist">江楠江楠</div>
+                </div>
+                <div class="music-controls">
+                    <div class="m-btn">⏮</div>
+                    <div class="m-btn" id="cc-play-btn">▶</div>
+                    <div class="m-btn">⏭</div>
+                </div>
             </div>
+            <div class="cc-handle"></div>
         </div>
 
         <!-- 桌面 -->
         <div id="desktop">
-            <div class="widgets-container">
+            <div class="widgets-container" id="os-widgets">
                 <div class="widget widget-time">
                     <h2 id="widget-time">00:00</h2>
                     <p id="widget-date">5月18日 星期四</p>
@@ -231,47 +275,45 @@
                 </div>
             </div>
 
-            <div class="app-grid">
-                <!-- 第一关：网易云 (已解锁) -->
+            <div class="app-grid" id="os-app-grid">
                 <div class="app-item core-app" id="app-icon-netease" onclick="openApp('netease')">
                     <div class="app-icon icon-netease">🎵</div>
                     <div class="app-name">网易云音乐</div>
                     <div class="badge" id="badge-netease">1</div>
                 </div>
-                
-                <!-- 第二关：微信 (初始完全锁定、无名字、无红点) -->
                 <div class="app-item locked-app" id="app-icon-wechat" onclick="openApp('wechat')">
                     <div class="app-icon icon-wechat">💬</div>
                     <div class="app-name">微信</div>
                     <div class="badge hidden-badge" id="badge-wechat">999+</div>
                 </div>
-                
-                <!-- 永远锁定的背景 APP -->
                 <div class="app-item locked-app"><div class="app-icon icon-qq">🐧</div><div class="app-name">QQ</div></div>
                 <div class="app-item locked-app"><div class="app-icon icon-xxt">🎓</div><div class="app-name">学习通</div></div>
                 <div class="app-item locked-app"><div class="app-icon icon-honor">👑</div><div class="app-name">王者荣耀</div></div>
                 <div class="app-item locked-app"><div class="app-icon icon-steam">♨️</div><div class="app-name">Steam</div></div>
-                
-                <!-- 纯模糊装饰 (系统自带APP) -->
                 <div class="app-item app-blurred"><div class="app-icon icon-camera">📷</div><div class="app-name">相机</div></div>
                 <div class="app-item app-blurred"><div class="app-icon icon-settings">⚙️</div><div class="app-name">设置</div></div>
+
+                <!-- 新生应用 -->
+                <div id="special-518-app" onclick="openBirthdayApp()">
+                    <div class="app-icon icon-gift">🎁</div>
+                    <div class="special-name">郑巧的 5.18</div>
+                </div>
             </div>
         </div>
 
         <!-- ================= APP 内部视图容器 ================= -->
         <div class="app-view-container">
             
-            <!-- 网易云游戏解密模块 -->
+            <!-- 【模块1】网易云 -->
             <div id="app-netease-page" class="app-page dark-mode-app">
                 <div class="red-flash" id="game-red-flash"></div>
-                
                 <div class="app-header">
                     <div class="btn-back" onclick="closeApp()">‹ 返回</div>
                     <div>一起听</div>
                 </div>
-                
                 <div class="game-hud">
                     <div class="hud-player">
+                        <!-- 修复：网易云名字改回“天然呆萌泪-” -->
                         <div class="hud-avatar" style="background:#ff9a9e">呆</div>
                         <span>天然呆萌泪-</span>
                     </div>
@@ -284,20 +326,12 @@
                         <div class="hud-avatar" style="background:#a18cd1">M</div>
                     </div>
                 </div>
-
-                <div class="song-info-bg">
-                    🎵 正在播放：江楠江楠 - 《不属于地球上的》
-                </div>
-
-                <div class="chat-container" id="chat-box">
-                    <div style="text-align:center; color:#666; font-size:0.8rem; margin: 10px 0;">-- 记忆同步已开启 --</div>
-                </div>
-
+                <div class="song-info-bg">🎵 正在播放：江楠江楠 - 《不属于地球上的》</div>
+                <div class="chat-container" id="netease-chat-box"></div>
                 <div class="interaction-panel" id="interaction-panel">
                     <div class="monologue" id="monologue-text"></div>
                     <div id="choices-container" style="display:flex; flex-direction:column; gap:10px;"></div>
                 </div>
-
                 <div class="game-outro" id="game-outro">
                     <p>至此，一段（真巧）的旅程开始了。</p>
                     <p style="color:#ff5a5f;">网易云红点清除成功 ➔</p>
@@ -305,17 +339,69 @@
                 </div>
             </div>
 
+            <!-- 【模块2】微信 -->
+            <div id="app-wechat-page" class="app-page">
+                <div class="app-header">
+                    <div class="btn-back" onclick="closeApp()">‹</div>
+                    <div style="font-weight:bold; font-size:1.1rem;">祈愿</div>
+                    <div style="position:absolute; right:20px;">···</div>
+                </div>
+
+                <!-- 微信添加好友界面 -->
+                <div class="wechat-add-friend" id="wc-friend-req">
+                    <div style="width: 80px; height: 80px; border-radius: 10px; background: #ff9a9e; color:white; display:flex; justify-content:center; align-items:center; font-size:2rem; font-weight:bold; margin-bottom:15px;">祈</div>
+                    <h2>祈愿</h2>
+                    <p>通过群聊添加</p>
+                    <div style="background:#f7f7f7; width:100%; padding:20px; text-align:center; margin-bottom:40px; color:#666;">
+                        "我是..."
+                    </div>
+                    <div class="add-actions">
+                        <button class="btn-reject" disabled>拒绝</button>
+                        <button class="btn-accept" onclick="acceptWechatFriend()">同意</button>
+                    </div>
+                </div>
+
+                <!-- 聊天界面 -->
+                <div class="chat-container" id="wechat-chat-box" style="padding-bottom: 90px; background:#ededed;">
+                    <!-- 走马灯消息区 -->
+                </div>
+
+                <!-- 底部输入打字框 -->
+                <div class="wechat-input-bar" id="wc-input-bar">
+                    <div class="wc-icon" style="transform: rotate(45deg);">🎙️</div>
+                    <div class="wc-input-box">
+                        <span id="wc-type-text"></span><span class="wc-cursor" id="wc-cursor"></span>
+                    </div>
+                    <div class="wc-icon">😊</div>
+                    <div class="wc-icon">⊕</div>
+                </div>
+            </div>
+
+            <!-- 【模块3】终极生日空界面 -->
+            <div id="app-birthday-page" class="app-page dark-mode-app" style="background:#050505; color:#fff; justify-content:center; align-items:center; text-align:center;">
+                <h1 style="color:#ff00aa; font-size:3rem; margin-bottom:20px; text-shadow:0 0 20px #ff00aa;">5.18</h1>
+                <p style="font-size:1.2rem; color:#ccc;">专属生日模块加载完毕...</p>
+                <p style="margin-top:20px; color:#666; font-size:0.9rem;">(此处接入你的正式礼物内容)</p>
+            </div>
+
         </div>
 
-        <!-- 全局返回主屏幕条 -->
-        <div class="home-indicator-zone" id="home-indicator" onclick="closeApp()" style="display:none;">
-            <div class="home-bar"></div>
+        <!-- 全局 Glitch 崩溃特效层 -->
+        <div id="glitch-overlay">
+            <div class="glitch-noise"></div>
+            <div class="matrix-bg" id="matrix-bg"></div>
+            <div class="glitch-core-text">5.18</div>
+            <div class="sys-warning-modal" id="warn-1" style="top:20%; left:10%;">[Warning]: Core Emotion Overload</div>
+            <div class="sys-warning-modal" id="warn-2" style="top:60%; right:10%;">[Error]: 1800km Distance Limitation Bypass</div>
+            <div class="sys-warning-modal" id="warn-3" style="top:40%; left:25%; font-size:1.2rem; background:rgba(0,0,0,0.9); color:#00ff00; border-color:#00ff00;">[Status]: Initiating 518_Special_Project.exe...</div>
         </div>
 
     </div>
 
     <script>
-        // --- 基础OS系统功能 ---
+        // ================= 公共基础与全局组件 =================
+        const sleep = ms => new Promise(res => setTimeout(res, ms));
+
         function updateTime() {
             const now = new Date();
             const hours = String(now.getHours()).padStart(2, '0');
@@ -327,7 +413,7 @@
         }
         setInterval(updateTime, 1000); updateTime();
 
-        // 剧情开场打字机
+        // 黑屏打字机
         const textLines = ["你在互联网的角落里，捡到了一部手机……", "它跨越了 1800 公里，从河南焦作，流落到了广西北海。"];
         const typeTextContainer = document.getElementById("type-text");
         let lineIdx = 0, charIdx = 0;
@@ -351,23 +437,29 @@
             document.getElementById("os-container").classList.remove("hidden");
         });
 
-        // 解锁手机与横幅逻辑
-        function showNotification(title, desc, icon, iconBg) {
-            document.getElementById('notif-title').innerText = title;
-            document.getElementById('notif-desc').innerText = desc;
-            document.getElementById('notif-icon').innerText = icon;
-            document.getElementById('notif-icon').style.background = iconBg;
-            document.getElementById("notification-banner").style.top = "50px";
-            setTimeout(() => { document.getElementById("notification-banner").style.top = "-100px"; }, 4000);
-        }
+        // 音乐播放器全局逻辑
+        const bgm = document.getElementById('netease-bgm');
+        const ccPlayBtn = document.getElementById('cc-play-btn');
+        ccPlayBtn.addEventListener('click', () => {
+            if (bgm.paused) { bgm.play(); } else { bgm.pause(); }
+        });
+        bgm.addEventListener('play', () => ccPlayBtn.innerText = '⏸');
+        bgm.addEventListener('pause', () => ccPlayBtn.innerText = '▶');
 
+        // 锁屏与解锁
         const lockScreen = document.getElementById("lock-screen");
         function triggerUnlock() {
             lockScreen.style.transform = `translateY(-100vh)`;
             lockScreen.style.opacity = 0;
-            setTimeout(() => { showNotification('网易云音乐', '一起听：收到一条新消息', '🎵', 'linear-gradient(135deg, #ff5a5f, #e00024)'); }, 1500);
+            setTimeout(() => { 
+                document.getElementById('notif-title').innerText = '网易云音乐';
+                document.getElementById('notif-desc').innerText = '一起听：收到一条新消息';
+                document.getElementById('notif-icon').innerText = '🎵';
+                document.getElementById('notif-icon').style.background = 'linear-gradient(135deg, #ff5a5f, #e00024)';
+                document.getElementById("notification-banner").style.top = "50px";
+                setTimeout(() => { document.getElementById("notification-banner").style.top = "-100px"; }, 4000);
+            }, 1500);
         }
-        
         document.getElementById("unlock-hint").addEventListener("click", triggerUnlock);
         let startY=0, currentY=0, isDragging=false;
         lockScreen.addEventListener("touchstart", e => { startY = e.touches[0].clientY; isDragging = true; lockScreen.style.transition="none"; });
@@ -381,276 +473,332 @@
             else lockScreen.style.transform = `translateY(0)`;
         });
 
-        // 控制中心下拉逻辑
+        // 下拉控制中心
         const touchZone = document.getElementById("status-bar-touch-zone");
-        const controlCenter = document.getElementById("control-center");
+        const cc = document.getElementById("control-center");
         let ccStartY=0, ccCurrentY=0, ccIsDragging=false, ccIsOpen=false;
-        touchZone.addEventListener("touchstart", e => {
-            if(lockScreen.style.opacity === "0" && document.querySelectorAll('.app-page.active').length === 0) {
-                ccStartY = e.touches[0].clientY; ccIsDragging = true; controlCenter.style.transition = "none";
-            }
-        });
-        touchZone.addEventListener("touchmove", e => {
-            if(!ccIsDragging) return; ccCurrentY = e.touches[0].clientY; const diff = ccCurrentY - ccStartY;
-            if(diff>0 && diff<window.innerHeight) controlCenter.style.top = `${-100 + (diff/window.innerHeight)*100}%`;
-        });
-        touchZone.addEventListener("touchend", e => {
-            if(!ccIsDragging) return; ccIsDragging = false; controlCenter.style.transition = "top 0.4s cubic-bezier(0.25, 1, 0.5, 1)";
-            if(ccCurrentY - ccStartY > 100) { controlCenter.style.top = "0"; ccIsOpen = true; }
-            else { controlCenter.style.top = "-100%"; }
-        });
-        controlCenter.addEventListener("touchstart", e => { if(ccIsOpen) { ccStartY = e.touches[0].clientY; ccIsDragging = true; controlCenter.style.transition = "none"; }});
-        controlCenter.addEventListener("touchmove", e => {
-            if(!ccIsDragging || !ccIsOpen) return; ccCurrentY = e.touches[0].clientY; const diff = ccCurrentY - ccStartY;
-            if(diff<0) controlCenter.style.top = `${(diff/window.innerHeight)*100}%`;
-        });
-        controlCenter.addEventListener("touchend", e => {
-            if(!ccIsDragging) return; ccIsDragging = false; controlCenter.style.transition = "top 0.4s cubic-bezier(0.25, 1, 0.5, 1)";
-            if(ccCurrentY - ccStartY < -50) { controlCenter.style.top = "-100%"; ccIsOpen = false; }
-            else { controlCenter.style.top = "0"; }
-        });
+        touchZone.addEventListener("touchstart", e => { if(lockScreen.style.opacity === "0" && !document.querySelector('.app-page.active')) { ccStartY = e.touches[0].clientY; ccIsDragging = true; cc.style.transition = "none"; }});
+        touchZone.addEventListener("touchmove", e => { if(!ccIsDragging) return; ccCurrentY = e.touches[0].clientY; const diff = ccCurrentY - ccStartY; if(diff>0) cc.style.top = `${-100 + (diff/window.innerHeight)*100}%`; });
+        touchZone.addEventListener("touchend", e => { if(!ccIsDragging) return; ccIsDragging = false; cc.style.transition = "top 0.4s ease"; if(ccCurrentY - ccStartY > 100) { cc.style.top = "0"; ccIsOpen = true; } else { cc.style.top = "-100%"; }});
+        cc.addEventListener("touchstart", e => { if(ccIsOpen) { ccStartY = e.touches[0].clientY; ccIsDragging = true; cc.style.transition = "none"; }});
+        cc.addEventListener("touchmove", e => { if(!ccIsDragging) return; ccCurrentY = e.touches[0].clientY; const diff = ccCurrentY - ccStartY; if(diff<0) cc.style.top = `${(diff/window.innerHeight)*100}%`; });
+        cc.addEventListener("touchend", e => { if(!ccIsDragging) return; ccIsDragging = false; cc.style.transition = "top 0.4s ease"; if(ccCurrentY - ccStartY < -50) { cc.style.top = "-100%"; ccIsOpen = false; } else { cc.style.top = "0"; }});
 
-        // APP 打开关闭控制
+        // APP 打开关闭
         function openApp(appId) {
             const page = document.getElementById(`app-${appId}-page`);
             if(page) {
                 page.classList.add('active');
                 document.getElementById('desktop').style.transform = 'scale(0.95)';
                 document.getElementById('desktop').style.filter = 'blur(5px)';
-                document.getElementById('home-indicator').style.display = 'flex';
                 if(!page.classList.contains('dark-mode-app')) document.getElementById('status-bar').classList.add('dark-mode');
                 
-                if(appId === 'netease' && !gameStarted) {
-                    // 尝试播放音乐
-                    document.getElementById('netease-bgm').play().catch(e => console.log("浏览器限制自动播放音乐", e));
-                    startGame();
+                if(appId === 'netease' && !neteaseStarted) {
+                    bgm.play().catch(e => console.log("Audio API blocked:", e));
+                    startNeteaseGame();
                 }
             }
         }
-
         function closeApp() {
             document.querySelectorAll('.app-page.active').forEach(p => p.classList.remove('active'));
             document.getElementById('desktop').style.transform = 'scale(1)';
             document.getElementById('desktop').style.filter = 'blur(0)';
-            document.getElementById('home-indicator').style.display = 'none';
             document.getElementById('status-bar').classList.remove('dark-mode');
         }
 
-        // ================= 网易云互动游戏引擎逻辑 =================
-        const chatBox = document.getElementById('chat-box');
-        const interactionPanel = document.getElementById('interaction-panel');
-        const monologueText = document.getElementById('monologue-text');
-        const choicesContainer = document.getElementById('choices-container');
-        const bpmVal = document.getElementById('bpm-val');
-        let gameStarted = false;
+        // ================= 模块1：网易云逻辑 =================
+        let neteaseStarted = false;
         let resolveChoice = null;
-
-        const sleep = ms => new Promise(res => setTimeout(res, ms));
         
-        // 渲染对话气泡 (who: 'left' = 她, 'right' = 我)
-        async function addChat(who, text, isImg=false, blurred=false) {
+        async function addNeteaseChat(who, text, isImg=false, blurred=false) {
+            const box = document.getElementById('netease-chat-box');
             const msgDiv = document.createElement('div');
             msgDiv.className = `chat-msg ${who} ${blurred ? 'fast-scroll-blur' : ''}`;
-            const avatarHtml = who === 'left' ? `<div class="chat-avatar" style="background:#ff9a9e">呆</div>` : `<div class="chat-avatar" style="background:#a18cd1">M</div>`;
+            const avatar = who === 'left' ? `<div class="chat-avatar" style="background:#ff9a9e; color:white;">呆</div>` : `<div class="chat-avatar" style="background:#a18cd1; color:white;">M</div>`;
+            const content = isImg ? `<div class="chat-img-wrapper"><img src="QQ名片.jpg"></div>` : `<div class="chat-bubble">${text}</div>`;
+            msgDiv.innerHTML = `${avatar}${content}`;
+            box.appendChild(msgDiv);
+            box.scrollTop = box.scrollHeight;
+            await sleep(blurred ? 150 : 800);
+        }
+
+        async function askChoice(monologue, choices) {
+            document.getElementById('monologue-text').innerHTML = monologue;
+            const container = document.getElementById('choices-container');
+            container.innerHTML = '';
+            choices.forEach(opt => {
+                const btn = document.createElement('div');
+                btn.className = 'btn-choice'; btn.innerText = opt.text;
+                btn.onclick = async () => {
+                    if(!opt.correct) {
+                        document.getElementById('game-red-flash').style.animation = 'none';
+                        void document.getElementById('game-red-flash').offsetWidth;
+                        document.getElementById('game-red-flash').style.animation = 'flashRed 1s ease-out';
+                        document.getElementById('monologue-text').innerHTML = `<span style="color:#ff3b30; font-weight:bold;">[ERROR] ${opt.failMsg}</span>`;
+                    } else {
+                        document.getElementById('interaction-panel').classList.remove('show');
+                        document.getElementById('netease-chat-box').style.paddingBottom = "120px";
+                        await sleep(400); resolveChoice(opt.id);
+                    }
+                };
+                container.appendChild(btn);
+            });
+            document.getElementById('interaction-panel').classList.add('show');
+            document.getElementById('netease-chat-box').style.paddingBottom = "350px";
+            setTimeout(() => { document.getElementById('netease-chat-box').scrollTop = document.getElementById('netease-chat-box').scrollHeight; }, 100);
+            return new Promise(resolve => { resolveChoice = resolve; });
+        }
+
+        async function startNeteaseGame() {
+            neteaseStarted = true; await sleep(1000);
+            await addNeteaseChat('left', 'cpdd？');
+            await askChoice("内心OS：等等，网易云真的能捞到人？这不会是愚人节诈骗吧？我该怎么回她？",
+                [{ id: 'A', text: "A. 不回，装高冷。", correct: false, failMsg: "Game Over！你成功凭实力单身，重选！" }, { id: 'B', text: "B. 回个省略号，看看她想干嘛。", correct: true }]
+            );
+            await addNeteaseChat('right', '……？'); await addNeteaseChat('left', 'dd'); await addNeteaseChat('right', 'dd');
+
+            document.getElementById('interaction-panel').classList.add('show');
+            document.getElementById('monologue-text').innerText = "内心OS：有点意思，看看她要干什么...";
+            document.getElementById('choices-container').innerHTML = ''; 
+            await sleep(1500); document.getElementById('interaction-panel').classList.remove('show');
+
+            const fillerChats = ["在干嘛", "听歌", "好巧我也在听", "这歌不错", "是的", "你平时喜欢干嘛", "打游戏看剧", "哦哦", "那你呢"];
+            for(let i=0; i<fillerChats.length; i++) await addNeteaseChat(i%2===0 ? 'left':'right', fillerChats[i], false, true);
+            
+            await addNeteaseChat('left', '……'); await sleep(800);
+            await addNeteaseChat('left', '看你这头像，你平时肯定特别喜欢看动漫吧？');
+            
+            await askChoice("内心OS：？她是福尔摩斯吗？这都能看出来？不行，我得给她亮点真家伙。",
+                [{ id: 'A', text: "A. 嘴硬否认：“我不看，你猜错了。”", correct: false, failMsg: "太假了，我这头像明摆着呢，重选！" }, { id: 'B', text: "B. 假装这个人不是我，甩出QQ资料卡让她分析", correct: true }]
+            );
+
+            await addNeteaseChat('right', '你看看这人，你猜他看不看'); await addNeteaseChat('right', '', true);
+
+            await sleep(1500);
+            document.getElementById('app-netease-page').classList.add('shake-screen');
+            document.getElementById('bpm-val').innerText = '140';
+            document.getElementById('heart-rate').style.color = '#ff0000';
+            document.getElementById('heart-rate').style.transform = 'scale(1.3)';
+            
+            // 此处由于发现是微信，所以弹窗标题必须叫微信，内容叫祈愿
+            document.getElementById('notif-title').innerText = '微信';
+            document.getElementById('notif-desc').innerText = '祈愿 请求添加你为好友';
+            document.getElementById('notif-icon').innerText = '💬';
+            document.getElementById('notif-icon').style.background = '#07c160';
+            document.getElementById("notification-banner").style.top = "50px";
+            setTimeout(() => { document.getElementById("notification-banner").style.top = "-100px"; }, 4000);
+            
+            await askChoice(`<span style="color:#ff3b30; font-size:1.1rem; font-weight:bold;">内心OS：等一下！！！我微信怎么弹信息了？！她怎么直接把我的微信加进来了？！大数据杀我？黑客开我户？！</span>`,
+                [{ id: 'CONT', text: "点击屏幕继续 (疯狂冒冷汗中...)", correct: true }]
+            );
+            document.getElementById('app-netease-page').classList.remove('shake-screen');
+
+            await addNeteaseChat('right', '你咋找的 😳😳😳'); await addNeteaseChat('left', '？开户');
+            await addNeteaseChat('right', '信息泄露了 😳😳😳'); await addNeteaseChat('right', '😳😳😳');
+            await addNeteaseChat('left', '😱😱😱 没关系'); await addNeteaseChat('right', '吗 😁😁😁'); await addNeteaseChat('left', '😐');
+
+            await askChoice("内心OS：等一下，我的CPU终于转过来了……我刚刚是不是发了张带QQ号的截图过去？搞不好她是顺着QQ摸过来的……",
+                [{ id: 'CONT', text: "强装镇定继续试探", correct: true }]
+            );
+
+            await addNeteaseChat('right', 'qq号搜的吧 😏'); await addNeteaseChat('left', '你咋知道，笑死我了');
+            await addNeteaseChat('right', '因为我记得我绑定qq号了 😕😕😕'); await addNeteaseChat('left', '那你猜对了');
+            document.getElementById('bpm-val').innerText = '110';
+
+            await askChoice("内心OS：可恶，主动权全在她手里了，我得强行挽回一下局面，假装这其实不是我！",
+                [{ id: 'A', text: "A. 发送：对，是我朋友，不是我。", correct: false, failMsg: "不，当时不是这样子发的，请还原历史！" }, { id: 'B', text: "B. 回避问题，发送：你猜他看不看动漫", correct: true }]
+            );
+            await addNeteaseChat('right', '其实不是我'); await addNeteaseChat('left', '？是你朋友吗');
+            await addNeteaseChat('right', '你猜他看不看动漫'); await addNeteaseChat('left', '你逗我呢，你们名字都一样，笑死我了');
+
+            document.getElementById('heart-rate').innerHTML = `<span style="color:#666">0 bpm (已社死)</span>`;
+            await askChoice("内心OS：（啪！）……寄。我忘了我网易云和QQ网名一模一样了。世界上怎么会有我这么蠢的人，根本演不下去了啊啊啊！",
+                [{ id: 'CONT', text: "放弃抵抗，原地躺平", correct: true }]
+            );
+
+            await addNeteaseChat('right', '😁😁😁 实在演不下去了 😁😁😁'); await addNeteaseChat('left', '笑死我了');
+            await sleep(2000);
+            document.getElementById('game-outro').classList.add('show');
+            document.getElementById('badge-netease').classList.add('hidden-badge');
+        }
+
+        function finishGame() {
+            // 根据要求，解锁微信时停止播放音乐
+            bgm.pause();
+            closeApp();
+            
+            const wechatItem = document.getElementById('app-icon-wechat');
+            wechatItem.classList.remove('locked-app');
+            wechatItem.classList.add('core-app');
+            setTimeout(() => {
+                document.getElementById('badge-wechat').classList.remove('hidden-badge');
+                document.getElementById('badge-wechat').style.animation = 'pulse 1s infinite';
+            }, 500);
+        }
+
+        // ================= 模块2：微信剧情与崩溃 =================
+        async function acceptWechatFriend() {
+            document.getElementById('wc-friend-req').style.opacity = 0;
+            setTimeout(() => { 
+                document.getElementById('wc-friend-req').style.display = 'none'; 
+                document.getElementById('wc-input-bar').classList.add('show');
+                startWechatSequence();
+            }, 500);
+        }
+
+        async function addWechatChat(who, text, isImg=false, blurred=false, customSleep=0) {
+            const box = document.getElementById('wechat-chat-box');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-msg ${who} ${blurred ? 'fast-scroll-blur' : ''}`;
+            const avatarHtml = who === 'left' ? `<div class="chat-avatar" style="background:#ff9a9e; color:white;">祈</div>` : `<div class="chat-avatar"><img src="QQ名片.jpg"></div>`;
             
             let contentHtml = '';
             if (isImg) {
-                // 使用真实截图文件 - 请确保仓库根目录下有 QQ名片.jpg 文件
-                contentHtml = `<div class="chat-img-wrapper"><img src="QQ名片.jpg" alt="QQ名片" style="width: 100%; height: auto; display: block;"></div>`;
+                contentHtml = `<div class="chat-img-wrapper"><div style="width:120px; height:120px; background:#ddd; display:flex; align-items:center; justify-content:center; color:#999; font-size:0.8rem; border-radius:5px;">[表情包]</div></div>`;
             } else {
                 contentHtml = `<div class="chat-bubble">${text}</div>`;
             }
 
             msgDiv.innerHTML = `${avatarHtml}${contentHtml}`;
-            chatBox.appendChild(msgDiv);
-            chatBox.scrollTop = chatBox.scrollHeight;
-            await sleep(blurred ? 200 : 800); // 模糊消息滚动更快
+            box.appendChild(msgDiv);
+            box.scrollTop = box.scrollHeight;
+            
+            if (customSleep > 0) { await sleep(customSleep); } 
+            else if(!blurred) { await sleep(800); }
         }
 
-        // 呼出选项面板，动态调整聊天框 padding 防遮挡
-        async function askChoice(monologue, choices) {
-            monologueText.innerHTML = monologue; // 支持带颜色的HTML
-            choicesContainer.innerHTML = '';
-            
-            choices.forEach(opt => {
-                const btn = document.createElement('div');
-                btn.className = 'btn-choice';
-                btn.innerText = opt.text;
-                btn.onclick = () => handleChoice(opt);
-                choicesContainer.appendChild(btn);
-            });
-
-            interactionPanel.classList.add('show');
-            chatBox.style.paddingBottom = "350px"; // 把聊天记录推上去，防遮挡
-            setTimeout(() => { chatBox.scrollTop = chatBox.scrollHeight; }, 100);
-            
-            return new Promise(resolve => { resolveChoice = resolve; });
-        }
-
-        async function handleChoice(opt) {
-            if(!opt.correct) {
-                document.getElementById('game-red-flash').style.animation = 'none';
-                void document.getElementById('game-red-flash').offsetWidth;
-                document.getElementById('game-red-flash').style.animation = 'flashRed 1s ease-out';
-                monologueText.innerHTML = `<span style="color:#ff3b30; font-weight:bold;">[ERROR] ${opt.failMsg}</span>`;
-            } else {
-                interactionPanel.classList.remove('show');
-                chatBox.style.paddingBottom = "120px"; // 恢复 padding
-                await sleep(400);
-                resolveChoice(opt.id);
+        async function typeAndSend(text, typeSpeed=150) {
+            const inputBox = document.getElementById('wc-type-text');
+            const cursor = document.getElementById('wc-cursor');
+            const box = document.getElementById('wechat-chat-box');
+            cursor.style.display = 'inline-block';
+            inputBox.innerText = '';
+            for(let i=0; i<text.length; i++) {
+                inputBox.innerText += text[i];
+                await sleep(typeSpeed + (Math.random()*50));
             }
+            await sleep(300);
+            inputBox.innerText = '';
+            await addWechatChat('right', text, false, false, 800);
+            box.scrollTop = box.scrollHeight;
         }
 
-        function setBPM(val) {
-            let current = parseInt(bpmVal.innerText);
-            let diff = val - current;
-            let step = diff > 0 ? 2 : -2;
-            let timer = setInterval(() => {
-                current += step;
-                bpmVal.innerText = current;
-                if(Math.abs(current - val) <= 2) { bpmVal.innerText = val; clearInterval(timer); }
-            }, 50);
-        }
-
-        // ================= 核心剧本时间轴 =================
-        async function startGame() {
-            gameStarted = true;
+        async function startWechatSequence() {
             await sleep(1000);
-
-            // 第一幕
-            await addChat('left', 'cpdd？');
             
-            await askChoice(
-                "内心OS：等等，网易云真的能捞到人？这不会是愚人节诈骗吧？我该怎么回她？",
-                [
-                    { id: 'A', text: "A. 不回，装高冷。", correct: false, failMsg: "Game Over！你成功凭实力单身，故事在这里大结局了。请重选！" },
-                    { id: 'B', text: "B. 回个省略号，看看她想干嘛。", correct: true }
-                ]
-            );
-
-            await addChat('right', '……？');
-            await addChat('left', 'dd');
-            await addChat('right', 'dd');
-
-            // 间幕：快速略过的模糊聊天
-            interactionPanel.classList.add('show');
-            monologueText.innerText = "内心OS：有点意思，看看她要干什么...";
-            choicesContainer.innerHTML = ''; 
-            await sleep(1500);
-            interactionPanel.classList.remove('show');
-
-            // 模拟快速划过的模糊对话
-            const fillerChats = ["你好", "你好", "在干嘛", "听歌", "好巧我也在听", "这歌不错", "是的", "你也喜欢这个歌手？", "还行吧", "我也觉得"];
-            for(let i=0; i<fillerChats.length; i++) {
-                await addChat(i%2===0 ? 'left':'right', fillerChats[i], false, true); // 开启模糊和快速
-            }
-            await addChat('left', '……', false, true);
+            // 阶段1：初识寒暄 (复刻截图内容)
+            await addWechatChat('right', '我通过了你的朋友验证请求，现在我们可以开始聊天了', false, false, 800);
             await sleep(500);
-
-            // 第二幕
-            await addChat('left', '看你这头像，你平时肯定特别喜欢看动漫吧？');
+            await addWechatChat('left', '勉强同意', false, false, 1000);
+            await typeAndSend('😁😁😁', 200);
+            await addWechatChat('left', '', true, false, 1000);
             
-            await askChoice(
-                "内心OS：？她是福尔摩斯吗？这都能看出来？不行，我得给她亮点真家伙。",
-                [
-                    { id: 'A', text: "A. 嘴硬否认：“我不看，你猜错了。”", correct: false, failMsg: "太假了，我这头像明摆着呢，重选！" },
-                    { id: 'B', text: "B. 假装这个人不是我，甩出QQ资料卡让她分析", correct: true }
-                ]
-            );
+            // 阶段2：8秒极限走马灯飙车 (还原截图内容)
+            const startTime = Date.now();
+            const DURATION = 8000;
+            const dummyPool = ["[表情包]", "一个老奶奶把恶的老人推下海", "好懂哦", "干嘛打哈哈", "你人还怪好捏", "救命", "一个人带不动啊", "没借老", "没人给我推", "这人还挺好玩", "撤回了一条消息", "哈哈哈哈"];
+            
+            while (Date.now() - startTime < DURATION) {
+                let who = Math.random() > 0.5 ? 'left' : 'right';
+                let isImg = Math.random() > 0.7;
+                let text = dummyPool[Math.floor(Math.random() * dummyPool.length)];
+                
+                await addWechatChat(who, text, isImg, true, 0);
 
-            await addChat('right', '你看看这人，你猜他看不看');
-            // 发送真实截图图片
-            await addChat('right', '', true);
+                let elapsed = Date.now() - startTime;
+                let currentDelay = Math.max(20, 300 - (280 * (elapsed / DURATION)));
+                await sleep(currentDelay);
+            }
 
-            // 第三幕：高潮震动与微信弹窗
+            // 阶段3：致命的降速与停顿
+            await sleep(2500); 
+            
+            // 阶段4：宿命的生日提问 (极慢打字)
+            await typeAndSend('你哪号生日？', 400); 
             await sleep(1500);
-            document.getElementById('app-netease-page').classList.add('shake-screen');
-            setBPM(140);
-            document.getElementById('heart-rate').style.color = '#ff0000';
-            document.getElementById('heart-rate').style.transform = 'scale(1.3)';
-            showNotification('微信', '天然呆萌泪- 请求添加你为好友', '💬', '#07c160');
+            await addWechatChat('left', '18', false, false, 1500);
             
-            await askChoice(
-                `<span style="color:#ff3b30; font-size:1.1rem; font-weight:bold;">内心OS：等一下！！！我微信怎么弹信息了？！她怎么直接把我的微信加进来了？！大数据杀我？黑客开我户？！</span>`,
-                [{ id: 'CONT', text: "点击屏幕继续 (疯狂冒冷汗中...)", correct: true }]
-            );
+            await typeAndSend('几月？', 400);
+            await sleep(1500);
+            await addWechatChat('left', '5', false, false, 1000);
+
+            await typeAndSend('好', 500);
+
+            // ================= 触发 GLITCH =================
+            triggerGlitch();
+        }
+
+        // ================= 骇客级系统崩溃与重构 =================
+        function playStaticNoise() {
+            try {
+                let audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+                let bufferSize = audioCtx.sampleRate * 4; 
+                let buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+                let data = buffer.getChannelData(0);
+                for (let i = 0; i < bufferSize; i++) data[i] = Math.random() * 2 - 1;
+                let noise = audioCtx.createBufferSource();
+                noise.buffer = buffer;
+                let gainNode = audioCtx.createGain();
+                gainNode.gain.value = 0.2;
+                noise.connect(gainNode); gainNode.connect(audioCtx.destination); noise.start();
+            } catch(e) { console.log("Audio blocked."); }
+        }
+
+        async function triggerGlitch() {
+            const glitchOverlay = document.getElementById('glitch-overlay');
+            glitchOverlay.style.display = 'block';
+            glitchOverlay.style.opacity = '1';
             
-            document.getElementById('app-netease-page').classList.remove('shake-screen');
-
-            // 慌张聊天
-            await addChat('right', '你咋找的 😳😳😳');
-            await addChat('left', '？开户');
-            await addChat('right', '信息泄露了 😳😳😳');
-            await addChat('right', '😳😳😳');
-            await addChat('left', '😱😱😱 没关系');
-            await addChat('right', '吗 😁😁😁');
-            await addChat('left', '😐');
-
-            await askChoice(
-                "内心OS：等一下，我的CPU终于转过来了……我刚刚是不是发了张带QQ号的截图过去？搞不好她是顺着QQ摸过来的……",
-                [{ id: 'CONT', text: "强装镇定继续试探", correct: true }]
-            );
-
-            await addChat('right', 'qq号搜的吧 😏');
-            await addChat('left', '你咋知道，笑死我了');
-            await addChat('right', '因为我记得我绑定qq号了 😕😕😕');
-            await addChat('left', '那你猜对了');
-            setBPM(110); 
-
-            // 第四幕
-            await askChoice(
-                "内心OS：可恶，主动权全在她手里了，我得强行挽回一下局面，假装这其实不是我！",
-                [
-                    { id: 'A', text: "A. 发送：对，是我朋友，不是我。", correct: false, failMsg: "不，当时不是这样子发的，请还原历史！" },
-                    { id: 'B', text: "B. 回避问题，发送：你猜他看不看动漫", correct: true }
-                ]
-            );
-
-            await addChat('right', '其实不是我');
-            await addChat('left', '？是你朋友吗');
-            await addChat('right', '你猜他看不看动漫');
-            await addChat('left', '你逗我呢，你们名字都一样，笑死我了');
-
-            // 社死结局
-            setBPM(0);
-            document.getElementById('heart-rate').innerHTML = `<span style="color:#666">0 bpm (已社死)</span>`;
+            playStaticNoise();
             
-            await askChoice(
-                "内心OS：（啪！）……寄。我忘了我网易云和QQ网名一模一样了。世界上怎么会有我这么蠢的人，根本演不下去了啊啊啊！",
-                [{ id: 'CONT', text: "放弃抵抗，原地躺平", correct: true }]
-            );
+            const matrixBox = document.getElementById('matrix-bg');
+            for(let i=0; i<20; i++) {
+                let col = document.createElement('div');
+                col.className = 'matrix-col';
+                col.style.animationDuration = (Math.random()*1+0.5) + 's';
+                col.innerText = "01001100 01001111 01010110 01000101 OVERRIDE QIAO 5.18 SYSTEM FAILURE ROOT GRANTED".split(" ").join("\n");
+                matrixBox.appendChild(col);
+            }
 
-            await addChat('right', '😁😁😁 实在演不下去了 😁😁😁');
-            await addChat('left', '笑死我了');
+            await sleep(500); document.getElementById('warn-1').classList.add('show');
+            await sleep(800); document.getElementById('warn-2').classList.add('show');
+            await sleep(800); document.getElementById('warn-3').classList.add('show');
 
             await sleep(2000);
-            document.getElementById('game-outro').classList.add('show');
-            document.getElementById('badge-netease').classList.add('hidden-badge'); // 清除网易云红点
+            glitchOverlay.style.background = '#000';
+            document.getElementById('warn-1').style.display = 'none';
+            document.getElementById('warn-2').style.display = 'none';
+            document.getElementById('warn-3').style.display = 'none';
+            document.querySelector('.glitch-core-text').style.display = 'none';
+            matrixBox.style.display = 'none';
+
+            closeApp(); 
+            reconstructDesktop(); 
+
+            await sleep(1000);
+            glitchOverlay.style.opacity = '0';
+            setTimeout(() => { glitchOverlay.style.display = 'none'; }, 500);
         }
 
-        // ================= 游戏通关：解锁微信 =================
-        function finishGame() {
-            // 停止音乐播放
-            const bgm = document.getElementById('netease-bgm');
-            bgm.pause();
-            bgm.currentTime = 0; // 可选：重置进度
+        function reconstructDesktop() {
+            document.getElementById('os-widgets').classList.add('dead-widget');
+            document.querySelectorAll('.app-item').forEach(app => {
+                app.classList.remove('core-app');
+                app.classList.add('dead-app');
+            });
+            document.getElementById('badge-wechat').classList.add('hidden-badge');
 
-            closeApp();
-            
-            // 核心逻辑：渐进式解锁微信
-            const wechatItem = document.getElementById('app-icon-wechat');
-            const wechatBadge = document.getElementById('badge-wechat');
-            
-            // 移除锁定状态
-            wechatItem.classList.remove('locked-app');
-            wechatItem.classList.add('core-app');
-            
-            // 延迟0.5秒后显示微信红点，引导点击
-            setTimeout(() => {
-                wechatBadge.classList.remove('hidden-badge');
-                wechatBadge.style.animation = 'pulse 1s infinite'; // 增加呼吸动画强调
-            }, 500);
+            setTimeout(() => { document.getElementById('special-518-app').classList.add('reveal'); }, 1000);
         }
+
+        function openBirthdayApp() {
+            const page = document.getElementById(`app-birthday-page`);
+            page.classList.add('active');
+            document.getElementById('desktop').style.transform = 'scale(0.95)';
+            document.getElementById('desktop').style.filter = 'blur(5px)';
+            document.getElementById('status-bar').classList.add('dark-mode');
+        }
+
     </script>
 </body>
 </html>
