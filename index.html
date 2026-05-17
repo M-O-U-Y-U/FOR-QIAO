@@ -420,7 +420,7 @@
                     <p id="widget-date">5月18日 星期四</p>
                 </div>
                 <div class="widget widget-weather">
-                    <div class="city">📍 广西北海市</div>
+                    <div class="city"> 广西北海市</div>
                     <div class="temp-icon"><div class="icon" id="desktop-weather-icon">⛅</div><h2 id="desktop-weather-temp">28°</h2></div>
                     <div class="city" style="margin-top:5px; opacity:0.8" id="desktop-weather-desc">多云 | 空气优</div>
                 </div>
@@ -1149,7 +1149,7 @@
             neteaseStarted = true; await sleep(1500); 
             await addNeteaseChat('left', 'cpdd？');
             await askChoice("内心OS：等等，网易云真的能捞到人？这不会是诈骗吧？我该怎么回她？",
-                [{ id: 'A', text: "A. 不回，装高冷。", correct: false, failMsg: "Game Over！你成功凭实力单身，重选！" }, { id: 'B', text: "B. 回个省略号，看看她想干嘛。", correct: true }]
+                [{ id: 'A', text: "A. 不回，装高冷。", correct: false, failMsg: "Game Over！你成功凭实力单身，重选！" }, { id: 'B', text: "B. 回个省略号，看看她到底想干嘛。", correct: true }]
             );
             await addNeteaseChat('right', '……？'); await addNeteaseChat('left', 'dd'); await addNeteaseChat('right', 'dd');
 
@@ -1203,25 +1203,25 @@
                 setTimeout(() => { banner.style.top = "-100px"; }, 4000);
             }
             
-            await askChoice(`<span style="color:#ff3b30; font-size:1.1rem; font-weight:bold;">内心OS：等一下！！！我微信怎么弹信息了？！她怎么直接把我的微信加进来了？！大数据杀我？黑客开我户？！</span>`,
+            await askChoice(`<span style="color:#ff3b30; font-size:1.1rem; font-weight:bold;">内心OS：等一下！！？我微信怎么弹好友申请信息了？！她怎么直接把我的微信加进来了？！我不记得我告诉她过啊？黑客开我户？！</span>`,
                 [{ id: 'CONT', text: "点击屏幕继续 (疯狂冒冷汗中...)", correct: true }]
             );
             if (neteasePage) neteasePage.classList.remove('shake-screen');
 
-            await addNeteaseChat('right', '你咋找的 😳😳😳'); await addNeteaseChat('left', '？开户');
-            await addNeteaseChat('right', '信息泄露了 😳😳😳'); await addNeteaseChat('right', '😳😳😳');
-            await addNeteaseChat('left', '😱😱😱 没关系'); await addNeteaseChat('right', '吗 😁😁😁'); await addNeteaseChat('left', '😐');
+            await addNeteaseChat('right', '你咋找的 😳😳😳'); await addNeteaseChat('left', '？开户😁😁');
+            await addNeteaseChat('right', '？信息泄露了 😳😳😳'); await addNeteaseChat('right', '😳😳😳');
+            await addNeteaseChat('left', '😱😱😱 没关系'); await addNeteaseChat('right', '没关系，吗？ 😁😁😁'); await addNeteaseChat('left', '😐');
 
-            await askChoice("内心OS：等一下，我的CPU终于转过来了……我刚刚是不是发了张带QQ号的截图过去？搞不好她是顺着QQ摸过来的……",
+            await askChoice("内心OS：等一下，我的CPU终于转过来了……emmmm我刚刚是不是发了张带QQ号的截图过去？搞不好她是顺着QQ摸过来的😐……",
                 [{ id: 'CONT', text: "强装镇定继续试探", correct: true }]
             );
 
-            await addNeteaseChat('right', 'qq号搜的吧 😏'); await addNeteaseChat('left', '你咋知道，笑死我了');
+            await addNeteaseChat('right', '你是通过qq号搜的吧 😏'); await addNeteaseChat('left', '你咋知道，笑死我了');
             await addNeteaseChat('right', 'because我记得我绑定qq号了 😕😕😕'); await addNeteaseChat('left', '那你猜对了');
             if (bpmVal) bpmVal.innerText = '110';
 
-            await askChoice("内心OS：可恶，主动权全在她手里了，我得强行挽回一下局面，假装这其实不是我！",
-                [{ id: 'A', text: "A. 发送：对，是我朋友，不是我。", correct: false, failMsg: "不，当时不是这样子发的，请还原历史！" }, { id: 'B', text: "B. 回避问题，发送：你猜他看不看动漫", correct: true }]
+            await askChoice("内心OS：还好，我猜对了，不行，我得强行挽回一下局面，假装这其实不是我！",
+                [{ id: 'A', text: "A. 发送：这是我朋友。", correct: false, failMsg: "不，当时不是这样子发的，请还原历史！" }, { id: 'B', text: "B. 回避问题，发送：你猜他看不看动漫", correct: true }]
             );
             await addNeteaseChat('right', '其实不是我'); await addNeteaseChat('left', '？是你朋友吗');
             await addNeteaseChat('right', '你猜他看不看动漫'); await addNeteaseChat('left', '你逗我呢，你们名字都一样，笑死我了');
@@ -1315,7 +1315,7 @@
             
             await addWechatChat('right', '我通过了你的朋友验证请求，现在我们可以开始聊天了', false, false, 1200);
             await sleep(800);
-            await addWechatChat('left', '勉强同意', false, false, 1500);
+            await addWechatChat('left', '我是祈愿', false, false, 1500);
             await typeAndSend('😁😁😁', 250);
             await addWechatChat('left', '', true, false, 1200);
             
@@ -1337,7 +1337,7 @@
 
             await sleep(3500); 
             
-            await typeAndSend('你哪号生日？', 300); 
+            await typeAndSend('对了，你哪号生日？', 300); 
             await sleep(1500);
             await addWechatChat('left', '18', false, false, 1200);
             
@@ -1345,7 +1345,7 @@
             await sleep(1500);
             await addWechatChat('left', '5', false, false, 1200);
 
-            await typeAndSend('好', 400);
+            await typeAndSend('好😁😁😁', 400);
 
             // ================= 触发 GLITCH =================
             triggerGlitch();
@@ -1510,7 +1510,7 @@
             const narrativeText = 
                 "北海今晚的天气是 ${qiaoTemp}℃，焦作是 ${mouyuTemp}℃。\n" +
                 "我们的直线距离是 1780 公里。\n" +
-                "郑巧，你看，虽然我此刻没办法抱到你，\n" +
+                "郑巧，你看，虽然我此刻没办法在你身边，\n" +
                 "但此时此刻，我们正吹着同一阵风，看着同一片星空。";
             
             await sleep(2000); 
