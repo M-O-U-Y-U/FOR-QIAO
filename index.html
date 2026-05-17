@@ -115,7 +115,7 @@
         .dead-app { pointer-events: none; opacity: 0.3 !important; filter: grayscale(100%) blur(2px) !important; transition: all 1s ease; }
         .dead-widget { opacity: 0.2; filter: grayscale(100%); }
 
-        /* 新生应用：祈愿的5.18 */
+        /* 新生应用：郑巧的5.18 */
         #special-518-app { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); opacity: 0; transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 200; pointer-events: none; }
         #special-518-app.reveal { transform: translate(-50%, -50%) scale(1.5); opacity: 1; pointer-events: auto; animation: floatIcon 3s infinite ease-in-out; }
         .icon-gift { background: linear-gradient(135deg, #ff00aa, #ff5a5f); box-shadow: 0 0 30px rgba(255, 0, 170, 0.8), 0 0 60px rgba(255, 90, 95, 0.5); font-size: 2rem !important; }
@@ -193,7 +193,7 @@
         .wc-cursor { display: inline-block; width: 2px; height: 1.2rem; background: #07c160; animation: blink 1s infinite; margin-left: 2px; }
 
         /* ================= 第四阶段：GLITCH 特效 ================= */
-        #glitch-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; opacity: 0; display: none; overflow: hidden; }
+        #glitch-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: auto; opacity: 0; display: none; overflow: hidden; background: transparent; transition: opacity 0.2s; }
         .glitch-noise { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: repeating-radial-gradient(circle at 17% 32%, #fff, #000 0.00085px); animation: tv-static 0.1s infinite; opacity: 0.4; mix-blend-mode: difference; }
         @keyframes tv-static { 0% { background-position: 0 0; } 100% { background-position: 100% 100%; } }
         .matrix-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; color: #ff0000; font-family: monospace; font-size: 12px; overflow: hidden; opacity: 0.8; }
@@ -285,7 +285,7 @@
         .fireworks-canvas { position: absolute; top:0; left:0; width:100%; height:100%; z-index: 2; pointer-events: none; }
         .final-card { position: absolute; z-index: 5; top: 10%; bottom: 10%; left: 8%; right: 8%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
         .final-title { font-size: 1.6rem; font-weight: bold; color: #ff00aa; text-shadow: 0 0 15px rgba(255,0,170,0.8); margin-bottom: 25px; letter-spacing: 3px; }
-        .final-p { font-size: 0.95rem; line-height: 2; color: rgba(255,255,255,0.9); font-weight: 300; max-width: 90%; min-height: 200px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+        .final-p { font-size: 0.95rem; line-height: 2; color: rgba(255,255,255,0.9); font-weight: 300; max-width: 90%; min-height: 250px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
 
         /* 闪白遮罩 */
         #flash-white { position: absolute; top:0; left:0; width:100%; height:100%; background: #fff; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; }
@@ -421,10 +421,10 @@
                 <div class="app-item app-blurred"><div class="app-icon icon-camera">📷</div><div class="app-name">相机</div></div>
                 <div class="app-item app-blurred"><div class="app-icon icon-settings">⚙️</div><div class="app-name">设置</div></div>
 
-                <!-- 祈愿的5.18核心解锁按钮 -->
+                <!-- 真名新生应用：郑巧的5.18核心解锁按钮 -->
                 <div id="special-518-app" onclick="openBirthdayApp()">
                     <div class="app-icon icon-gift">🎁</div>
-                    <div class="special-name">祈愿的 5.18</div>
+                    <div class="special-name">郑巧的 5.18</div>
                 </div>
             </div>
         </div>
@@ -521,19 +521,19 @@
                 </div>
             </div>
 
-            <!-- 【模块3】终极生日空界面 & 三大核心关卡 -->
+            <!-- 【模块3】终极生日主界面 & 三大核心关卡 -->
             <div id="app-birthday-page" class="app-page dark-mode-app">
                 <div id="flash-white"></div>
                 
                 <!-- 背景渲染画布 (气流、繁星、雨滴) -->
                 <canvas id="bday-ambient-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none;"></canvas>
 
-                <!-- 🌌 第一景：「共时空」浪漫星海 -->
+                <!-- 🌌 第一景：「共时空」浪漫星海 (已替换真名) -->
                 <div class="bday-scene" id="bday-scene-1">
                     <div class="sky-split">
-                        <!-- MOUYU (焦作) -->
+                        <!-- 李雨鸿 (焦作) -->
                         <div class="sky-half mouyu">
-                            <div class="sky-title">焦作 / MOUYU</div>
+                            <div class="sky-title">焦作 / 李雨鸿</div>
                             <div class="weather-info">
                                 <div class="weather-temp" id="weather-temp-mouyu">--°C</div>
                                 <div style="font-size:0.8rem; opacity:0.8;" id="weather-desc-mouyu">定位中...</div>
@@ -547,9 +547,9 @@
                             <div class="barrier-line"></div>
                         </div>
 
-                        <!-- 祈愿 (北海) -->
+                        <!-- 郑巧 (北海) -->
                         <div class="sky-half qiao">
-                            <div class="sky-title">北海 / 祈愿</div>
+                            <div class="sky-title">北海 / 郑巧</div>
                             <div class="weather-info">
                                 <div class="weather-temp" id="weather-temp-qiao">--°C</div>
                                 <div style="font-size:0.8rem; opacity:0.8;" id="weather-desc-qiao">定位中...</div>
@@ -598,20 +598,20 @@
                     </div>
                 </div>
 
-                <!-- 🌐 第三景：距离清零拥抱计划 -->
+                <!-- 🌐 第三景：距离清零拥抱计划 (已替换真名) -->
                 <div class="bday-scene" id="bday-scene-3">
                     <div class="hug-container">
                         <div class="hug-instructions">
                             <h2>云拥抱计划</h2>
                             <p>两端距离横亘，系统已将其硬性物理化</p>
                             <p style="color:#ff3b30; margin-top:5px;">请用双指长按左右两颗发光体，启动融合仪式</p>
-                            <p style="color:#888; font-size:0.75rem; margin-top:3px;">(电脑端：单击 MOUYU 后，长按 祈愿 即可启动)</p>
+                            <p style="color:#888; font-size:0.75rem; margin-top:3px;">(电脑端：单击 李雨鸿 后，长按 郑巧 即可启动)</p>
                         </div>
 
                         <div class="hug-sandbox">
-                            <!-- MOUYU 结点 -->
+                            <!-- 李雨鸿 结点 -->
                             <div class="hug-node mouyu" id="node-mouyu">
-                                <span>MOUYU</span>
+                                <span>李雨鸿</span>
                                 <div class="node-ripple"></div>
                             </div>
 
@@ -621,9 +621,9 @@
                                 <div class="wire-text" id="wire-dist-text">1800 km</div>
                             </div>
 
-                            <!-- 祈愿 结点 -->
+                            <!-- 郑巧 结点 -->
                             <div class="hug-node qiao" id="node-qiao">
-                                <span>祈愿</span>
+                                <span>郑巧</span>
                                 <div class="node-ripple"></div>
                             </div>
                         </div>
@@ -638,7 +638,7 @@
                 <div class="outro-illustration" id="outro-illustration">
                     <canvas class="fireworks-canvas" id="fireworks-canvas"></canvas>
                     <div class="final-card">
-                        <div class="final-title">TO: 祈愿</div>
+                        <div class="final-title">TO: 郑巧</div>
                         <p class="final-p" id="final-card-text"></p>
                     </div>
                 </div>
@@ -647,10 +647,20 @@
 
         </div>
 
+        <!-- 全局 Glitch 崩溃特效层 -->
+        <div id="glitch-overlay">
+            <div class="glitch-noise"></div>
+            <div class="matrix-bg" id="matrix-bg"></div>
+            <div class="glitch-core-text">5.18</div>
+            <div class="sys-warning-modal" id="warn-1" style="top:20%; left:10%;">[Warning]: Core Emotion Overload</div>
+            <div class="sys-warning-modal" id="warn-2" style="top:60%; right:10%;">[Error]: 1800km Distance Limitation Bypass</div>
+            <div class="sys-warning-modal" id="warn-3" style="top:40%; left:25%; font-size:1.2rem; background:rgba(0,0,0,0.9); color:#00ff00; border-color:#00ff00;">[Status]: Initiating 518_Special_Project.exe...</div>
+        </div>
+
     </div>
 
     <script>
-        // ================= 全局状态与控制变量（前置置顶，防止TDZ ReferenceError） =================
+        // ================= 全局状态与控制变量 =================
         let neteaseStarted = false;
         let wechatStarted = false;
         let bdayStarted = false;
@@ -662,7 +672,7 @@
         let currentPasscode = "";
         let mouyuHeld = false;
         let qiaoHeld = false;
-        let hugProgress = 0; // 0 到 100
+        let hugProgress = 0; 
         let hugInterval = null;
         let heartbeatTimer = null;
         let currentBPM = 80;
@@ -1173,7 +1183,7 @@
             await addWechatChat('left', '', true, false, 1000);
             
             const startTime = Date.now();
-            const DURATION = 8000;
+            const DURATION = 6000; // 优化为 6 秒快速刷屏，防止等待过长失去焦点
             const dummyPool = ["[表情包]", "一个老奶奶把恶的老人推下海", "好懂哦", "干嘛打哈哈", "你人还怪好捏", "救命", "一个人带不动啊", "没借老", "没人给我推", "这人还挺好玩", "撤回了一条消息", "哈哈哈哈"];
             
             while (Date.now() - startTime < DURATION) {
@@ -1188,15 +1198,15 @@
                 await sleep(currentDelay);
             }
 
-            await sleep(2500); 
+            await sleep(1500); 
             
             await typeAndSend('你哪号生日？', 200); 
-            await sleep(1000);
-            await addWechatChat('left', '18', false, false, 1000);
+            await sleep(800);
+            await addWechatChat('left', '18', false, false, 800);
             
             await typeAndSend('几月？', 200);
-            await sleep(1000);
-            await addWechatChat('left', '5', false, false, 1000);
+            await sleep(800);
+            await addWechatChat('left', '5', false, false, 800);
 
             await typeAndSend('好', 300);
 
@@ -1223,16 +1233,21 @@
         async function triggerGlitch() {
             if (bgmWechat) bgmWechat.pause();
 
+            // 深度修复：确保 Glitch Overlay 层能够正确渲染与捕获
             const glitchOverlay = document.getElementById('glitch-overlay');
             if (glitchOverlay) {
+                glitchOverlay.style.background = 'transparent';
                 glitchOverlay.style.display = 'block';
                 glitchOverlay.style.opacity = '1';
             }
             
             playStaticNoise();
             
+            // 重置与挂载 Matrix 矩阵
             const matrixBox = document.getElementById('matrix-bg');
             if (matrixBox) {
+                matrixBox.style.display = 'flex';
+                matrixBox.innerHTML = '';
                 for(let i=0; i<20; i++) {
                     let col = document.createElement('div');
                     col.className = 'matrix-col';
@@ -1241,13 +1256,20 @@
                     matrixBox.appendChild(col);
                 }
             }
+            
+            const glitchText = document.querySelector('.glitch-core-text');
+            if (glitchText) glitchText.style.display = 'block';
 
-            await sleep(500); 
             const warn1 = document.getElementById('warn-1');
             const warn2 = document.getElementById('warn-2');
             const warn3 = document.getElementById('warn-3');
-            const glitchText = document.querySelector('.glitch-core-text');
             
+            // 确保警告框能够二次显示
+            if (warn1) { warn1.style.display = 'block'; warn1.classList.remove('show'); }
+            if (warn2) { warn2.style.display = 'block'; warn2.classList.remove('show'); }
+            if (warn3) { warn3.style.display = 'block'; warn3.classList.remove('show'); }
+
+            await sleep(500); 
             if (warn1) warn1.classList.add('show');
             await sleep(800); 
             if (warn2) warn2.classList.add('show');
@@ -1255,6 +1277,8 @@
             if (warn3) warn3.classList.add('show');
 
             await sleep(2000);
+            
+            // 崩溃收尾，切入纯黑背景
             if (glitchOverlay) glitchOverlay.style.background = '#000';
             if (warn1) warn1.style.display = 'none';
             if (warn2) warn2.style.display = 'none';
@@ -1287,9 +1311,9 @@
         }
 
         // ==============================================================
-        // 🎁 生日主线核心模块逻辑 (核心重构与完美合并) ==============================================================
+        // 🎁 郑巧的 5.18 生日主线核心模块 (已全面替换真名)
+        // ==============================================================
 
-        // 解锁开启主视图
         function openBirthdayApp() {
             const page = document.getElementById(`app-birthday-page`);
             if (page) {
@@ -1318,10 +1342,11 @@
 
             fetchDualCityWeather();
 
+            // 已替换真名
             const narrativeText = 
                 "北海今晚的天气是 ${qiaoTemp}℃，焦作是 ${mouyuTemp}℃。\n" +
                 "我们的直线距离是 1780 公里。\n" +
-                "祈愿，你看，虽然我此刻没办法抱到你，\n" +
+                "郑巧，你看，虽然我此刻没办法抱到你，\n" +
                 "但此时此刻，我们正吹着同一阵风，看着同一片星空。";
             
             await sleep(1200);
@@ -1453,10 +1478,11 @@
         }
 
         const shardsUnlocked = { 1: false, 2: false, 3: false, 4: false };
+        // 已全面替换真名
         const shardData = {
             1: {
                 title: "🪐 动漫偏好档案",
-                body: "你以为你隐藏得很好，其实那天在网易云，我一眼就看穿了你的动漫头像。为了能接住你所有的梗，那天晚上我偷偷连夜把那部动漫的前 10 集全部看完了。这是属于 MOUYU 的第一级预谋。"
+                body: "你以为你隐藏得很好，其实那天在网易云，我一眼就看穿了你的动漫头像。为了能接住你所有的梗，那天晚上我偷偷连夜把那部动漫的前 10 集全部看完了。这是属于 李雨鸿 的第一级预谋。"
             },
             2: {
                 title: "💾 赛博隐私大危机",
@@ -1468,7 +1494,7 @@
             },
             4: {
                 title: "🎓 全能代刷网课业务",
-                body: "虽然天天在学习通里帮你刷高数 and 各种作业题，但其实我最想研究的课题，只有‘今天祈愿有没有想我’这一门。"
+                body: "虽然天天在学习通里帮你刷高数 and 各种作业题，但其实我最想研究的课题，只有‘今天郑巧有没有想我’这一门。"
             }
         };
 
@@ -1501,7 +1527,7 @@
             }
         }
 
-        // ================= 第三景：拥抱仪式 (重低音心跳生成) =================
+        // ================= 第三景：拥抱仪式 =================
         const toScene3Btn = document.getElementById('btn-to-scene3');
         if (toScene3Btn) {
             toScene3Btn.addEventListener('click', () => {
@@ -1657,7 +1683,7 @@
             }
         }
 
-        // ================= 终极：大表白落幕 (Canvas 绚丽粒子烟花) =================
+        // ================= 终局落幕：最深情的告白 =================
         async function triggerFinalMerge() {
             const flash = document.getElementById('flash-white');
             if (flash) flash.style.opacity = '1';
@@ -1678,11 +1704,15 @@
 
             startFireworks();
 
+            // 已替换真名并增加指定结尾段落
             const finalLoveText = 
-                "5.18 生日快乐，祈愿。\n\n" +
+                "5.18 生日快乐，郑巧。\n\n" +
                 "在网页的代码里，我可以用 3 秒钟让两颗心融合，把距离清零。\n" +
                 "但在现实的世界里，我们要用剩下的日子，去把这 1800 公里一步步走完。\n\n" +
-                "每一次的生日，都是宇宙对生命的一次深情祈愿。";
+                "每一次的生日，都是宇宙对生命的一次深情祈愿。\n" +
+                "谢谢你来到这个世界上。\n" +
+                "祝你生日快乐，我的女孩。 —— 李雨鸿\n\n" +
+                "郑巧，真巧";
 
             typeFinalLoveLetter(finalLoveText);
         }
