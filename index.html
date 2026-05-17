@@ -269,7 +269,7 @@
                     <p id="widget-date">5月18日 星期四</p>
                 </div>
                 <div class="widget widget-weather">
-                    <div class="city">📍 广西北海市</div>
+                    <div class="city"> 广西北海市</div>
                     <div class="temp-icon"><div class="icon">⛅</div><h2>28°</h2></div>
                     <div class="city" style="margin-top:5px; opacity:0.8">多云 | 空气优</div>
                 </div>
@@ -570,7 +570,7 @@
         async function startNeteaseGame() {
             neteaseStarted = true; await sleep(1000);
             await addNeteaseChat('left', 'cpdd？');
-            await askChoice("内心OS：等等，网易云真的能捞到人？这不会是愚人节诈骗吧？我该怎么回她？",
+            await askChoice("内心OS：等等，网易云真的能捞到人？这不会是诈骗吧？我该怎么回她？",
                 [{ id: 'A', text: "A. 不回，装高冷。", correct: false, failMsg: "Game Over！你成功凭实力单身，重选！" }, { id: 'B', text: "B. 回个省略号，看看她想干嘛。", correct: true }]
             );
             await addNeteaseChat('right', '……？'); await addNeteaseChat('left', 'dd'); await addNeteaseChat('right', 'dd');
