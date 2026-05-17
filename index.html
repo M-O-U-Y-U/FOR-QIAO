@@ -134,6 +134,9 @@
         .chat-img-wrapper { max-width: 220px; border-radius: 10px; overflow: hidden; border: 2px solid rgba(255,255,255,0.1); display: flex; }
         .chat-img-wrapper img { width: 100%; height: auto; display: block; }
         
+        /* 快速划过的模糊聊天特效 */
+        .fast-scroll-blur { filter: blur(3px); opacity: 0.6; transition: all 0.5s ease; }
+        
         @keyframes slideInUp { to { opacity: 1; transform: translateY(0); } }
 
         /* 互动 UI (内心戏与选择) */
@@ -445,15 +448,15 @@
         const sleep = ms => new Promise(res => setTimeout(res, ms));
         
         // 渲染对话气泡 (who: 'left' = 她, 'right' = 我)
-        async function addChat(who, text, isImg=false) {
+        async function addChat(who, text, isImg=false, blurred=false) {
             const msgDiv = document.createElement('div');
-            msgDiv.className = `chat-msg ${who}`;
+            msgDiv.className = `chat-msg ${who} ${blurred ? 'fast-scroll-blur' : ''}`;
             const avatarHtml = who === 'left' ? `<div class="chat-avatar" style="background:#ff9a9e">呆</div>` : `<div class="chat-avatar" style="background:#a18cd1">M</div>`;
             
             let contentHtml = '';
             if (isImg) {
-                // 使用真实截图文件
-                contentHtml = `<div class="chat-img-wrapper"><img src="Screenshot_2026-05-17-12-57-48-650_com.tencent.mo.jpg" alt="QQ名片"></div>`;
+                // 使用真实截图文件 - 请确保仓库根目录下有 QQ名片.jpg 文件
+                contentHtml = `<div class="chat-img-wrapper"><img src="QQ名片.jpg" alt="QQ名片" style="width: 100%; height: auto; display: block;"></div>`;
             } else {
                 contentHtml = `<div class="chat-bubble">${text}</div>`;
             }
@@ -461,7 +464,7 @@
             msgDiv.innerHTML = `${avatarHtml}${contentHtml}`;
             chatBox.appendChild(msgDiv);
             chatBox.scrollTop = chatBox.scrollHeight;
-            await sleep(800);
+            await sleep(blurred ? 200 : 800); // 模糊消息滚动更快
         }
 
         // 呼出选项面板，动态调整聊天框 padding 防遮挡
@@ -529,19 +532,20 @@
             await addChat('left', 'dd');
             await addChat('right', 'dd');
 
-            // 间幕：速度放慢的聊天
+            // 间幕：快速略过的模糊聊天
             interactionPanel.classList.add('show');
             monologueText.innerText = "内心OS：有点意思，看看她要干什么...";
             choicesContainer.innerHTML = ''; 
-            await sleep(2000);
+            await sleep(1500);
             interactionPanel.classList.remove('show');
 
-            // 模拟有实际内容的聊天推拉
-            const casualChats = ["平时喜欢听什么类型的歌？", "就随便听听，遇到好听的就收藏了", "你今天不用上课吗", "刚下课，闲着无聊听会歌"];
-            for(let i=0; i<4; i++) {
-                await addChat(i%2===0 ? 'left':'right', casualChats[i]);
-                await sleep(400); // 速度放慢，让人能看清
+            // 模拟快速划过的模糊对话
+            const fillerChats = ["你好", "你好", "在干嘛", "听歌", "好巧我也在听", "这歌不错", "是的", "你也喜欢这个歌手？", "还行吧", "我也觉得"];
+            for(let i=0; i<fillerChats.length; i++) {
+                await addChat(i%2===0 ? 'left':'right', fillerChats[i], false, true); // 开启模糊和快速
             }
+            await addChat('left', '……', false, true);
+            await sleep(500);
 
             // 第二幕
             await addChat('left', '看你这头像，你平时肯定特别喜欢看动漫吧？');
@@ -626,6 +630,11 @@
 
         // ================= 游戏通关：解锁微信 =================
         function finishGame() {
+            // 停止音乐播放
+            const bgm = document.getElementById('netease-bgm');
+            bgm.pause();
+            bgm.currentTime = 0; // 可选：重置进度
+
             closeApp();
             
             // 核心逻辑：渐进式解锁微信
