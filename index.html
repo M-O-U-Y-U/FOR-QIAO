@@ -1469,6 +1469,33 @@
             }
         }
 
+        async function fetchDualCityWeather() {
+            const tempQiao = document.getElementById('weather-temp-qiao');
+            const descQiao = document.getElementById('weather-desc-qiao');
+            const tempMouyu = document.getElementById('weather-temp-mouyu');
+            const descMouyu = document.getElementById('weather-desc-mouyu');
+
+            try {
+                const qiaoRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=21.48&longitude=109.12&current_weather=true");
+                const qiaoData = await qiaoRes.json();
+                if (tempQiao) tempQiao.innerText = Math.round(qiaoData.current_weather.temperature) + '°C';
+                if (descQiao) descQiao.innerText = getWeatherDesc(qiaoData.current_weather.weathercode);
+            } catch(e) {
+                if (tempQiao) tempQiao.innerText = '28°C';
+                if (descQiao) descQiao.innerText = '微风 晴朗';
+            }
+
+            try {
+                const mouRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.24&longitude=113.24&current_weather=true");
+                const mouData = await mouRes.json();
+                if (tempMouyu) tempMouyu.innerText = Math.round(mouData.current_weather.temperature) + '°C';
+                if (descMouyu) descMouyu.innerText = getWeatherDesc(mouData.current_weather.weathercode);
+            } catch(e) {
+                if (tempMouyu) tempMouyu.innerText = '20°C';
+                if (descMouyu) descMouyu.innerText = '微风 舒适';
+            }
+        }
+
         async function initBirthdayModule() {
             try { bdayAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
             
@@ -1477,7 +1504,7 @@
             const scene1 = document.getElementById('bday-scene-1');
             if (scene1) scene1.classList.add('active');
 
-            fetchDualCityWeather();
+            await fetchDualCityWeather();
 
             // 已替换真名
             const narrativeText = 
