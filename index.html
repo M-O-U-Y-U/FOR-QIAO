@@ -115,7 +115,7 @@
         .dead-app { pointer-events: none; opacity: 0.3 !important; filter: grayscale(100%) blur(2px) !important; transition: all 1s ease; }
         .dead-widget { opacity: 0.2; filter: grayscale(100%); }
 
-        /* 新生应用：郑巧的5.18 */
+        /* 新生应用：祈愿的5.18 */
         #special-518-app { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%) scale(0); opacity: 0; transition: all 1.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); z-index: 200; pointer-events: none; }
         #special-518-app.reveal { transform: translate(-50%, -50%) scale(1.5); opacity: 1; pointer-events: auto; animation: floatIcon 3s infinite ease-in-out; }
         .icon-gift { background: linear-gradient(135deg, #ff00aa, #ff5a5f); box-shadow: 0 0 30px rgba(255, 0, 170, 0.8), 0 0 60px rgba(255, 90, 95, 0.5); font-size: 2rem !important; }
@@ -192,26 +192,83 @@
         .wc-input-box { flex: 1; background: #fff; border-radius: 5px; min-height: 40px; padding: 10px; font-size: 1rem; display: flex; align-items: center; }
         .wc-cursor { display: inline-block; width: 2px; height: 1.2rem; background: #07c160; animation: blink 1s infinite; margin-left: 2px; }
 
-        /* ================= 第四阶段：GLITCH 特效 ================= */
-        #glitch-overlay { position: absolute; top: 0; left: 0; width: 100%; height: 100%; z-index: 9999; pointer-events: none; opacity: 0; display: none; overflow: hidden; }
-        .glitch-noise { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background-image: repeating-radial-gradient(circle at 17% 32%, #fff, #000 0.00085px); animation: tv-static 0.1s infinite; opacity: 0.4; mix-blend-mode: difference; }
-        @keyframes tv-static { 0% { background-position: 0 0; } 100% { background-position: 100% 100%; } }
-        .matrix-bg { position: absolute; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.8); display: flex; color: #ff0000; font-family: monospace; font-size: 12px; overflow: hidden; opacity: 0.8; }
-        .matrix-col { flex: 1; text-align: center; animation: fall linear infinite; }
-        @keyframes fall { 0% { transform: translateY(-100%); } 100% { transform: translateY(1000%); } }
+        /* ================= 真正好玩、极具互动性的生日主线模块 ================= */
+        #app-birthday-page { background: #000; overflow: hidden; position: relative; width:100%; height:100%; display:block;}
+        .bday-scene { position: absolute; top:0; left:0; width:100%; height:100%; display: flex; flex-direction: column; opacity: 0; pointer-events: none; transition: opacity 1s ease, transform 1s ease; transform: scale(1.05); }
+        .bday-scene.active { opacity: 1; pointer-events: auto; transform: scale(1); }
 
-        .glitch-core-text { position: absolute; top: 50%; left: 50%; transform: translate(-50%, -50%); font-size: 6rem; font-weight: 900; color: #000; text-shadow: 0 0 20px red, 0 0 40px red; animation: glitchTextAnim 0.2s infinite; z-index: 10; white-space: nowrap; }
-        @keyframes glitchTextAnim {
-            0% { transform: translate(-50%, -50%) skew(0deg); color: #fff; }
-            20% { transform: translate(-52%, -50%) skew(-10deg); color: #ff0000; }
-            40% { transform: translate(-50%, -48%) skew(10deg); color: #00ffff; }
-            60% { transform: translate(-48%, -50%) skew(-5deg); color: #fff; }
-            80% { transform: translate(-50%, -52%) skew(5deg); color: #ff0000; }
-            100% { transform: translate(-50%, -50%) skew(0deg); color: #fff; }
-        }
+        /* 第一景：浪漫星海 */
+        .sky-split { display: flex; width:100%; height: 60%; position: relative; border-bottom: 1px dashed rgba(255,255,255,0.1); }
+        .sky-half { flex: 1; position: relative; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .sky-half.mouyu { background: linear-gradient(135deg, rgba(0,122,255,0.15) 0%, transparent 100%); }
+        .sky-half.qiao { background: linear-gradient(225deg, rgba(255,45,85,0.15) 0%, transparent 100%); }
+        .sky-title { font-size: 1.2rem; font-weight: 500; color: #fff; margin-bottom: 10px; letter-spacing: 2px; text-shadow: 0 0 10px rgba(255,255,255,0.5); }
+        .weather-info { background: rgba(255,255,255,0.06); padding: 12px 20px; border-radius: 15px; border: 1px solid rgba(255,255,255,0.1); backdrop-filter: blur(10px); color: #fff; text-align: left; }
+        .weather-temp { font-size: 2rem; font-weight: 300; margin-bottom: 2px; }
+        .sky-barrier { position: absolute; left: 50%; top: 10%; bottom: 10%; width: 1px; transform: translateX(-50%); display: flex; flex-direction: column; justify-content: center; align-items: center; pointer-events: none; }
+        .barrier-line { flex: 1; border-left: 1.5px dashed rgba(255,255,255,0.25); }
+        .barrier-badge { background: #ff3b30; color: #fff; font-family: monospace; font-size: 0.75rem; font-weight: bold; padding: 4px 10px; border-radius: 10px; white-space: nowrap; box-shadow: 0 0 15px rgba(255,59,48,0.5); z-index: 5; margin: 15px 0; }
+        
+        .bday-text-card { flex: 1; padding: 25px; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; background: rgba(0,0,0,0.8); z-index: 10; position: relative; }
+        .narrative-p { font-size: 0.95rem; line-height: 1.8; color: rgba(255,255,255,0.85); max-width: 85%; min-height: 90px; margin-bottom: 20px; }
+        .btn-next-scene { background: linear-gradient(135deg, #ff00aa, #ff5a5f); color:#fff; border:none; padding: 12px 30px; border-radius: 25px; font-weight: bold; font-size: 0.95rem; cursor: pointer; opacity: 0; transform: translateY(10px); transition: all 0.5s ease; box-shadow: 0 0 20px rgba(255,0,170,0.4); }
+        .btn-next-scene.show { opacity: 1; transform: translateY(0); }
 
-        .sys-warning-modal { position: absolute; background: rgba(200, 0, 0, 0.9); border: 2px solid #fff; color: #fff; padding: 15px; font-family: monospace; font-weight: bold; font-size: 0.9rem; box-shadow: 10px 10px 0 rgba(0,0,0,0.8); opacity: 0; transform: scale(0.8); z-index: 20; }
-        .sys-warning-modal.show { opacity: 1; transform: scale(1); transition: all 0.1s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        /* 第二景：记忆碎片博物馆 */
+        .museum-container { flex: 1; display: flex; flex-direction: column; align-items: center; padding: 30px 20px; position: relative; }
+        .museum-title { font-size: 1.3rem; font-weight: 500; color: #ff00aa; text-shadow: 0 0 10px rgba(255,0,170,0.5); margin-bottom: 10px; letter-spacing: 2px; }
+        .museum-subtitle { font-size: 0.85rem; color: #999; margin-bottom: 40px; }
+        .shards-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 30px; width: 100%; max-width: 320px; flex: 1; align-content: center; }
+        .shard-sphere { height: 110px; border-radius: 25px; background: radial-gradient(circle at 30% 30%, rgba(255,255,255,0.15) 0%, rgba(0,0,0,0.6) 100%); border: 1px solid rgba(255,255,255,0.15); display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; color: #ccc; cursor: pointer; transition: all 0.5s cubic-bezier(0.175, 0.885, 0.32, 1.275); position: relative; overflow: hidden; animation: floatSphere 4s infinite ease-in-out; }
+        .shard-sphere::before { content:''; position:absolute; top:0; left:0; width:100%; height:100%; background: linear-gradient(135deg, rgba(255,0,170,0.15) 0%, transparent 100%); opacity: 0; transition: opacity 0.5s; }
+        .shard-sphere.unlocked { border-color: #ff00aa; color: #fff; font-weight: bold; box-shadow: 0 0 20px rgba(255,0,170,0.3); }
+        .shard-sphere.unlocked::before { opacity: 1; }
+        .shard-icon { font-size: 1.8rem; margin-bottom: 8px; color: rgba(255,255,255,0.4); transition: color 0.5s; }
+        .shard-sphere.unlocked .shard-icon { color: #ff00aa; text-shadow: 0 0 10px rgba(255,0,170,0.5); }
+        .shard-name { font-size: 0.8rem; }
+        @keyframes floatSphere { 0%, 100% { transform: translateY(0) rotate(0deg); } 50% { transform: translateY(-8px) rotate(3deg); } }
+
+        /* 碎片详情弹窗 */
+        .museum-modal { position: absolute; top:0; left:0; width:100%; height:100%; background: rgba(0,0,0,0.85); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 100; display: flex; justify-content: center; align-items: center; opacity: 0; pointer-events: none; transition: opacity 0.4s ease; padding: 25px; }
+        .museum-modal.show { opacity: 1; pointer-events: auto; }
+        .modal-card { background: rgba(255,255,255,0.06); border: 1px solid rgba(255,0,170,0.3); border-radius: 20px; width: 100%; max-width: 320px; padding: 25px; text-align: center; color: #fff; box-shadow: 0 0 30px rgba(255,0,170,0.15); transform: scale(0.9); transition: transform 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275); }
+        .museum-modal.show .modal-card { transform: scale(1); }
+        .modal-title { font-size: 1.1rem; font-weight: bold; color: #ff00aa; margin-bottom: 15px; border-bottom: 1px dashed rgba(255,0,170,0.3); padding-bottom: 10px; }
+        .modal-body { font-size: 0.9rem; line-height: 1.7; color: rgba(255,255,255,0.85); text-align: left; margin-bottom: 25px; }
+        .btn-modal-close { background: rgba(255,255,255,0.1); border: 1px solid rgba(255,255,255,0.2); color:#fff; padding: 8px 20px; border-radius: 20px; font-size: 0.85rem; cursor: pointer; }
+
+        /* 第三景：拥抱计划 */
+        .hug-container { flex: 1; display: flex; flex-direction: column; align-items: center; justify-content: space-between; padding: 40px 20px; position: relative; }
+        .hug-instructions { text-align: center; color: #fff; padding: 0 10px; }
+        .hug-instructions h2 { font-size: 1.4rem; color: #ff00aa; margin-bottom: 10px; text-shadow: 0 0 10px rgba(255,0,170,0.5); }
+        .hug-instructions p { font-size: 0.85rem; color: #999; line-height: 1.5; }
+        
+        /* 核心互动沙盒 */
+        .hug-sandbox { width: 100%; height: 200px; display: flex; align-items: center; justify-content: space-between; position: relative; padding: 0 30px; }
+        .hug-node { width: 80px; height: 80px; border-radius: 50%; display: flex; flex-direction: column; justify-content: center; align-items: center; color: #fff; font-weight: bold; font-size: 0.85rem; cursor: pointer; position: relative; z-index: 10; transition: transform 0.1s, filter 0.3s; }
+        .hug-node.mouyu { background: radial-gradient(circle, #007aff, #0040aa); box-shadow: 0 0 25px rgba(0,122,255,0.6); }
+        .hug-node.qiao { background: radial-gradient(circle, #ff00aa, #aa0055); box-shadow: 0 0 25px rgba(255,0,170,0.6); }
+        .hug-node.holding { transform: scale(1.15); filter: brightness(1.2); }
+        .node-ripple { position: absolute; width:100%; height:100%; border-radius: 50%; border: 2px solid inherit; opacity: 0; pointer-events: none; }
+        .hug-node.holding .node-ripple { animation: ripple 1s infinite linear; }
+        @keyframes ripple { 0% { transform: scale(1); opacity: 0.8; } 100% { transform: scale(2.2); opacity: 0; } }
+        
+        /* 距离电磁网阻断线 */
+        .barrier-wire { position: absolute; left: 110px; right: 110px; height: 4px; background: rgba(120,120,120,0.6); z-index: 5; display: flex; justify-content: center; align-items: center; border-radius: 2px; }
+        .wire-danger { position: absolute; width: 100%; height: 100%; background: repeating-linear-gradient(90deg, #555, #555 5px, red 5px, red 10px); animation: wireMove 0.5s infinite linear; border-radius: 2px; }
+        .wire-text { position: absolute; background: #222; border: 1px solid #ff3b30; color: #ff3b30; font-family: monospace; font-size: 0.75rem; font-weight: bold; padding: 2px 8px; border-radius: 5px; transform: translateY(-15px); text-shadow: 0 0 5px red; }
+        @keyframes wireMove { 0% { background-position: 0 0; } 100% { background-position: 10px 0; } }
+
+        /* 第四景：终局大表白落幕 */
+        .outro-illustration { position: absolute; top:0; left:0; width:100%; height:100%; background: radial-gradient(circle at 50% 50%, #1a0033 0%, #000 100%); z-index: 1; display: none; }
+        .fireworks-canvas { position: absolute; top:0; left:0; width:100%; height:100%; z-index: 2; pointer-events: none; }
+        .final-card { position: absolute; z-index: 5; top: 10%; bottom: 10%; left: 8%; right: 8%; display: flex; flex-direction: column; justify-content: center; align-items: center; text-align: center; }
+        .final-title { font-size: 1.6rem; font-weight: bold; color: #ff00aa; text-shadow: 0 0 15px rgba(255,0,170,0.8); margin-bottom: 25px; letter-spacing: 3px; }
+        .final-p { font-size: 0.95rem; line-height: 2; color: rgba(255,255,255,0.9); font-weight: 300; max-width: 90%; min-height: 200px; text-shadow: 0 1px 3px rgba(0,0,0,0.8); }
+
+        /* 闪白遮罩 */
+        #flash-white { position: absolute; top:0; left:0; width:100%; height:100%; background: #fff; z-index: 9999; opacity: 0; pointer-events: none; transition: opacity 0.8s ease; }
+
     </style>
 </head>
 <body>
@@ -343,10 +400,10 @@
                 <div class="app-item app-blurred"><div class="app-icon icon-camera">📷</div><div class="app-name">相机</div></div>
                 <div class="app-item app-blurred"><div class="app-icon icon-settings">⚙️</div><div class="app-name">设置</div></div>
 
-                <!-- 新生应用 -->
+                <!-- 祈愿的5.18核心解锁按钮 -->
                 <div id="special-518-app" onclick="openBirthdayApp()">
                     <div class="app-icon icon-gift">🎁</div>
-                    <div class="special-name">郑巧的 5.18</div>
+                    <div class="special-name">祈愿的 5.18</div>
                 </div>
             </div>
         </div>
@@ -443,23 +500,130 @@
                 </div>
             </div>
 
-            <!-- 【模块3】终极生日空界面 -->
-            <div id="app-birthday-page" class="app-page dark-mode-app" style="background:#050505; color:#fff; justify-content:center; align-items:center; text-align:center;">
-                <h1 style="color:#ff00aa; font-size:3rem; margin-bottom:20px; text-shadow:0 0 20px #ff00aa;">5.18</h1>
-                <p style="font-size:1.2rem; color:#ccc;">专属生日模块加载完毕...</p>
-                <p style="margin-top:20px; color:#666; font-size:0.9rem;">(此处接入你的正式礼物内容)</p>
+            <!-- 【模块3】终极生日空界面 & 三大核心关卡 -->
+            <div id="app-birthday-page" class="app-page dark-mode-app">
+                <div id="flash-white"></div>
+                
+                <!-- 背景渲染画布 (气流、繁星、雨滴) -->
+                <canvas id="bday-ambient-canvas" style="position:absolute; top:0; left:0; width:100%; height:100%; z-index:0; pointer-events:none;"></canvas>
+
+                <!-- 🌌 第一景：「共时空」浪漫星海 -->
+                <div class="bday-scene" id="bday-scene-1">
+                    <div class="sky-split">
+                        <!-- MOUYU (焦作) -->
+                        <div class="sky-half mouyu">
+                            <div class="sky-title">焦作 / MOUYU</div>
+                            <div class="weather-info">
+                                <div class="weather-temp" id="weather-temp-mouyu">--°C</div>
+                                <div style="font-size:0.8rem; opacity:0.8;" id="weather-desc-mouyu">定位中...</div>
+                            </div>
+                        </div>
+
+                        <!-- 1780 公里虚线 -->
+                        <div class="sky-barrier">
+                            <div class="barrier-line"></div>
+                            <div class="barrier-badge" id="bday-barrier-dist">1780 KM</div>
+                            <div class="barrier-line"></div>
+                        </div>
+
+                        <!-- 祈愿 (北海) -->
+                        <div class="sky-half qiao">
+                            <div class="sky-title">北海 / 祈愿</div>
+                            <div class="weather-info">
+                                <div class="weather-temp" id="weather-temp-qiao">--°C</div>
+                                <div style="font-size:0.8rem; opacity:0.8;" id="weather-desc-qiao">定位中...</div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="bday-text-card">
+                        <p class="narrative-p" id="scene1-type-text"></p>
+                        <button class="btn-next-scene" id="btn-to-scene2">向深处探索 ➔</button>
+                    </div>
+                </div>
+
+                <!-- 🔍 第二景：细节解密博物馆 -->
+                <div class="bday-scene" id="bday-scene-2">
+                    <div class="museum-container">
+                        <div class="museum-title">记忆碎片博物馆</div>
+                        <div class="museum-subtitle">点亮漂浮着的 4 个几何体以解锁档案</div>
+                        <div class="shards-grid">
+                            <div class="shard-sphere" id="shard-1" onclick="openShardModal(1)">
+                                <div class="shard-icon">🪐</div>
+                                <div class="shard-name">动漫偏好</div>
+                            </div>
+                            <div class="shard-sphere" id="shard-2" onclick="openShardModal(2)">
+                                <div class="shard-icon">💾</div>
+                                <div class="shard-name">赛博大危机</div>
+                            </div>
+                            <div class="shard-sphere" id="shard-3" onclick="openShardModal(3)">
+                                <div class="shard-icon">⚠️</div>
+                                <div class="shard-name">吞不吞动滑</div>
+                            </div>
+                            <div class="shard-sphere" id="shard-4" onclick="openShardModal(4)">
+                                <div class="shard-icon">🎓</div>
+                                <div class="shard-name">网课代刷</div>
+                            </div>
+                        </div>
+                        <button class="btn-next-scene" id="btn-to-scene3" style="margin-top: 30px;">跨越距离, 云拥抱 ➔</button>
+                    </div>
+
+                    <!-- 碎片详情弹窗 -->
+                    <div class="museum-modal" id="museum-modal" onclick="closeShardModal()">
+                        <div class="modal-card" onclick="event.stopPropagation()">
+                            <div class="modal-title" id="modal-title">记忆详情</div>
+                            <div class="modal-body" id="modal-body">这里是正文...</div>
+                            <button class="btn-modal-close" onclick="closeShardModal()">合上档案</button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 🌐 第三景：距离清零拥抱计划 -->
+                <div class="bday-scene" id="bday-scene-3">
+                    <div class="hug-container">
+                        <div class="hug-instructions">
+                            <h2>云拥抱计划</h2>
+                            <p>两端距离横亘，系统已将其硬性物理化</p>
+                            <p style="color:#ff3b30; margin-top:5px;">请用双指长按左右两颗发光体，启动融合仪式</p>
+                            <p style="color:#888; font-size:0.75rem; margin-top:3px;">(电脑端：单击 MOUYU 后，长按 祈愿 即可启动)</p>
+                        </div>
+
+                        <div class="hug-sandbox">
+                            <!-- MOUYU 结点 -->
+                            <div class="hug-node mouyu" id="node-mouyu">
+                                <span>MOUYU</span>
+                                <div class="node-ripple"></div>
+                            </div>
+
+                            <!-- 阻断线 -->
+                            <div class="barrier-wire" id="barrier-wire">
+                                <div class="wire-danger"></div>
+                                <div class="wire-text" id="wire-dist-text">1800 km</div>
+                            </div>
+
+                            <!-- 祈愿 结点 -->
+                            <div class="hug-node qiao" id="node-qiao">
+                                <span>祈愿</span>
+                                <div class="node-ripple"></div>
+                            </div>
+                        </div>
+
+                        <div style="font-family: monospace; color: #ff3b30; font-size: 1.1rem; font-weight: bold; background: rgba(0,0,0,0.5); padding: 8px 15px; border-radius: 10px; border: 1px solid rgba(255,59,48,0.3)">
+                            HEARTBEAT: <span id="hug-bpm">80</span> BPM
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 终局落幕 (满屏动态生日烟花) -->
+                <div class="outro-illustration" id="outro-illustration">
+                    <canvas class="fireworks-canvas" id="fireworks-canvas"></canvas>
+                    <div class="final-card">
+                        <div class="final-title">TO: 祈愿</div>
+                        <p class="final-p" id="final-card-text"></p>
+                    </div>
+                </div>
+
             </div>
 
-        </div>
-
-        <!-- 全局 Glitch 崩溃特效层 -->
-        <div id="glitch-overlay">
-            <div class="glitch-noise"></div>
-            <div class="matrix-bg" id="matrix-bg"></div>
-            <div class="glitch-core-text">5.18</div>
-            <div class="sys-warning-modal" id="warn-1" style="top:20%; left:10%;">[Warning]: Core Emotion Overload</div>
-            <div class="sys-warning-modal" id="warn-2" style="top:60%; right:10%;">[Error]: 1800km Distance Limitation Bypass</div>
-            <div class="sys-warning-modal" id="warn-3" style="top:40%; left:25%; font-size:1.2rem; background:rgba(0,0,0,0.9); color:#00ff00; border-color:#00ff00;">[Status]: Initiating 518_Special_Project.exe...</div>
         </div>
 
     </div>
@@ -610,11 +774,9 @@
             }, 1500);
         }
 
-        // 修改原本直接滑动的逻辑，改为弹出密码框
         document.getElementById("unlock-hint").addEventListener("click", showPasscodeScreen);
         let startY=0, currentY=0, isDragging=false;
         lockScreen.addEventListener("touchstart", e => { 
-            // 只有在没弹密码框时记录
             if(!document.getElementById('passcode-overlay').classList.contains('show')){
                 startY = e.touches[0].clientY; isDragging = true; 
             }
@@ -642,9 +804,6 @@
         cc.addEventListener("touchend", e => { if(!ccIsDragging) return; ccIsDragging = false; cc.style.transition = "top 0.4s ease"; if(ccCurrentY - ccStartY < -50) { cc.style.top = "-100%"; ccIsOpen = false; } else { cc.style.top = "0"; }});
 
         // APP 打开关闭
-        let neteaseStarted = false;
-        let wechatStarted = false;
-
         function openApp(appId) {
             const page = document.getElementById(`app-${appId}-page`);
             if(page) {
@@ -767,7 +926,7 @@
             );
 
             await addNeteaseChat('right', 'qq号搜的吧 😏'); await addNeteaseChat('left', '你咋知道，笑死我了');
-            await addNeteaseChat('right', '因为我记得我绑定qq号了 😕😕😕'); await addNeteaseChat('left', '那你猜对了');
+            await addNeteaseChat('right', 'because我记得我绑定qq号了 😕😕😕'); await addNeteaseChat('left', '那你猜对了');
             document.getElementById('bpm-val').innerText = '110';
 
             await askChoice("内心OS：可恶，主动权全在她手里了，我得强行挽回一下局面，假装这其实不是我！",
@@ -815,7 +974,6 @@
             const msgDiv = document.createElement('div');
             msgDiv.className = `chat-msg ${who} ${blurred ? 'fast-scroll-blur' : ''}`;
             
-            // 头像修复：只使用极简文字头像
             const avatarHtml = who === 'left' 
                 ? `<div class="chat-avatar" style="background:#ff9a9e; color:white;">祈</div>` 
                 : `<div class="chat-avatar" style="background:#a18cd1; color:white;">M</div>`;
@@ -957,12 +1115,516 @@
             setTimeout(() => { document.getElementById('special-518-app').classList.add('reveal'); }, 1000);
         }
 
+        // ==============================================================
+        // 🎁 生日主线核心模块逻辑 (核心重构)
+        // ==============================================================
+        let bdayAudioCtx = null;
+        let ambientCanvas = null;
+        let ambientCtx = null;
+        let bdayStarted = false;
+
+        // 解锁开启主视图
         function openBirthdayApp() {
             const page = document.getElementById(`app-birthday-page`);
             page.classList.add('active');
             document.getElementById('desktop').style.transform = 'scale(0.95)';
             document.getElementById('desktop').style.filter = 'blur(5px)';
-            document.getElementById('status-bar').classList.add('dark-mode');
+            if(!bdayStarted) {
+                bdayStarted = true;
+                initBirthdayModule();
+            }
+        }
+
+        async function initBirthdayModule() {
+            // 初始化音频接口（延后激活避免受限）
+            try { bdayAudioCtx = new (window.AudioContext || window.webkitAudioContext)(); } catch(e){}
+            
+            // 运行背景Canvas粒子星云系统
+            initAmbientCanvas();
+
+            // 切换到第一景
+            document.getElementById('bday-scene-1').classList.add('active');
+
+            // 1. 获取焦作与北海的温度数据 (采用免费免Key气象服务API，安全可靠)
+            fetchDualCityWeather();
+
+            // 2. 第一景慢打字叙事
+            const narrativeText = 
+                "北海今晚的天气是 ${qiaoTemp}℃，焦作是 ${mouyuTemp}℃。\n" +
+                "我们的直线距离是 1780 公里。\n" +
+                "祈愿，你看，虽然我此刻没办法抱到你，\n" +
+                "但此时此刻，我们正吹着同一阵风，看着同一片星空。";
+            
+            // 模拟动态数据代入
+            await sleep(1200);
+            let tempQiao = document.getElementById('weather-temp-qiao').innerText.replace('°C', '');
+            let tempMou = document.getElementById('weather-temp-mouyu').innerText.replace('°C', '');
+            if(tempQiao === '--') tempQiao = '28';
+            if(tempMou === '--') tempMou = '20';
+
+            const formattedText = narrativeText
+                .replace('${qiaoTemp}', tempQiao)
+                .replace('${mouyuTemp}', tempMou);
+
+            typeNarrative(formattedText);
+        }
+
+        // 真实温度数据获取与接口降级保护
+        async function fetchDualCityWeather() {
+            try {
+                // 北海坐标：21.48, 109.12
+                const qiaoRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=21.48&longitude=109.12&current_weather=true");
+                const qiaoData = await qiaoRes.json();
+                document.getElementById('weather-temp-qiao').innerText = Math.round(qiaoData.current_weather.temperature) + '°C';
+                document.getElementById('weather-desc-qiao').innerText = getWeatherDesc(qiaoData.current_weather.weathercode);
+            } catch(e) {
+                document.getElementById('weather-temp-qiao').innerText = '28°C';
+                document.getElementById('weather-desc-qiao').innerText = '微风 晴朗';
+            }
+
+            try {
+                // 焦作坐标：35.24, 113.24
+                const mouRes = await fetch("https://api.open-meteo.com/v1/forecast?latitude=35.24&longitude=113.24&current_weather=true");
+                const mouData = await mouRes.json();
+                document.getElementById('weather-temp-mouyu').innerText = Math.round(mouData.current_weather.temperature) + '°C';
+                document.getElementById('weather-desc-mouyu').innerText = getWeatherDesc(mouData.current_weather.weathercode);
+            } catch(e) {
+                document.getElementById('weather-temp-mouyu').innerText = '20°C';
+                document.getElementById('weather-desc-mouyu').innerText = '微风 舒适';
+            }
+        }
+
+        function getWeatherDesc(code) {
+            if(code === 0) return "晴空万里";
+            if(code <= 3) return "多云转晴";
+            if(code <= 48) return "薄雾朦胧";
+            if(code <= 67) return "细雨绵绵";
+            return "偶有阵雨";
+        }
+
+        // 打字机渲染文字
+        async function typeNarrative(text) {
+            const container = document.getElementById('scene1-type-text');
+            container.innerText = '';
+            for(let i=0; i<text.length; i++) {
+                container.innerHTML += text[i] === '\n' ? '<br>' : text[i];
+                await sleep(65);
+            }
+            // 显示跳转下一景按钮
+            document.getElementById('btn-to-scene2').classList.add('show');
+        }
+
+        // 背景渲染
+        function initAmbientCanvas() {
+            ambientCanvas = document.getElementById('bday-ambient-canvas');
+            ambientCtx = ambientCanvas.getContext('2d');
+            resizeAmbientCanvas();
+            window.addEventListener('resize', resizeAmbientCanvas);
+
+            // 粒子系统
+            let particles = [];
+            for(let i=0; i<60; i++) {
+                particles.push({
+                    x: Math.random() * ambientCanvas.width,
+                    y: Math.random() * ambientCanvas.height,
+                    vx: (Math.random() - 0.5) * 0.4,
+                    vy: (Math.random() - 0.5) * 0.4,
+                    r: Math.random() * 2 + 1,
+                    alpha: Math.random() * 0.5 + 0.2
+                });
+            }
+
+            function animate() {
+                if(!bdayStarted) return;
+                ambientCtx.clearRect(0,0,ambientCanvas.width, ambientCanvas.height);
+                
+                // 绘制分割区的天气光影
+                const mid = ambientCanvas.width / 2;
+                ambientCtx.fillStyle = 'rgba(0, 122, 255, 0.03)';
+                ambientCtx.fillRect(0, 0, mid, ambientCanvas.height);
+                ambientCtx.fillStyle = 'rgba(255, 45, 85, 0.03)';
+                ambientCtx.fillRect(mid, 0, mid, ambientCanvas.height);
+
+                // 星空/风粒子动画
+                particles.forEach(p => {
+                    p.x += p.vx;
+                    p.y += p.vy;
+                    if(p.x < 0) p.x = ambientCanvas.width;
+                    if(p.x > ambientCanvas.width) p.x = 0;
+                    if(p.y < 0) p.y = ambientCanvas.height;
+                    if(p.y > ambientCanvas.height) p.y = 0;
+
+                    ambientCtx.beginPath();
+                    ambientCtx.arc(p.x, p.y, p.r, 0, Math.PI*2);
+                    ambientCtx.fillStyle = `rgba(255, 255, 255, ${p.alpha})`;
+                    ambientCtx.fill();
+                });
+
+                requestAnimationFrame(animate);
+            }
+            animate();
+        }
+
+        function resizeAmbientCanvas() {
+            if(ambientCanvas) {
+                ambientCanvas.width = ambientCanvas.parentElement.clientWidth;
+                ambientCanvas.height = ambientCanvas.parentElement.clientHeight;
+            }
+        }
+
+        // ================= 第二景：解密博物馆 =================
+        document.getElementById('btn-to-scene2').addEventListener('click', () => {
+            document.getElementById('bday-scene-1').classList.remove('active');
+            document.getElementById('bday-scene-2').classList.add('active');
+        });
+
+        const shardsUnlocked = { 1: false, 2: false, 3: false, 4: false };
+        const shardData = {
+            1: {
+                title: "🪐 动漫偏好档案",
+                body: "你以为你隐藏得很好，其实那天在网易云，我一眼就看穿了你的动漫头像。为了能接住你所有的梗，那天晚上我偷偷连夜把那部动漫的前 10 集全部看完了。这是属于 MOUYU 的第一级预谋。"
+            },
+            2: {
+                title: "💾 赛博隐私大危机",
+                body: "4月1日那天，我这辈子干过最蠢的事，就是自己把带 QQ 号的资料截图送货上门，还试图嘴硬假装是自己的朋友。结果因为网易云和 QQ 名字一模一样被你当场抓包。当时我表面高呼‘信息泄露’，其实心里的小鹿已经把焦作撞出了地震。"
+            },
+            3: {
+                title: "⚠️ 吞不吞动滑（信号干扰）",
+                body: "‘您猜他吞不吞动滑’——这个至今没破解的错别字，是我当时因为被你发现真相，手指发抖打出来的。这些可爱的错别字，是互联网信号在 1800 公里传递时，因为极度心动产生的幸福杂音。"
+            },
+            4: {
+                title: "🎓 全能代刷网课业务",
+                body: "虽然天天在学习通里帮你刷高数和各种作业题，但其实我最想研究的课题，只有‘今天祈愿有没有想我’这一门。"
+            }
+        };
+
+        function openShardModal(id) {
+            const data = shardData[id];
+            document.getElementById('modal-title').innerText = data.title;
+            document.getElementById('modal-body').innerText = data.body;
+            document.getElementById('museum-modal').classList.add('show');
+            
+            // 标记解锁
+            shardsUnlocked[id] = true;
+            document.getElementById(`shard-${id}`).classList.add('unlocked');
+
+            // 检查全部解锁
+            if(Object.values(shardsUnlocked).every(v => v === true)) {
+                document.getElementById('btn-to-scene3').classList.add('show');
+            }
+        }
+
+        function closeShardModal() {
+            document.getElementById('museum-modal').classList.remove('show');
+        }
+
+        // ================= 第三景：拥抱仪式 (重低音心跳生成) =================
+        document.getElementById('btn-to-scene3').addEventListener('click', () => {
+            document.getElementById('bday-scene-2').classList.remove('active');
+            document.getElementById('bday-scene-3').classList.add('active');
+            initHugRitual();
+        });
+
+        let mouyuHeld = false;
+        let qiaoHeld = false;
+        let hugProgress = 0; // 0 到 100
+        let hugInterval = null;
+        let heartbeatTimer = null;
+        let currentBPM = 80;
+
+        // 动态脉宽调制低音鼓点 (合成心跳声)
+        function playDoubleHeartbeat() {
+            if(!bdayAudioCtx) return;
+            try {
+                let osc = bdayAudioCtx.createOscillator();
+                let gain = bdayAudioCtx.createGain();
+                osc.type = 'sine';
+                
+                // 第一声：低沉 thud
+                osc.frequency.setValueAtTime(65, bdayAudioCtx.currentTime);
+                osc.frequency.exponentialRampToValueAtTime(20, bdayAudioCtx.currentTime + 0.15);
+                gain.gain.setValueAtTime(0.5, bdayAudioCtx.currentTime);
+                gain.gain.exponentialRampToValueAtTime(0.01, bdayAudioCtx.currentTime + 0.15);
+                
+                osc.connect(gain); gain.connect(bdayAudioCtx.destination);
+                osc.start(); osc.stop(bdayAudioCtx.currentTime + 0.16);
+
+                // 第二声：稍弱稍迟 delay
+                setTimeout(() => {
+                    let osc2 = bdayAudioCtx.createOscillator();
+                    let gain2 = bdayAudioCtx.createGain();
+                    osc2.type = 'sine';
+                    osc2.frequency.setValueAtTime(55, bdayAudioCtx.currentTime);
+                    osc2.frequency.exponentialRampToValueAtTime(20, bdayAudioCtx.currentTime + 0.2);
+                    gain2.gain.setValueAtTime(0.35, bdayAudioCtx.currentTime);
+                    gain2.gain.exponentialRampToValueAtTime(0.01, bdayAudioCtx.currentTime + 0.2);
+                    osc2.connect(gain2); gain2.connect(bdayAudioCtx.destination);
+                    osc2.start(); osc2.stop(bdayAudioCtx.currentTime + 0.21);
+                }, 180);
+            } catch(e){}
+        }
+
+        // 动态自适应调节心率声律
+        function runHeartbeatLoop() {
+            if(!mouyuHeld && !qiaoHeld) {
+                currentBPM = 80;
+            } else if(mouyuHeld && qiaoHeld) {
+                currentBPM = Math.min(150, currentBPM + 5);
+            } else {
+                currentBPM = 100;
+            }
+            document.getElementById('hug-bpm').innerText = currentBPM;
+            playDoubleHeartbeat();
+
+            // 根据心率调节下一次播放时间
+            let interval = (60 / currentBPM) * 1000;
+            heartbeatTimer = setTimeout(runHeartbeatLoop, interval);
+        }
+
+        function initHugRitual() {
+            const nm = document.getElementById('node-mouyu');
+            const nq = document.getElementById('node-qiao');
+
+            // 运行全局心跳机制
+            runHeartbeatLoop();
+
+            // 移动端：双指长按支持
+            function touchStartHandler(e, isMouyu) {
+                e.preventDefault();
+                if(bdayAudioCtx && bdayAudioCtx.state === 'suspended') bdayAudioCtx.resume();
+                if(isMouyu) { mouyuHeld = true; nm.classList.add('holding'); }
+                else { qiaoHeld = true; nq.classList.add('holding'); }
+                checkAndProgressHug();
+            }
+
+            function touchEndHandler(e, isMouyu) {
+                e.preventDefault();
+                if(isMouyu) { mouyuHeld = false; nm.classList.remove('holding'); }
+                else { qiaoHeld = false; nq.classList.remove('holding'); }
+                stopHugProgress();
+            }
+
+            nm.addEventListener('touchstart', e => touchStartHandler(e, true));
+            nm.addEventListener('touchend', e => touchEndHandler(e, true));
+            nq.addEventListener('touchstart', e => touchStartHandler(e, false));
+            nq.addEventListener('touchend', e => touchEndHandler(e, false));
+
+            // 电脑端特殊测试兼容：单击MOUYU锁定状态，随后长按祈愿进行触发
+            let mouyuClicked = false;
+            nm.addEventListener('mousedown', (e) => {
+                if(bdayAudioCtx && bdayAudioCtx.state === 'suspended') bdayAudioCtx.resume();
+                mouyuClicked = !mouyuClicked;
+                mouyuHeld = mouyuClicked;
+                if(mouyuHeld) { nm.classList.add('holding'); } 
+                else { nm.classList.remove('holding'); }
+                checkAndProgressHug();
+            });
+
+            nq.addEventListener('mousedown', (e) => {
+                if(bdayAudioCtx && bdayAudioCtx.state === 'suspended') bdayAudioCtx.resume();
+                qiaoHeld = true;
+                nq.classList.add('holding');
+                checkAndProgressHug();
+            });
+
+            nq.addEventListener('mouseup', (e) => {
+                qiaoHeld = false;
+                nq.classList.remove('holding');
+                stopHugProgress();
+            });
+        }
+
+        function checkAndProgressHug() {
+            if(mouyuHeld && qiaoHeld) {
+                // 开启进度推动
+                if(!hugInterval) {
+                    hugInterval = setInterval(updateHugProgress, 40);
+                }
+            } else {
+                stopHugProgress();
+            }
+        }
+
+        function stopHugProgress() {
+            if(hugInterval) {
+                clearInterval(hugInterval);
+                hugInterval = null;
+            }
+        }
+
+        function updateHugProgress() {
+            hugProgress += 0.8; // 速度
+            if(hugProgress >= 100) {
+                hugProgress = 100;
+                stopHugProgress();
+                clearTimeout(heartbeatTimer);
+                // 触发融合
+                triggerFinalMerge();
+            }
+
+            // 更新距离文案和融合动效
+            const currentDist = Math.round(1800 * (1 - hugProgress/100));
+            document.getElementById('wire-dist-text').innerText = currentDist + ' km';
+            
+            // 阻隔网溶解与缩放
+            const wire = document.getElementById('barrier-wire');
+            wire.style.opacity = (1 - hugProgress/100);
+            wire.style.transform = `scaleY(${1 - hugProgress/100})`;
+
+            // 结点物理靠拢
+            const pxOffset = hugProgress * 1.1; // 自适应平滑偏移量
+            document.getElementById('node-mouyu').style.transform = `translateX(${pxOffset}px) scale(${1 + hugProgress/200})`;
+            document.getElementById('node-qiao').style.transform = `translateX(${-pxOffset}px) scale(${1 + hugProgress/200})`;
+
+            // 设备震动
+            if(navigator.vibrate && Math.random() > 0.5) {
+                navigator.vibrate(30);
+            }
+        }
+
+        // ================= 终极：大表白落幕 (Canvas 绚丽粒子烟花) =================
+        async function triggerFinalMerge() {
+            // 闪白致盲
+            const flash = document.getElementById('flash-white');
+            flash.style.opacity = '1';
+            await sleep(800);
+
+            // 切换隐藏系统外壳
+            document.getElementById('bday-scene-3').classList.remove('active');
+            document.getElementById('os-widgets').style.display = 'none';
+            document.getElementById('os-app-grid').style.display = 'none';
+            document.getElementById('status-bar').style.display = 'none';
+            
+            // 展示第四景插画
+            document.getElementById('outro-illustration').style.display = 'block';
+            flash.style.opacity = '0';
+
+            // 运行超级Canvas烟花
+            startFireworks();
+
+            // 打印最后的情书文案
+            const finalLoveText = 
+                "5.18 生日快乐，祈愿。\n\n" +
+                "在网页的代码里，我可以用 3 秒钟让两颗心融合，把距离清零。\n" +
+                "但在现实的世界里，我们要用剩下的日子，去把这 1800 公里一步步走完。\n\n" +
+                "每一次的生日，都是宇宙对生命的一次深情祈愿。";
+
+            typeFinalLoveLetter(finalLoveText);
+        }
+
+        async function typeFinalLoveLetter(text) {
+            const container = document.getElementById('final-card-text');
+            container.innerText = '';
+            for(let i=0; i<text.length; i++) {
+                container.innerHTML += text[i] === '\n' ? '<br>' : text[i];
+                await sleep(95); // 缓缓浮现，浪漫深情
+            }
+        }
+
+        // canvas 高性能烟花渲染器
+        function startFireworks() {
+            const canvas = document.getElementById('fireworks-canvas');
+            const ctx = canvas.getContext('2d');
+            
+            function resizeCanvas() {
+                canvas.width = window.innerWidth;
+                canvas.height = window.innerHeight;
+            }
+            resizeCanvas();
+            window.addEventListener('resize', resizeCanvas);
+
+            let particles = [];
+            let rockets = [];
+
+            class Rocket {
+                constructor() {
+                    this.x = Math.random() * canvas.width;
+                    this.y = canvas.height;
+                    this.tx = Math.random() * canvas.width;
+                    this.ty = Math.random() * (canvas.height * 0.45) + (canvas.height * 0.1);
+                    this.vx = (this.tx - this.x) / 50;
+                    this.vy = (this.ty - this.y) / 50;
+                    this.hue = Math.random() * 360;
+                }
+                update() {
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    if(Math.abs(this.y - this.ty) < 5) {
+                        explode(this.x, this.y, this.hue);
+                        return false;
+                    }
+                    return true;
+                }
+                draw() {
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, 3, 0, Math.PI*2);
+                    ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`;
+                    ctx.fill();
+                }
+            }
+
+            class Particle {
+                constructor(x, y, hue) {
+                    this.x = x;
+                    this.y = y;
+                    const angle = Math.random() * Math.PI * 2;
+                    const speed = Math.random() * 6 + 2;
+                    this.vx = Math.cos(angle) * speed;
+                    this.vy = Math.sin(angle) * speed;
+                    this.alpha = 1;
+                    this.gravity = 0.08;
+                    this.drag = 0.95;
+                    this.hue = hue;
+                }
+                update() {
+                    this.vx *= this.drag;
+                    this.vy *= this.drag;
+                    this.vy += this.gravity;
+                    this.x += this.vx;
+                    this.y += this.vy;
+                    this.alpha -= 0.015;
+                    return this.alpha > 0;
+                }
+                draw() {
+                    ctx.save();
+                    ctx.globalAlpha = this.alpha;
+                    ctx.beginPath();
+                    ctx.arc(this.x, this.y, Math.random()*2+1, 0, Math.PI*2);
+                    ctx.fillStyle = `hsl(${this.hue}, 100%, 60%)`;
+                    ctx.fill();
+                    ctx.restore();
+                }
+            }
+
+            function explode(x, y, hue) {
+                for(let i=0; i<80; i++) {
+                    particles.push(new Particle(x, y, hue));
+                }
+            }
+
+            function loop() {
+                ctx.fillStyle = 'rgba(0, 0, 0, 0.15)';
+                ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                if(Math.random() < 0.04) {
+                    rockets.push(new Rocket());
+                }
+
+                rockets = rockets.filter(r => {
+                    r.update();
+                    r.draw();
+                    return r.y > r.ty;
+                });
+
+                particles = particles.filter(p => {
+                    let active = p.update();
+                    p.draw();
+                    return active;
+                });
+
+                requestAnimationFrame(loop);
+            }
+            loop();
         }
 
     </script>
